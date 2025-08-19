@@ -40,8 +40,9 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
         throw new Error("Failed to join waitlist");
       }
       setSuccess(true);
-    } catch (err: any) {
-      setError(err?.message || "Something went wrong.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Something went wrong.";
+      setError(message);
     } finally {
       setSubmitting(false);
     }

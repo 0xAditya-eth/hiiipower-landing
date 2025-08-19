@@ -11,7 +11,6 @@ export function DynamicBackground({ containerRef }: Props) {
   // Prefer container scroll if provided, else fallback to viewport scroll
   const { scrollYProgress: containerProgress } = useScroll({ container: containerRef });
   const { scrollYProgress: viewportProgress } = useScroll();
-  const framerScroll = containerRef?.current ? containerProgress : viewportProgress;
   // Manual scroll progress to ensure responsiveness with custom scroll containers
   const manualProgress = useMotionValue(0);
   useEffect(() => {
@@ -34,7 +33,7 @@ export function DynamicBackground({ containerRef }: Props) {
     el.addEventListener('scroll', update, { passive: true } as AddEventListenerOptions);
     window.addEventListener('resize', update);
     return () => {
-      el.removeEventListener('scroll', update as any);
+      el.removeEventListener('scroll', update as EventListener);
       window.removeEventListener('resize', update);
     };
   }, [containerRef, manualProgress]);

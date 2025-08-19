@@ -7,6 +7,16 @@ type Payload = {
   email?: string;
 };
 
+type WaitlistEntry = {
+  name: string;
+  email: string;
+  createdAt: string;
+};
+
+type WaitlistFile = {
+  entries: WaitlistEntry[];
+};
+
 const DATA_FILE = path.join(process.cwd(), "data", "waitlist.json");
 
 async function ensureDataFile() {
@@ -30,9 +40,9 @@ export async function POST(request: Request) {
 
     await ensureDataFile();
     const raw = await fs.readFile(DATA_FILE, "utf8");
-    const json = raw ? JSON.parse(raw) : { entries: [] as any[] };
+    const json: WaitlistFile = raw ? (JSON.parse(raw) as WaitlistFile) : { entries: [] };
 
-    const exists = (json.entries as any[]).some(
+    const exists = json.entries.some(
       (e) => typeof e?.email === "string" && e.email.toLowerCase() === email
     );
     if (!exists) {
@@ -41,7 +51,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
