@@ -17,7 +17,8 @@ export default function LandingPage() {
       <header className="fixed top-0 left-0 right-0 z-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mt-4 flex h-14 items-center justify-between rounded-full border border-black/5 bg-white/70 backdrop-blur-md px-4 shadow-sm">
-            <a href="#hero" className="font-extrabold text-lg tracking-tight text-gray-900">
+            <a href="#hero" className="flex items-center gap-2 font-extrabold text-lg tracking-tight text-gray-900">
+              <img src="/favicon.ico" alt="HiiiPower logo" className="h-6 w-6 rounded" />
               HiiiPower
             </a>
             <nav className="flex items-center gap-2 sm:gap-3">
@@ -62,7 +63,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="relative h-screen w-full snap-start overflow-hidden px-6 py-24">
+      <section id="features" className="relative h-screen w-full snap-start overflow-hidden flex flex-col items-center justify-center px-6 py-24">
         <div className="relative z-10 max-w-6xl mx-auto">
           <motion.h2
             className="text-5xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent drop-shadow-lg text-center"
