@@ -57,11 +57,24 @@ Request body:
 
 Responses:
 
-- `200` `{ ok: true }` on success (idempotent for duplicate emails)
+- `200` `{ ok: true, storage: "mongodb" | "file" }` on success (idempotent for duplicate emails)
 - `400` `{ error: "Invalid input" }` if name/email invalid
 - `500` `{ error: "Server error" }` on unexpected errors
 
-Persistence: submissions are stored in `data/waitlist.json`. The file and folder are ensured at runtime if missing.
+Persistence:
+
+- By default, submissions are stored in `data/waitlist.json` (the file and folder are ensured at runtime if missing).
+- If `MONGODB_URI` is set, submissions are stored in MongoDB instead, with a unique index on `email` to prevent duplicates.
+
+### Environment variables
+
+Create a `.env.local` at the project root to enable MongoDB:
+
+```bash
+MONGODB_URI=your-mongodb-connection-string
+# Optional: override database name (otherwise uses the default from URI)
+MONGODB_DB=your-db-name
+```
 
 ## Deployment
 
@@ -77,4 +90,5 @@ npm run start
 ## Notes
 
 - `node_modules/` is ignored via `.gitignore`.
-- No environment variables are required for local development; the API writes to the local filesystem.
+- Env files (`.env*`) are ignored by default.
+- No environment variables are required for local development (falls back to file-based storage), but you can set `MONGODB_URI` to use MongoDB.

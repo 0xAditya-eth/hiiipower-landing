@@ -4,7 +4,7 @@ import React, { useEffect, RefObject } from "react";
 import { motion, useMotionTemplate, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
 
 type Props = {
-  containerRef?: RefObject<HTMLElement>;
+  containerRef?: RefObject<HTMLElement | null>;
 };
 
 export function DynamicBackground({ containerRef }: Props) {
@@ -48,8 +48,14 @@ export function DynamicBackground({ containerRef }: Props) {
   // Pointer + scroll-driven gradient center (scroll weighted more than pointer)
   const x = useMotionValue(0.5);
   const y = useMotionValue(0.35);
-  const centerX = useTransform([x, scrollYProgress], ([xp, s]) => 0.5 + (xp - 0.5) * 0.2 + (s as number - 0.5) * 0.25);
-  const centerY = useTransform([y, scrollYProgress], ([yp, s]) => 0.25 + (yp - 0.25) * 0.25 + (s as number) * 0.55);
+  const centerX = useTransform([x, scrollYProgress], (vals) => {
+    const [xp, s] = vals as [number, number];
+    return 0.5 + (xp - 0.5) * 0.2 + (s - 0.5) * 0.25;
+  });
+  const centerY = useTransform([y, scrollYProgress], (vals) => {
+    const [yp, s] = vals as [number, number];
+    return 0.25 + (yp - 0.25) * 0.25 + s * 0.55;
+  });
   const xPct = useTransform(centerX, [0, 1], ["0%", "100%"]);
   const yPct = useTransform(centerY, [0, 1], ["0%", "100%"]);
 
@@ -88,12 +94,30 @@ export function DynamicBackground({ containerRef }: Props) {
   const background = useMotionTemplate`radial-gradient(120vmax 120vmax at ${xPct} ${yPct}, hsl(${hue1} 70% 95% / 1), hsl(${hue2} 65% 96% / 1) 60%, #ffffff)`;
 
   // Parallax/oscillation for background blobs
-  const blob1X = useTransform([x, time, scrollYProgress], ([xp, t, s]) => (xp - 0.5) * 100 + Math.sin(t * 0.6) * 24 + (s as number) * 150);
-  const blob1Y = useTransform([y, time, scrollYProgress], ([yp, t, s]) => (yp - 0.5) * 90 + Math.cos(t * 0.4) * 22 + (s as number) * -250);
-  const blob2X = useTransform([x, time, scrollYProgress], ([xp, t, s]) => (0.5 - xp) * 95 + Math.cos(t * 0.5) * 22 + (s as number) * -170);
-  const blob2Y = useTransform([y, time, scrollYProgress], ([yp, t, s]) => (0.5 - yp) * 120 + Math.sin(t * 0.35) * 24 + (s as number) * 300);
-  const blob3X = useTransform([x, time, scrollYProgress], ([xp, t, s]) => (xp - 0.5) * 80 + Math.sin(t * 0.25) * 20 + (s as number) * 100);
-  const blob3Y = useTransform([y, time, scrollYProgress], ([yp, t, s]) => (yp - 0.5) * 80 + Math.cos(t * 0.2) * 20 + (s as number) * -180);
+  const blob1X = useTransform([x, time, scrollYProgress], (vals) => {
+    const [xp, t, s] = vals as [number, number, number];
+    return (xp - 0.5) * 100 + Math.sin(t * 0.6) * 24 + s * 150;
+  });
+  const blob1Y = useTransform([y, time, scrollYProgress], (vals) => {
+    const [yp, t, s] = vals as [number, number, number];
+    return (yp - 0.5) * 90 + Math.cos(t * 0.4) * 22 + s * -250;
+  });
+  const blob2X = useTransform([x, time, scrollYProgress], (vals) => {
+    const [xp, t, s] = vals as [number, number, number];
+    return (0.5 - xp) * 95 + Math.cos(t * 0.5) * 22 + s * -170;
+  });
+  const blob2Y = useTransform([y, time, scrollYProgress], (vals) => {
+    const [yp, t, s] = vals as [number, number, number];
+    return (0.5 - yp) * 120 + Math.sin(t * 0.35) * 24 + s * 300;
+  });
+  const blob3X = useTransform([x, time, scrollYProgress], (vals) => {
+    const [xp, t, s] = vals as [number, number, number];
+    return (xp - 0.5) * 80 + Math.sin(t * 0.25) * 20 + s * 100;
+  });
+  const blob3Y = useTransform([y, time, scrollYProgress], (vals) => {
+    const [yp, t, s] = vals as [number, number, number];
+    return (yp - 0.5) * 80 + Math.cos(t * 0.2) * 20 + s * -180;
+  });
 
   const filterStr = useMotionTemplate`saturate(1.15) hue-rotate(${hueRotate})`;
 

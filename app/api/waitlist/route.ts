@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import { getMongoDb } from "@/lib/mongodb";
+export const runtime = "nodejs";
 
 type Payload = {
   name?: string;
@@ -38,6 +40,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
+    // Prefer MongoDB if configured; gracefully fall back to file storage.
+    const mongoUri = process.env.MONGODB_URI || "";
+    const mongoDbName = process.env.MONGODB_DB || undefined;
+    if (mongoUri) {
+      try {
+        const db = await getMongoDb(mongoUri, mongoDbName);
+        const collection = db.collection<WaitlistEntry>("waitlist");
+        // Ensure a unique index on email so we do not store duplicates
+        await collection.createIndex({ email: 1 }, { unique: true });
+        const createdAt = new Date().toISOString();
+        await collection.updateOne(
+          { email },
+          { $setOnInsert: { name, email, createdAt } },
+          { upsert: true }
+        );
+        return NextResponse.json({ ok: true, storage: "mongodb" });
+      } catch (err) {
+        // If MongoDB is misconfigured or temporarily unavailable, fall back to file storage.
+        // Continue to file-based storage below.
+      }
+    }
+
     await ensureDataFile();
     const raw = await fs.readFile(DATA_FILE, "utf8");
     const json: WaitlistFile = raw ? (JSON.parse(raw) as WaitlistFile) : { entries: [] };
@@ -50,7 +74,7 @@ export async function POST(request: Request) {
       await fs.writeFile(DATA_FILE, JSON.stringify(json, null, 2));
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, storage: "file" });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
