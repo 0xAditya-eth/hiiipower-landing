@@ -66,10 +66,10 @@ export default function LandingPage() {
       </section>
 
       {/* Real People Section */}
-      <section id="people" className="relative min-h-screen md:h-screen w-full snap-start overflow-visible md:overflow-hidden flex flex-col items-center justify-center px-6 py-24">
+      <section id="people" className="relative h-screen w-full snap-start overflow-hidden flex flex-col items-center justify-center px-4 sm:px-6 py-16 sm:py-20">
         <div className="relative z-10 max-w-6xl mx-auto w-full">
           <motion.h2
-            className="text-5xl sm:text-6xl md:text-8xl font-extrabold mb-4 bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent drop-shadow-lg text-center leading-[1.1] md:leading-[1.05] pb-1 break-words text-balance"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold mb-3 sm:mb-4 bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent drop-shadow-lg text-center leading-tight pb-1 break-words text-balance"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -79,7 +79,7 @@ export default function LandingPage() {
           </motion.h2>
           
           <motion.p
-            className="text-center text-gray-600 text-base sm:text-lg md:text-xl mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed"
+            className="text-center text-gray-600 text-sm sm:text-base md:text-lg mb-6 sm:mb-8 max-w-2xl mx-auto leading-snug"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -88,7 +88,7 @@ export default function LandingPage() {
             No bots. No fake accounts. No catfish. Every person you connect with is verified, authentic, and human.
           </motion.p>
           
-          <div className="flex min-w-0 md:grid md:grid-cols-2 gap-5 md:gap-8 will-change-transform overflow-x-auto snap-x snap-mandatory pb-2 md:overflow-visible touch-pan-x overscroll-x-contain scroll-px-6">
+          <div className="flex min-w-0 md:grid md:grid-cols-3 gap-4 md:gap-6 will-change-transform overflow-x-auto snap-x snap-mandatory pb-2 md:overflow-visible touch-pan-x overscroll-x-contain scroll-px-6">
             {[
               {
                 title: "Connect With Real Humans",
@@ -103,39 +103,33 @@ export default function LandingPage() {
                 tag: "Ad-Free Zone"
               },
               {
-                title: "Be Yourself Without Fear",
-                desc: "Feel safe to express yourself authentically. Everyone is verified, so you can trust the community around you.",
-                icon: "🛡️",
-                tag: "Protected Space"
-              },
-              {
                 title: "Build Trust Naturally",
-                desc: "Know that everyone you meet is exactly who they claim to be. Real identities create real relationships.",
+                desc: "Know that everyone you meet is exactly who they claim to be. Real identities create real relationships and authentic connections.",
                 icon: "💯",
                 tag: "Verified Humans"
               },
             ].map((f, i) => (
               <motion.div
                 key={i}
-                className="relative z-10 bg-white/70 backdrop-blur-md box-border p-6 md:p-8 rounded-3xl border border-white/50 shadow-xl hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 transform-gpu snap-start flex-none w-[80vw] sm:w-[60vw] md:w-auto"
+                className="relative z-10 bg-white/70 backdrop-blur-md box-border p-4 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl border border-white/50 shadow-xl hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 transform-gpu snap-start flex-none w-[80vw] sm:w-[55vw] md:w-auto"
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, type: "spring", stiffness: 120, damping: 18, mass: 0.6 }}
                 variants={{ hidden: { opacity: 1, y: 14, scale: 0.995 }, show: { opacity: 1, y: 0, scale: 1 } }}
               >
-                <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-black to-gray-700 text-white shadow-md">
-                  <span className="text-xl" aria-hidden>
+                <div className="mb-3 inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-black to-gray-700 text-white shadow-md">
+                  <span className="text-lg sm:text-xl" aria-hidden>
                     {f.icon}
                   </span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-extrabold mb-2 tracking-tight bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent drop-shadow-sm">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold mb-1.5 sm:mb-2 tracking-tight bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent drop-shadow-sm">
                   {f.title}
                 </h3>
-                <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed mb-3">
+                <p className="text-gray-700 text-xs sm:text-sm md:text-base leading-snug mb-2.5">
                   {f.desc}
                 </p>
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 text-xs sm:text-sm font-medium text-gray-700">
+                <div className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 text-xs font-medium text-gray-700">
                   {f.tag}
                 </div>
               </motion.div>
@@ -145,10 +139,10 @@ export default function LandingPage() {
       </section>
 
       {/* Real Moments Section */}
-      <section id="moments" className="relative min-h-screen md:h-screen w-full snap-start overflow-visible md:overflow-hidden flex flex-col items-center justify-center px-6 py-24">
+      <section id="moments" className="relative h-screen w-full snap-start overflow-hidden flex flex-col items-center justify-center px-4 sm:px-6 py-16 sm:py-20">
         <div className="relative z-10 max-w-6xl mx-auto w-full">
           <motion.h2
-            className="text-5xl sm:text-6xl md:text-8xl font-extrabold mb-4 bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent drop-shadow-lg text-center leading-[1.1] md:leading-[1.05] pb-1 break-words text-balance"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold mb-3 sm:mb-4 bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent drop-shadow-lg text-center leading-tight pb-1 break-words text-balance"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -158,7 +152,7 @@ export default function LandingPage() {
           </motion.h2>
           
           <motion.p
-            className="text-center text-gray-600 text-base sm:text-lg md:text-xl mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed"
+            className="text-center text-gray-600 text-sm sm:text-base md:text-lg mb-6 sm:mb-8 max-w-2xl mx-auto leading-snug"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -167,7 +161,7 @@ export default function LandingPage() {
             Every post is captured in real-time. No uploads, no editing, no curated perfection—just life as it happens.
           </motion.p>
           
-          <div className="flex min-w-0 md:grid md:grid-cols-3 gap-5 md:gap-8 will-change-transform overflow-x-auto snap-x snap-mandatory pb-2 md:overflow-visible touch-pan-x overscroll-x-contain scroll-px-6">
+          <div className="flex min-w-0 md:grid md:grid-cols-3 gap-4 md:gap-6 will-change-transform overflow-x-auto snap-x snap-mandatory pb-2 md:overflow-visible touch-pan-x overscroll-x-contain scroll-px-6">
             {[
               {
                 title: "Share Life as It Happens",
@@ -190,25 +184,25 @@ export default function LandingPage() {
             ].map((f, i) => (
               <motion.div
                 key={i}
-                className="relative z-10 bg-white/70 backdrop-blur-md box-border p-6 md:p-8 rounded-3xl border border-white/50 shadow-xl hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 transform-gpu snap-start flex-none w-[80vw] sm:w-[55vw] md:w-auto"
+                className="relative z-10 bg-white/70 backdrop-blur-md box-border p-4 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl border border-white/50 shadow-xl hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 transform-gpu snap-start flex-none w-[80vw] sm:w-[55vw] md:w-auto"
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, type: "spring", stiffness: 120, damping: 18, mass: 0.6 }}
                 variants={{ hidden: { opacity: 1, y: 14, scale: 0.995 }, show: { opacity: 1, y: 0, scale: 1 } }}
               >
-                <div className="mb-4 inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-black to-gray-700 text-white shadow-md">
-                  <span className="text-xl" aria-hidden>
+                <div className="mb-3 inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-black to-gray-700 text-white shadow-md">
+                  <span className="text-lg sm:text-xl" aria-hidden>
                     {f.icon}
                   </span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-extrabold mb-2 tracking-tight bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent drop-shadow-sm">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold mb-1.5 sm:mb-2 tracking-tight bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent drop-shadow-sm">
                   {f.title}
                 </h3>
-                <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed mb-3">
+                <p className="text-gray-700 text-xs sm:text-sm md:text-base leading-snug mb-2.5">
                   {f.desc}
                 </p>
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 text-xs sm:text-sm font-medium text-gray-700">
+                <div className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 text-xs font-medium text-gray-700">
                   {f.detail}
                 </div>
               </motion.div>
@@ -218,10 +212,10 @@ export default function LandingPage() {
       </section>
 
       {/* Real Power Section */}
-      <section id="power" className="relative min-h-screen md:h-screen w-full snap-start flex flex-col items-center justify-center text-center px-6 py-24 overflow-visible md:overflow-hidden">
+      <section id="power" className="relative h-screen w-full snap-start flex flex-col items-center justify-center text-center px-4 sm:px-6 py-16 sm:py-20 overflow-hidden">
         <div className="relative z-10 max-w-6xl mx-auto w-full">
           <motion.h2
-            className="text-5xl sm:text-6xl md:text-8xl font-extrabold mb-4 bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent drop-shadow-lg leading-[1.1] md:leading-[1.05] pb-1 break-words text-balance"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold mb-3 sm:mb-4 bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent drop-shadow-lg leading-tight pb-1 break-words text-balance"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -230,7 +224,7 @@ export default function LandingPage() {
             Real Power
           </motion.h2>
           <motion.p
-            className="mt-4 mx-auto max-w-3xl text-gray-600 text-base sm:text-lg md:text-xl leading-relaxed mb-8 sm:mb-12"
+            className="mt-2 sm:mt-3 mx-auto max-w-2xl text-gray-600 text-sm sm:text-base md:text-lg leading-snug mb-6 sm:mb-8"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -239,7 +233,7 @@ export default function LandingPage() {
             Take back control. Your data, your attention, your mental health—it all belongs to you, not to algorithms designed to exploit you.
           </motion.p>
 
-          <div className="flex min-w-0 md:grid md:grid-cols-2 gap-5 md:gap-8 text-left will-change-transform overflow-x-auto snap-x snap-mandatory pb-2 md:overflow-visible touch-pan-x overscroll-x-contain scroll-px-6">
+          <div className="flex min-w-0 md:grid md:grid-cols-3 gap-4 md:gap-6 text-left will-change-transform overflow-x-auto snap-x snap-mandatory pb-2 md:overflow-visible touch-pan-x overscroll-x-contain scroll-px-6">
             {[
               {
                 title: "Finally, Your Data Works for You",
@@ -248,45 +242,39 @@ export default function LandingPage() {
                 benefit: "You own everything"
               },
               {
-                title: "Get Your Time Back",
-                desc: "No endless scrolling. No algorithm pulling you deeper. Open the app, connect with people, and get back to your real life.",
-                icon: "🧘",
-                benefit: "Time well spent"
-              },
-              {
                 title: "You're Enough, Just as You Are",
-                desc: "No likes to chase. No follower count to obsess over. Your value isn't a number—just be yourself and connect.",
+                desc: "No likes to chase. No follower count to obsess over. Your value isn't a number—just be yourself and connect. No endless scrolling or addictive algorithms.",
                 icon: "💎",
                 benefit: "No metrics game"
               },
               {
                 title: "Have Real Conversations Again",
-                desc: "Remember when you actually talked to people instead of just reacting with emojis? We're bringing that back.",
+                desc: "Remember when you actually talked to people instead of just reacting with emojis? We're bringing genuine dialogue back to social media.",
                 icon: "💬",
                 benefit: "Genuine dialogue"
               },
             ].map((item, i) => (
               <motion.div
                 key={i}
-                className="relative z-10 bg-white/70 backdrop-blur-md box-border p-6 md:p-8 rounded-3xl border border-white/50 shadow-xl hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 transform-gpu snap-start flex-none w-[80vw] sm:w-[60vw] md:w-auto"
+                className="relative z-10 bg-white/70 backdrop-blur-md box-border p-4 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl border border-white/50 shadow-xl hover:shadow-2xl hover:-translate-y-1 hover:scale-[1.01] transition-all duration-300 transform-gpu snap-start flex-none w-[80vw] sm:w-[55vw] md:w-auto"
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08, type: "spring", stiffness: 120, damping: 18, mass: 0.6 }}
                 variants={{ hidden: { opacity: 1, y: 14, scale: 0.995 }, show: { opacity: 1, y: 0, scale: 1 } }}
               >
-                <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-black to-gray-700 text-white shadow">
-                  <span className="text-xl" aria-hidden>
+                <div className="mb-3 inline-flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-gradient-to-br from-black to-gray-700 text-white shadow">
+                  <span className="text-lg sm:text-xl" aria-hidden>
                     {item.icon}
                   </span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent mb-2">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent mb-1.5 sm:mb-2">
                   {item.title}
                 </h3>
-                <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed mb-3">
+                <p className="text-gray-700 text-xs sm:text-sm md:text-base leading-snug mb-2.5">
                   {item.desc}
                 </p>
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 text-xs sm:text-sm font-medium text-gray-700">
+                <div className="inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 text-xs font-medium text-gray-700">
                   {item.benefit}
                 </div>
               </motion.div>
