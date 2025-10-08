@@ -22,15 +22,17 @@ export default function LandingPage() {
               HiiiPower
             </a>
             <nav className="flex items-center gap-1 sm:gap-3 overflow-x-auto whitespace-nowrap min-w-0">
-              <a href="#people" className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-gray-800 hover:text-black">
-                People
-              </a>
-              <a href="#moments" className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-gray-800 hover:text-black">
-                Moments
-              </a>
-              <a href="#power" className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-gray-800 hover:text-black">
-                Power
-              </a>
+              <div className="hidden sm:flex items-center gap-1 sm:gap-3">
+                <a href="#people" className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-gray-800 hover:text-black">
+                  People
+                </a>
+                <a href="#moments" className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-gray-800 hover:text-black">
+                  Moments
+                </a>
+                <a href="#power" className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-gray-800 hover:text-black">
+                  Power
+                </a>
+              </div>
               <a href="#join" className="px-3 py-1.5 text-xs sm:text-sm font-medium text-white bg-black rounded-full hover:bg-gray-800 shrink-0">
                 Join
               </a>
