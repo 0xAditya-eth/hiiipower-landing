@@ -34,11 +34,7 @@ export function CtaBand({ onJoin }: CtaBandProps) {
               Be among the first to experience social media the way it should have been from the start.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button
-                size="lg"
-                onClick={onJoin}
-                className="bg-white text-zinc-900 hover:bg-zinc-100 shadow-none"
-              >
+              <Button variant="inverse" size="lg" onClick={onJoin}>
                 Join the waitlist
               </Button>
             </div>

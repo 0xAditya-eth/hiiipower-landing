@@ -3,7 +3,7 @@
 import * as React from "react";
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary" | "inverse" | "ghost";
   size?: "sm" | "md" | "lg";
 };
 
@@ -12,6 +12,8 @@ const variants = {
     "bg-zinc-900 text-white hover:bg-zinc-800 active:scale-[0.98]",
   secondary:
     "bg-white text-zinc-900 border border-zinc-200 hover:bg-zinc-50 hover:border-zinc-300 active:scale-[0.98]",
+  inverse:
+    "bg-white text-zinc-900 hover:bg-zinc-100 shadow-lg shadow-black/25 border border-white/20 active:scale-[0.98]",
   ghost: "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100",
 };
 
