@@ -60,13 +60,13 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="absolute inset-0 bg-black/40"
+            className="absolute inset-0 bg-zinc-900/50 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -74,13 +74,23 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
             onClick={resetAndClose}
           />
           <motion.div
-            className="relative z-10 w-full max-w-md rounded-2xl border border-white/50 bg-white/80 backdrop-blur-md p-6 shadow-xl"
-            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            className="relative z-10 w-full max-w-md glass-card gradient-border rounded-3xl p-7 sm:p-8 shadow-2xl shadow-indigo-500/10"
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.98 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, y: 16, scale: 0.96 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             layout
           >
+            <button
+              onClick={resetAndClose}
+              className="absolute top-4 right-4 p-1.5 rounded-full text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
+              aria-label="Close"
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
+                <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </button>
+
             <AnimatePresence mode="wait" initial={false}>
               {success ? (
                 <motion.div
@@ -89,70 +99,62 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                  className="text-center"
+                  className="text-center pt-2"
                 >
-                  <h4 className="text-2xl font-extrabold bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent mb-2">
-                    You’re on the list 🎉
-                  </h4>
-                  <p className="text-gray-700 mb-6">
-                    We’ll reach out with early access details soon.
-                  </p>
-                  <Button className="px-6 py-3 rounded-full bg-black text-white hover:bg-gray-800" onClick={resetAndClose}>
-                    Close
-                  </Button>
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-2xl shadow-lg shadow-indigo-500/25">
+                    🎉
+                  </div>
+                  <h4 className="text-2xl font-extrabold gradient-text mb-2">You&apos;re on the list!</h4>
+                  <p className="text-zinc-500 mb-6">We&apos;ll reach out with early access details soon.</p>
+                  <Button onClick={resetAndClose}>Close</Button>
                 </motion.div>
               ) : (
                 <motion.form
                   key="form"
                   onSubmit={handleSubmit}
-                  className="space-y-4"
+                  className="space-y-5"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <div className="text-center">
-                    <span className="inline-block rounded-full border border-black/10 bg-white/80 px-3 py-1 text-[11px] font-semibold tracking-wider uppercase text-gray-700">
+                    <span className="inline-block rounded-full border border-indigo-200/60 bg-indigo-50/80 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase text-indigo-600">
                       Join the waitlist
                     </span>
-                    <h4 className="mt-3 text-2xl font-extrabold bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent">
-                      Be the first to know
-                    </h4>
+                    <h4 className="mt-4 text-2xl font-extrabold gradient-text">Be the first to know</h4>
+                    <p className="mt-2 text-sm text-zinc-500">Get early access when we launch.</p>
                   </div>
-                  {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+                  {error && (
+                    <p className="text-sm text-red-600 text-center bg-red-50 rounded-xl px-4 py-2.5 border border-red-100">
+                      {error}
+                    </p>
+                  )}
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-800">Name</label>
+                    <label className="mb-1.5 block text-sm font-medium text-zinc-700">Name</label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full rounded-md border border-black/10 bg-white/90 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-black/20"
+                      className="w-full rounded-xl border border-zinc-200 bg-white/90 px-4 py-2.5 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-300 transition-all"
                       placeholder="Jane Doe"
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-800">Email</label>
+                    <label className="mb-1.5 block text-sm font-medium text-zinc-700">Email</label>
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-md border border-black/10 bg-white/90 px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-black/20"
+                      className="w-full rounded-xl border border-zinc-200 bg-white/90 px-4 py-2.5 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-300 transition-all"
                       placeholder="jane@example.com"
                     />
                   </div>
-                  <div className="flex items-center justify-center gap-3 pt-2">
-                    <Button
-                      type="button"
-                      className="px-5 py-2.5 rounded-full border border-black/10 bg-white/80 text-gray-900 hover:bg-white"
-                      onClick={resetAndClose}
-                    >
+                  <div className="flex items-center justify-center gap-3 pt-1">
+                    <Button type="button" variant="secondary" onClick={resetAndClose}>
                       Cancel
                     </Button>
-                    <Button
-                      type="submit"
-                      className="px-6 py-2.5 rounded-full bg-black text-white hover:bg-gray-800 disabled:opacity-60"
-                      disabled={submitting}
-                    >
+                    <Button type="submit" disabled={submitting}>
                       {submitting ? "Submitting..." : "Submit"}
                     </Button>
                   </div>
@@ -165,5 +167,3 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
     </AnimatePresence>
   );
 }
-
-
