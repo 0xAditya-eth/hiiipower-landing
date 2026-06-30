@@ -66,15 +66,15 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="absolute inset-0 bg-zinc-900/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-zinc-900/60 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            transition={{ duration: 0.2 }}
             onClick={resetAndClose}
           />
           <motion.div
-            className="relative z-10 w-full max-w-md glass-card gradient-border rounded-3xl p-7 sm:p-8 shadow-2xl shadow-indigo-500/10"
+            className="relative z-10 w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-7 sm:p-8 shadow-2xl"
             initial={{ opacity: 0, y: 24, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
@@ -83,7 +83,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
           >
             <button
               onClick={resetAndClose}
-              className="absolute top-4 right-4 p-1.5 rounded-full text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
               aria-label="Close"
             >
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
@@ -98,13 +98,13 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.2 }}
                   className="text-center pt-2"
                 >
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-2xl shadow-lg shadow-indigo-500/25">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-900 text-2xl">
                     🎉
                   </div>
-                  <h4 className="text-2xl font-extrabold gradient-text mb-2">You&apos;re on the list!</h4>
+                  <h4 className="text-2xl font-extrabold text-zinc-900 mb-2">You&apos;re on the list!</h4>
                   <p className="text-zinc-500 mb-6">We&apos;ll reach out with early access details soon.</p>
                   <Button onClick={resetAndClose}>Close</Button>
                 </motion.div>
@@ -116,13 +116,10 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.2 }}
                 >
                   <div className="text-center">
-                    <span className="inline-block rounded-full border border-indigo-200/60 bg-indigo-50/80 px-4 py-1.5 text-xs font-semibold tracking-widest uppercase text-indigo-600">
-                      Join the waitlist
-                    </span>
-                    <h4 className="mt-4 text-2xl font-extrabold gradient-text">Be the first to know</h4>
+                    <h4 className="text-2xl font-extrabold text-zinc-900">Join the waitlist</h4>
                     <p className="mt-2 text-sm text-zinc-500">Get early access when we launch.</p>
                   </div>
                   {error && (
@@ -136,7 +133,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full rounded-xl border border-zinc-200 bg-white/90 px-4 py-2.5 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-300 transition-all"
+                      className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-300 transition-all"
                       placeholder="Jane Doe"
                     />
                   </div>
@@ -146,7 +143,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-xl border border-zinc-200 bg-white/90 px-4 py-2.5 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-300 transition-all"
+                      className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-300 transition-all"
                       placeholder="jane@example.com"
                     />
                   </div>
