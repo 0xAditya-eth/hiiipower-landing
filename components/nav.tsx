@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo";
 
 const LINKS = [
   { href: "#features", label: "Features" },
@@ -32,11 +33,8 @@ export function Nav({ onJoin }: NavProps) {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <a href="#" className="flex items-center gap-2.5 font-bold text-lg tracking-tight text-zinc-900">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white text-xs font-extrabold">
-            H
-          </div>
-          HiiiPower
+        <a href="#" className="flex items-center">
+          <Logo />
         </a>
 
         <nav className="hidden lg:flex items-center gap-1">

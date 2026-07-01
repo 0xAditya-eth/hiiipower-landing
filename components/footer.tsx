@@ -1,3 +1,5 @@
+import { Logo } from "@/components/logo";
+
 const FOOTER_LINKS = {
   Product: [
     { label: "Features", href: "#features" },
@@ -17,11 +19,8 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-12">
           <div className="col-span-2 sm:col-span-1">
-            <a href="#" className="flex items-center gap-2.5 font-bold text-lg tracking-tight text-zinc-900">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white text-xs font-extrabold">
-                H
-              </div>
-              HiiiPower
+            <a href="#" className="inline-flex">
+              <Logo />
             </a>
             <p className="mt-4 text-sm text-zinc-500 leading-relaxed max-w-xs">
               The social network where authenticity wins. Real people. Real moments. Real power.

@@ -95,72 +95,110 @@ const ROWS: Row[] = [
   },
 ];
 
+function CompareCell({
+  type,
+  headline,
+  detail,
+}: {
+  type: "traditional" | "hiiipower";
+  headline: string;
+  detail: string;
+}) {
+  const isUs = type === "hiiipower";
+  return (
+    <div className={`h-full px-3 py-2.5 sm:px-4 sm:py-3 ${isUs ? "bg-emerald-50/50" : "bg-red-50/30"}`}>
+      <p className="text-xs sm:text-sm font-semibold text-zinc-800 leading-snug mb-1">{headline}</p>
+      <p className="text-[11px] sm:text-xs text-zinc-500 leading-relaxed">{detail}</p>
+    </div>
+  );
+}
+
 export function Comparison() {
   return (
-    <section id="compare" className="relative z-10 py-20 sm:py-28">
+    <section id="compare" className="relative z-10 py-14 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mb-12 sm:mb-16">
-          <p className="text-sm font-semibold text-zinc-500 uppercase tracking-widest mb-3">The difference</p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-900 leading-tight">
-            Side by side with the apps you know.
-          </h2>
-          <p className="mt-4 text-lg text-zinc-500 leading-relaxed">
-            Not small tweaks — a fundamentally different approach to every part of the experience.
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+          <div className="max-w-xl">
+            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2">The difference</p>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+              Side by side with the apps you know.
+            </h2>
+          </div>
+          <p className="text-sm text-zinc-500 max-w-sm sm:text-right leading-snug">
+            A fundamentally different approach to every part of the experience.
           </p>
         </div>
 
-        <div className="space-y-6">
-          {ROWS.map((row, i) => (
-            <motion.div
-              key={row.topic}
-              className="rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm"
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ delay: i * 0.06, duration: 0.4 }}
-            >
-              <div className="px-5 sm:px-6 py-3.5 bg-zinc-50 border-b border-zinc-200">
-                <h3 className="text-sm font-bold text-zinc-900">{row.topic}</h3>
-              </div>
-
-              <div className="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-zinc-200">
-                {/* Traditional */}
-                <div className="p-5 sm:p-6 bg-red-50/40">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span
-                      className="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-red-500 text-xs font-bold shrink-0"
-                      aria-label="Not available on traditional social media"
-                    >
-                      ✕
-                    </span>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-red-400">
+        <motion.div
+          className="rounded-xl border border-zinc-200 bg-white shadow-sm overflow-hidden"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.4 }}
+        >
+          {/* Desktop table */}
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full border-collapse text-left">
+              <thead>
+                <tr className="border-b border-zinc-200 bg-zinc-50">
+                  <th className="w-[11%] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-500" />
+                  <th className="w-[44.5%] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-red-400">
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100 text-red-500 text-[10px]">✕</span>
                       Typical social apps
                     </span>
-                  </div>
-                  <p className="text-sm font-semibold text-zinc-800 mb-2">{row.traditional.headline}</p>
-                  <p className="text-sm text-zinc-500 leading-relaxed">{row.traditional.detail}</p>
-                </div>
-
-                {/* HiiiPower */}
-                <div className="p-5 sm:p-6 bg-emerald-50/40">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span
-                      className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold shrink-0"
-                      aria-label="Available on HiiiPower"
-                    >
-                      ✓
-                    </span>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600">
+                  </th>
+                  <th className="w-[44.5%] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-600">
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-[10px]">✓</span>
                       HiiiPower
                     </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {ROWS.map((row, i) => (
+                  <tr key={row.topic} className={i < ROWS.length - 1 ? "border-b border-zinc-100" : ""}>
+                    <td className="align-top px-4 py-2.5 bg-zinc-50/80 border-r border-zinc-100">
+                      <span className="text-xs font-bold text-zinc-800 leading-snug">{row.topic}</span>
+                    </td>
+                    <td className="align-top p-0 border-r border-zinc-100">
+                      <CompareCell type="traditional" headline={row.traditional.headline} detail={row.traditional.detail} />
+                    </td>
+                    <td className="align-top p-0">
+                      <CompareCell type="hiiipower" headline={row.hiiipower.headline} detail={row.hiiipower.detail} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile / tablet: compact stacked rows */}
+          <div className="lg:hidden divide-y divide-zinc-200">
+            {ROWS.map((row) => (
+              <div key={row.topic} className="px-3 py-2.5 sm:px-4">
+                <p className="text-xs font-bold text-zinc-800 mb-2">{row.topic}</p>
+                <div className="grid sm:grid-cols-2 gap-2 rounded-lg overflow-hidden border border-zinc-200">
+                  <div>
+                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-red-50 border-b border-zinc-200">
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100 text-red-500 text-[10px]">✕</span>
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-red-400">Typical</span>
+                    </div>
+                    <CompareCell type="traditional" headline={row.traditional.headline} detail={row.traditional.detail} />
                   </div>
-                  <p className="text-sm font-semibold text-zinc-800 mb-2">{row.hiiipower.headline}</p>
-                  <p className="text-sm text-zinc-600 leading-relaxed">{row.hiiipower.detail}</p>
+                  <div>
+                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 border-b border-zinc-200">
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-[10px]">✓</span>
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600">HiiiPower</span>
+                    </div>
+                    <CompareCell type="hiiipower" headline={row.hiiipower.headline} detail={row.hiiipower.detail} />
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
