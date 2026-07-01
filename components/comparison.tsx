@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Row = {
   topic: string;
@@ -99,21 +100,139 @@ function CompareCell({
   type,
   headline,
   detail,
+  expanded,
 }: {
   type: "traditional" | "hiiipower";
   headline: string;
   detail: string;
+  expanded: boolean;
 }) {
   const isUs = type === "hiiipower";
   return (
-    <div className={`h-full px-3 py-2.5 sm:px-4 sm:py-3 ${isUs ? "bg-emerald-50/50" : "bg-red-50/30"}`}>
-      <p className="text-xs sm:text-sm font-semibold text-zinc-800 leading-snug mb-1">{headline}</p>
-      <p className="text-[11px] sm:text-xs text-zinc-500 leading-relaxed">{detail}</p>
+    <div className={`px-3 py-2.5 sm:px-4 sm:py-3 ${isUs ? "bg-emerald-50/50" : "bg-red-50/30"}`}>
+      <div className="flex items-start gap-2">
+        <span
+          className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+            isUs ? "bg-emerald-100 text-emerald-600" : "bg-red-100 text-red-500"
+          }`}
+          aria-hidden
+        >
+          {isUs ? "✓" : "✕"}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs sm:text-sm font-semibold text-zinc-800 leading-snug">{headline}</p>
+          <AnimatePresence initial={false}>
+            {expanded && (
+              <motion.p
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: "auto", marginTop: 8 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden text-[11px] sm:text-xs text-zinc-500 leading-relaxed"
+              >
+                {detail}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CompareRow({
+  row,
+  index,
+  isExpanded,
+  onActivate,
+  onDeactivate,
+  onTogglePin,
+}: {
+  row: Row;
+  index: number;
+  isExpanded: boolean;
+  onActivate: (index: number) => void;
+  onDeactivate: () => void;
+  onTogglePin: (index: number) => void;
+}) {
+  return (
+    <div
+      className={`border-b border-zinc-100 last:border-0 transition-colors ${
+        isExpanded ? "bg-zinc-50/60" : "hover:bg-zinc-50/40"
+      }`}
+      onMouseEnter={() => onActivate(index)}
+      onMouseLeave={onDeactivate}
+    >
+      <button
+        type="button"
+        className="w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-300"
+        onClick={() => onTogglePin(index)}
+        onFocus={() => onActivate(index)}
+        onBlur={onDeactivate}
+        aria-expanded={isExpanded}
+      >
+        {/* Desktop layout */}
+        <div className="hidden lg:grid grid-cols-[minmax(7rem,12%)_1fr_1fr]">
+          <div className="flex items-center px-4 py-3 border-r border-zinc-100 bg-zinc-50/80">
+            <span className="text-xs font-bold text-zinc-800">{row.topic}</span>
+          </div>
+          <CompareCell
+            type="traditional"
+            headline={row.traditional.headline}
+            detail={row.traditional.detail}
+            expanded={isExpanded}
+          />
+          <CompareCell
+            type="hiiipower"
+            headline={row.hiiipower.headline}
+            detail={row.hiiipower.detail}
+            expanded={isExpanded}
+          />
+        </div>
+
+        {/* Mobile layout */}
+        <div className="lg:hidden px-3 py-2.5 sm:px-4">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-xs font-bold text-zinc-800">{row.topic}</span>
+            <svg
+              className={`ml-auto h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden
+            >
+              <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-px rounded-lg overflow-hidden border border-zinc-200 bg-zinc-200">
+            <CompareCell
+              type="traditional"
+              headline={row.traditional.headline}
+              detail={row.traditional.detail}
+              expanded={isExpanded}
+            />
+            <CompareCell
+              type="hiiipower"
+              headline={row.hiiipower.headline}
+              detail={row.hiiipower.detail}
+              expanded={isExpanded}
+            />
+          </div>
+        </div>
+      </button>
     </div>
   );
 }
 
 export function Comparison() {
+  const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
+  const [pinnedIndex, setPinnedIndex] = React.useState<number | null>(null);
+
+  const activeIndex = pinnedIndex ?? hoveredIndex;
+
+  function handleTogglePin(index: number) {
+    setPinnedIndex((current) => (current === index ? null : index));
+  }
+
   return (
     <section id="compare" className="relative z-10 py-14 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -125,7 +244,7 @@ export function Comparison() {
             </h2>
           </div>
           <p className="text-sm text-zinc-500 max-w-sm sm:text-right leading-snug">
-            A fundamentally different approach to every part of the experience.
+            Hover or tap a topic to see the full comparison.
           </p>
         </div>
 
@@ -135,69 +254,29 @@ export function Comparison() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.4 }}
+          onMouseLeave={() => setHoveredIndex(null)}
         >
-          {/* Desktop table */}
-          <div className="hidden lg:block overflow-x-auto">
-            <table className="w-full border-collapse text-left">
-              <thead>
-                <tr className="border-b border-zinc-200 bg-zinc-50">
-                  <th className="w-[11%] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-500" />
-                  <th className="w-[44.5%] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-red-400">
-                    <span className="inline-flex items-center gap-1.5">
-                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100 text-red-500 text-[10px]">✕</span>
-                      Typical social apps
-                    </span>
-                  </th>
-                  <th className="w-[44.5%] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-600">
-                    <span className="inline-flex items-center gap-1.5">
-                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-[10px]">✓</span>
-                      HiiiPower
-                    </span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {ROWS.map((row, i) => (
-                  <tr key={row.topic} className={i < ROWS.length - 1 ? "border-b border-zinc-100" : ""}>
-                    <td className="align-top px-4 py-2.5 bg-zinc-50/80 border-r border-zinc-100">
-                      <span className="text-xs font-bold text-zinc-800 leading-snug">{row.topic}</span>
-                    </td>
-                    <td className="align-top p-0 border-r border-zinc-100">
-                      <CompareCell type="traditional" headline={row.traditional.headline} detail={row.traditional.detail} />
-                    </td>
-                    <td className="align-top p-0">
-                      <CompareCell type="hiiipower" headline={row.hiiipower.headline} detail={row.hiiipower.detail} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="hidden lg:grid grid-cols-[minmax(7rem,12%)_1fr_1fr] border-b border-zinc-200 bg-zinc-50">
+            <div className="px-4 py-2.5" />
+            <div className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-red-400 border-r border-zinc-200">
+              Typical social apps
+            </div>
+            <div className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-600">
+              HiiiPower
+            </div>
           </div>
 
-          {/* Mobile / tablet: compact stacked rows */}
-          <div className="lg:hidden divide-y divide-zinc-200">
-            {ROWS.map((row) => (
-              <div key={row.topic} className="px-3 py-2.5 sm:px-4">
-                <p className="text-xs font-bold text-zinc-800 mb-2">{row.topic}</p>
-                <div className="grid sm:grid-cols-2 gap-2 rounded-lg overflow-hidden border border-zinc-200">
-                  <div>
-                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-red-50 border-b border-zinc-200">
-                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100 text-red-500 text-[10px]">✕</span>
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-red-400">Typical</span>
-                    </div>
-                    <CompareCell type="traditional" headline={row.traditional.headline} detail={row.traditional.detail} />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-50 border-b border-zinc-200">
-                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-[10px]">✓</span>
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-600">HiiiPower</span>
-                    </div>
-                    <CompareCell type="hiiipower" headline={row.hiiipower.headline} detail={row.hiiipower.detail} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {ROWS.map((row, i) => (
+            <CompareRow
+              key={row.topic}
+              row={row}
+              index={i}
+              isExpanded={activeIndex === i}
+              onActivate={setHoveredIndex}
+              onDeactivate={() => setHoveredIndex(null)}
+              onTogglePin={handleTogglePin}
+            />
+          ))}
         </motion.div>
       </div>
     </section>
