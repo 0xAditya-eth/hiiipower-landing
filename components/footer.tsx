@@ -10,6 +10,8 @@ const FOOTER_LINKS = {
   Resources: [
     { label: "Documentation", href: "https://docs.hiiipower.app", external: true },
     { label: "Join waitlist", href: "#join" },
+    { label: "Terms of Service", href: "/tos" },
+    { label: "Privacy Policy", href: "/privacy" },
   ],
 };
 
