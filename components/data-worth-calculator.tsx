@@ -104,12 +104,16 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
     // Inflation adjustment: 3% annual inflation rate (common assumption in PDAV frameworks)
     const inflationRate = 0.03;
     
-    // Present value of lifetime so far (past years)
-    const lifetimeDiscounted = Array.from({ length: years }, (_, i) => {
-      return annualValue / Math.pow(1 + inflationRate, years - i);
+    // Inflation-adjusted lifetime so far (PAST years - inflate to present)
+    // Data from past years is worth MORE in today's dollars
+    const lifetimeInflated = Array.from({ length: years }, (_, i) => {
+      // i=0 is most recent year, i=years-1 is oldest year
+      const yearsAgo = years - 1 - i;
+      return annualValue * Math.pow(1 + inflationRate, yearsAgo);
     }).reduce((sum, val) => sum + val, 0);
     
-    // Present value of future 60-year stream
+    // Present value of future 60-year stream (FUTURE years - discount to present)
+    // Future dollars are worth LESS in today's terms
     const projected60yrDiscounted = Array.from({ length: 60 }, (_, i) => {
       return annualValue / Math.pow(1 + inflationRate, i + 1);
     }).reduce((sum, val) => sum + val, 0);
@@ -117,7 +121,7 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
     const calculatedResult: CalculationResult = {
       annual: Math.round(annualValue),
       lifetime: Math.round(annualValue * years),
-      lifetimeInflationAdjusted: Math.round(lifetimeDiscounted),
+      lifetimeInflationAdjusted: Math.round(lifetimeInflated),
       projected60yr: Math.round(annualValue * 60),
       projected60yrInflationAdjusted: Math.round(projected60yrDiscounted),
       scenario: usageScenario,
@@ -195,7 +199,7 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
             <p className="text-2xl font-bold text-zinc-900">
               ${result.lifetimeInflationAdjusted.toLocaleString()}
             </p>
-            <p className="text-sm text-zinc-600 mt-2">Present value (3% inflation)</p>
+            <p className="text-sm text-zinc-600 mt-2">In today&apos;s dollars (3% inflation)</p>
           </div>
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 hover:border-zinc-300 hover:shadow-md transition-all duration-300">
