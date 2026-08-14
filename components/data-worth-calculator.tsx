@@ -58,8 +58,6 @@ type CalculationResult = {
   annual: number;
   lifetime: number;
   lifetimeInflationAdjusted: number;
-  projected60yr: number;
-  projected60yrInflationAdjusted: number;
   scenario: "conservative" | "central" | "expansive";
 };
 
@@ -111,19 +109,11 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
       const yearsAgo = years - 1 - i;
       return annualValue * Math.pow(1 + inflationRate, yearsAgo);
     }).reduce((sum, val) => sum + val, 0);
-    
-    // Present value of future 60-year stream (FUTURE years - discount to present)
-    // Future dollars are worth LESS in today's terms
-    const projected60yrDiscounted = Array.from({ length: 60 }, (_, i) => {
-      return annualValue / Math.pow(1 + inflationRate, i + 1);
-    }).reduce((sum, val) => sum + val, 0);
 
     const calculatedResult: CalculationResult = {
       annual: Math.round(annualValue),
       lifetime: Math.round(annualValue * years),
       lifetimeInflationAdjusted: Math.round(lifetimeInflated),
-      projected60yr: Math.round(annualValue * 60),
-      projected60yrInflationAdjusted: Math.round(projected60yrDiscounted),
       scenario: usageScenario,
     };
 
@@ -171,7 +161,7 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
         </div>
 
         {/* Detailed Breakdown */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 hover:border-zinc-300 hover:shadow-md transition-all duration-300">
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
               Annual Value
@@ -194,32 +184,12 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
 
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 hover:border-emerald-300 hover:shadow-md transition-all duration-300">
             <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-2">
-              Lifetime (Inflation-Adj)
+              Lifetime So Far (Inflation-Adj)
             </p>
             <p className="text-2xl font-bold text-zinc-900">
               ${result.lifetimeInflationAdjusted.toLocaleString()}
             </p>
             <p className="text-sm text-zinc-600 mt-2">In today&apos;s dollars (3% inflation)</p>
-          </div>
-
-          <div className="rounded-2xl border border-zinc-200 bg-white p-6 hover:border-zinc-300 hover:shadow-md transition-all duration-300">
-            <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
-              60-Year Projection
-            </p>
-            <p className="text-2xl font-bold text-zinc-900">
-              ${result.projected60yr.toLocaleString()}
-            </p>
-            <p className="text-sm text-zinc-600 mt-2">Nominal value</p>
-          </div>
-
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 hover:border-emerald-300 hover:shadow-md transition-all duration-300">
-            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-2">
-              60-Year (Inflation-Adj)
-            </p>
-            <p className="text-2xl font-bold text-zinc-900">
-              ${result.projected60yrInflationAdjusted.toLocaleString()}
-            </p>
-            <p className="text-sm text-zinc-600 mt-2">Present value (3% inflation)</p>
           </div>
         </div>
 
