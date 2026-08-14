@@ -9,6 +9,7 @@ const LINKS = [
   { href: "#how-it-works", label: "How it works" },
   { href: "#compare", label: "Compare" },
   { href: "#faq", label: "FAQ" },
+  { href: "/your-worth", label: "Your Worth" },
 ];
 
 type NavProps = {

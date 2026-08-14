@@ -6,6 +6,7 @@ const FOOTER_LINKS = {
     { label: "How it works", href: "#how-it-works" },
     { label: "Compare", href: "#compare" },
     { label: "FAQ", href: "#faq" },
+    { label: "Your Worth", href: "/your-worth" },
   ],
   Resources: [
     { label: "Documentation", href: "https://docs.hiiipower.app", external: true },
