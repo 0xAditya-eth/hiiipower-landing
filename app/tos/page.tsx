@@ -26,7 +26,7 @@ export default function TermsOfService() {
 
             <div className="prose prose-zinc max-w-none">
               <p className="text-zinc-600 leading-relaxed mb-6">
-                <strong>Operator:</strong> HiiiPower (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;)<br />
+                <strong>Operator:</strong> HiiiPower Technologies Private Limited (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;)<br />
                 <strong>Contact:</strong> support@hiiipower.app<br />
                 <strong>Public URL:</strong> https://hiiipower.app/tos
               </p>

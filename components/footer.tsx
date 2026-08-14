@@ -51,7 +51,7 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-zinc-400">
-            &copy; {new Date().getFullYear()} HiiiPower. All rights reserved.
+            &copy; {new Date().getFullYear()} HiiiPower Technologies Private Limited. All rights reserved.
           </p>
           <p className="text-xs text-zinc-400">Built for real people.</p>
         </div>
