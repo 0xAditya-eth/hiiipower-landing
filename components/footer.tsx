@@ -49,11 +49,11 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 pt-8 border-t border-zinc-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-zinc-400">
+        <div className="mt-12 pt-8 border-t border-zinc-100 flex flex-col items-center justify-center gap-4">
+          <p className="text-xs text-zinc-400 text-center">
             &copy; {new Date().getFullYear()} HiiiPower Technologies Private Limited. All rights reserved.
           </p>
-          <p className="text-xs text-zinc-400">Built for real people.</p>
+          <p className="text-xs text-zinc-400 text-center">Built for real people.</p>
         </div>
       </div>
     </footer>
