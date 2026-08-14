@@ -49,7 +49,7 @@ export default function TermsOfService() {
                 2. Account registration
               </h2>
               <ul className="list-disc pl-6 space-y-2 text-zinc-700 leading-relaxed mb-6">
-                <li>Access is provided through email one-time-passcode (OTP) authentication via our identity provider (Privy). You are responsible for keeping access to your email secure.</li>
+                <li>Access is provided only through email one-time-passcode (OTP) authentication via our identity provider (Privy). We do not offer password-based login. You are responsible for keeping access to your email secure.</li>
                 <li>You agree to provide accurate information during onboarding (including username and any profile details you choose to share) and to keep it up to date.</li>
                 <li>You may not impersonate others, create accounts for abusive purposes, or attempt to circumvent bans, blocks, or safety systems.</li>
                 <li>You may deactivate or delete your account in <strong>Settings → Deactivate / Delete Account</strong>. Deletion enters a grace period (currently 30 days) during which you may reactivate; after that, we permanently erase account data as described in the Privacy Policy, subject to legal and technical limits (for example content already published to decentralized storage or recorded on a public blockchain).</li>
@@ -99,7 +99,7 @@ export default function TermsOfService() {
                 6. Identity verification (liveness)
               </h2>
               <p className="text-zinc-700 leading-relaxed mb-4">
-                To reduce fake accounts and protect the community, we may require a one-time facial liveness / uniqueness check during registration. This process may capture camera frames and derive a biometric template (face embedding) used to verify liveness and help prevent duplicate registrations. Templates are treated as sensitive personal data; see the Privacy Policy for retention and deletion details.
+                To reduce fake accounts and protect the community, we may require a one-time facial liveness / uniqueness check during registration. Camera frames are processed on your device to derive a biometric template (face embedding); we do <strong>not</strong> upload face images or video. The template and related decision metadata are used to verify liveness and help prevent duplicate registrations. Templates are treated as sensitive personal data and are not used for advertising; see the Privacy Policy for retention and deletion details.
               </p>
               <p className="text-zinc-700 leading-relaxed mb-6">
                 You must only submit your own face. Attempting to spoof, use another person&apos;s biometric data, or otherwise defeat the check is prohibited.
@@ -189,12 +189,6 @@ export default function TermsOfService() {
               </h2>
               <p className="text-zinc-700 leading-relaxed mb-6">
                 Questions about these Terms: <strong>support@hiiipower.app</strong>
-              </p>
-
-              <hr className="border-zinc-200 my-8" />
-
-              <p className="text-xs text-zinc-400 italic">
-                This document is a practical baseline for App Store / product launch. Have counsel review before relying on it as final legal advice.
               </p>
             </div>
           </div>

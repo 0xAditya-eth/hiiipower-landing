@@ -68,12 +68,15 @@ export default function PrivacyPolicy() {
                 <li>Embedded wallet address(es) created for your account (and, if applicable, smart-wallet addresses used for sponsored transactions)</li>
                 <li>Authentication tokens / session credentials needed to keep you signed in</li>
               </ul>
+              <p className="text-zinc-700 leading-relaxed mb-6">
+                Sign-in is through Privy email one-time-passcode (OTP) only. We do not offer password-based login.
+              </p>
 
               <h3 className="text-xl font-semibold text-zinc-900 mt-6 mb-3">
                 2.3 Biometric / liveness data (sensitive)
               </h3>
               <p className="text-zinc-700 leading-relaxed mb-4">
-                During registration we may run a facial liveness / uniqueness check. Depending on configuration this can involve:
+                During registration we may run a facial liveness / uniqueness check. Camera frames used for the check are processed on your device and are <strong>not</strong> uploaded as images or video. What we receive and may store includes:
               </p>
               <ul className="list-disc pl-6 space-y-2 text-zinc-700 leading-relaxed mb-4">
                 <li>Device / session metadata for the check</li>
@@ -81,14 +84,14 @@ export default function PrivacyPolicy() {
                 <li>Scores and decision metadata (e.g. accept / review / reject), device hashes, and similarity match references used for anti-abuse</li>
               </ul>
               <p className="text-zinc-700 leading-relaxed mb-6">
-                We use this data to verify that a real person is registering and to reduce duplicate or fraudulent accounts. We do <strong>not</strong> sell biometric data. Templates are treated as sensitive personal information.
+                We use this data only to verify that a real person is registering and to reduce duplicate or fraudulent accounts. We do <strong>not</strong> sell biometric data, and we do <strong>not</strong> use biometric templates for advertising or third-party advertising profiles. Templates are treated as sensitive personal information.
               </p>
 
               <h3 className="text-xl font-semibold text-zinc-900 mt-6 mb-3">
                 2.4 User-generated content
               </h3>
               <ul className="list-disc pl-6 space-y-2 text-zinc-700 leading-relaxed mb-6">
-                <li>Posts, captions, comments, likes, and direct messages (plaintext and/or encrypted, depending on feature)</li>
+                <li>Posts, captions, comments, likes, and direct messages (plaintext and/or encrypted, depending on feature; comments are currently plaintext)</li>
                 <li>Media you upload (stored on our servers and/or decentralized storage such as IPFS)</li>
                 <li>Location labels you attach to posts (for example city / place), when you choose to share them</li>
               </ul>
@@ -106,8 +109,8 @@ export default function PrivacyPolicy() {
               <ul className="list-disc pl-6 space-y-2 text-zinc-700 leading-relaxed mb-6">
                 <li>Device identifiers used for push notifications (e.g. Expo push tokens) and platform (iOS/Android)</li>
                 <li>App version / basic device information needed for compatibility</li>
-                <li>Crash and diagnostic logs when crash reporting is enabled</li>
                 <li>IP address and request metadata processed by our servers (security, rate limiting, abuse prevention)</li>
+                <li>If we later enable a crash-reporting service, limited crash and diagnostic logs may be collected to improve reliability; we will update this Policy if that becomes material</li>
               </ul>
 
               <h3 className="text-xl font-semibold text-zinc-900 mt-6 mb-3">
@@ -129,9 +132,14 @@ export default function PrivacyPolicy() {
               <h3 className="text-xl font-semibold text-zinc-900 mt-6 mb-3">
                 2.9 Optional platform connections
               </h3>
-              <p className="text-zinc-700 leading-relaxed mb-6">
-                If you connect third-party platforms (for example Google, Meta family, or Spotify) for data-portability features, we may store OAuth tokens (encrypted), connection status, and derived data assets you choose to archive. This is separate from sign-in.
+              <p className="text-zinc-700 leading-relaxed mb-4">
+                If you connect third-party platforms for data-portability features (separate from sign-in), we may store connection status and data assets you choose to archive. Depending on the provider and how the connection works:
               </p>
+              <ul className="list-disc pl-6 space-y-2 text-zinc-700 leading-relaxed mb-6">
+                <li><strong>OAuth-based connections</strong> (for example Spotify or Google today) — encrypted access / refresh tokens, scopes, and derived or synced assets</li>
+                <li><strong>Archive / guided export connections</strong> (for example Meta family platforms today) — uploaded archive files or summaries you provide, plus connection status (not OAuth tokens)</li>
+                <li><strong>Additional providers</strong> we may add later — using similar OAuth and/or archive patterns, which we will describe in this Policy when material</li>
+              </ul>
 
               <h2 className="text-2xl font-semibold text-zinc-900 mt-8 mb-4">
                 3. How we use data
@@ -171,10 +179,12 @@ export default function PrivacyPolicy() {
                 <li><strong>Cloud hosting / database</strong> — API, realtime, and data storage</li>
                 <li><strong>Email delivery</strong> — transactional messages</li>
                 <li><strong>Maps / geocoding providers</strong> (e.g. Google Maps, LocationIQ) — location features</li>
-                <li><strong>IPFS pinning / gateways</strong> (e.g. Pinata) — media and metadata storage for posts</li>
+                <li><strong>IPFS pinning / gateways</strong> (e.g. Infura, Pinata, or another provider we configure) — media and metadata storage for posts</li>
                 <li><strong>Push infrastructure</strong> (e.g. Expo / APNs) — notifications</li>
-                <li><strong>Encryption / key services</strong> (e.g. Lit Protocol where configured) — access control for encrypted posts</li>
               </ul>
+              <p className="text-zinc-700 leading-relaxed mb-4">
+                Encrypted / access-controlled posts use server-side key wrapping and access checks operated by us (not a separate third-party key network).
+              </p>
               <p className="text-zinc-700 leading-relaxed mb-4">
                 We may disclose information if required by law, to protect rights and safety, or in connection with a merger / acquisition (with notice where required).
               </p>
@@ -196,7 +206,7 @@ export default function PrivacyPolicy() {
                 <li><strong>Active accounts:</strong> data retained while your account is open and as needed to operate the Service</li>
                 <li><strong>Deactivation:</strong> profile and posts may be hidden while account data is retained</li>
                 <li><strong>Deletion request:</strong> after you request deletion in-app, we schedule permanent erasure (currently a <strong>30-day grace period</strong> during which you may cancel by signing back in). After purge we delete account records, social graph rows, messages involving you, safety rows involving you, liveness session/attempt records, local profile media files we host, and related progression data, as described in our account lifecycle process</li>
-                <li><strong>Biometric templates:</strong> deleted with the account purge; earlier soft-hide clears push tokens and hides content but may retain templates until purge completes</li>
+                <li><strong>Biometric templates:</strong> retained only for anti-abuse / uniqueness purposes while the account exists (or until purge after a deletion request). Soft-hide (deactivation or the deletion grace period) clears push tokens and hides content but may retain templates until purge completes. Templates are deleted with the account purge and are not used for advertising</li>
                 <li><strong>Backups:</strong> may persist for a limited period before rolling off</li>
                 <li><strong>Legal holds / abuse records:</strong> may be retained longer when necessary</li>
                 <li><strong>IPFS / blockchain:</strong> we may be unable to erase copies that already exist on public networks</li>
@@ -232,7 +242,7 @@ export default function PrivacyPolicy() {
                 10. Security
               </h2>
               <p className="text-zinc-700 leading-relaxed mb-6">
-                We use industry-standard measures including transport encryption (HTTPS/TLS), hashed passwords where password fields still exist for legacy accounts, access-controlled APIs, and encryption for certain post and biometric templates. No method of transmission or storage is 100% secure.
+                We use industry-standard measures including transport encryption (HTTPS/TLS), access-controlled APIs, and encryption for certain post content and biometric templates. No method of transmission or storage is 100% secure.
               </p>
 
               <h2 className="text-2xl font-semibold text-zinc-900 mt-8 mb-4">
@@ -255,12 +265,6 @@ export default function PrivacyPolicy() {
               <p className="text-zinc-700 leading-relaxed mb-6">
                 <strong>support@hiiipower.app</strong><br />
                 Website: https://hiiipower.app
-              </p>
-
-              <hr className="border-zinc-200 my-8" />
-
-              <p className="text-xs text-zinc-400 italic">
-                This document is a practical baseline aligned to the current HiiiPower product. Have counsel review before publication, especially for biometric (BIPA / GDPR Art. 9) and children&apos;s privacy requirements in your markets.
               </p>
             </div>
           </div>
