@@ -205,7 +205,7 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
               Take Back Control of Your Data
             </h3>
             <p className="text-lg text-zinc-600 mb-6 leading-relaxed">
-              While you can&apos;t directly claim this money from tech companies, <span className="font-bold text-zinc-900">HiiiPower helps you start getting your data&apos;s worth</span>. Join a social network where you own your data, control your privacy, and keep the value you create.
+              While you can&apos;t claim this money from tech companies, <span className="font-bold text-zinc-900">you can stop them from extracting more</span>. HiiiPower helps you take back control and start earning your data&apos;s worth going forward. Join a social network where you own your data, control your privacy, and keep the value you create.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button size="lg" onClick={onJoin || (() => window.location.href = '/#join')}>
