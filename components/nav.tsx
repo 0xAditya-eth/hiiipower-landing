@@ -9,13 +9,15 @@ const LINKS = [
   { href: "#how-it-works", label: "How it works" },
   { href: "#compare", label: "Compare" },
   { href: "#faq", label: "FAQ" },
+  { href: "/your-worth", label: "Your Worth" },
 ];
 
 type NavProps = {
   onJoin: () => void;
+  hideJoinButton?: boolean;
 };
 
-export function Nav({ onJoin }: NavProps) {
+export function Nav({ onJoin, hideJoinButton = false }: NavProps) {
   const [scrolled, setScrolled] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
 
@@ -58,9 +60,11 @@ export function Nav({ onJoin }: NavProps) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button size="sm" onClick={onJoin} className="hidden sm:inline-flex">
-            Join waitlist
-          </Button>
+          {!hideJoinButton && (
+            <Button size="sm" onClick={onJoin} className="hidden sm:inline-flex">
+              Join waitlist
+            </Button>
+          )}
           <button
             type="button"
             className="lg:hidden p-2 rounded-lg text-zinc-600 hover:bg-zinc-100"
@@ -99,9 +103,11 @@ export function Nav({ onJoin }: NavProps) {
           >
             Docs
           </a>
-          <Button size="sm" onClick={() => { setMenuOpen(false); onJoin(); }} className="w-full mt-2">
-            Join waitlist
-          </Button>
+          {!hideJoinButton && (
+            <Button size="sm" onClick={() => { setMenuOpen(false); onJoin(); }} className="w-full mt-2">
+              Join waitlist
+            </Button>
+          )}
         </div>
       )}
     </header>
