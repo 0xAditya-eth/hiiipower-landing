@@ -4,6 +4,10 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
+type DataWorthCalculatorProps = {
+  onJoin?: () => void;
+};
+
 // Regional PDAV values from Web3 Foundation report
 const REGIONAL_VALUES = {
   usa: { central: 6563, conservative: 4594, expansive: 9188 },
@@ -53,12 +57,13 @@ const USAGE_SCENARIOS = [
 type CalculationResult = {
   annual: number;
   lifetime: number;
+  lifetimeInflationAdjusted: number;
   projected60yr: number;
   projected60yrInflationAdjusted: number;
   scenario: "conservative" | "central" | "expansive";
 };
 
-export function DataWorthCalculator() {
+export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
   const [region, setRegion] = useState<keyof typeof REGIONAL_VALUES>("global");
   const [yearsActive, setYearsActive] = useState(10);
   const [usageScenario, setUsageScenario] = useState<"conservative" | "central" | "expansive">("central");
@@ -97,17 +102,24 @@ export function DataWorthCalculator() {
     const years = Math.min(yearsActive, 60);
 
     // Inflation adjustment: 3% annual inflation rate (common assumption in PDAV frameworks)
-    // Present value of future 60-year stream
     const inflationRate = 0.03;
-    const discountedValue = Array.from({ length: 60 }, (_, i) => {
+    
+    // Present value of lifetime so far (past years)
+    const lifetimeDiscounted = Array.from({ length: years }, (_, i) => {
+      return annualValue / Math.pow(1 + inflationRate, years - i);
+    }).reduce((sum, val) => sum + val, 0);
+    
+    // Present value of future 60-year stream
+    const projected60yrDiscounted = Array.from({ length: 60 }, (_, i) => {
       return annualValue / Math.pow(1 + inflationRate, i + 1);
     }).reduce((sum, val) => sum + val, 0);
 
     const calculatedResult: CalculationResult = {
       annual: Math.round(annualValue),
       lifetime: Math.round(annualValue * years),
+      lifetimeInflationAdjusted: Math.round(lifetimeDiscounted),
       projected60yr: Math.round(annualValue * 60),
-      projected60yrInflationAdjusted: Math.round(discountedValue),
+      projected60yrInflationAdjusted: Math.round(projected60yrDiscounted),
       scenario: usageScenario,
     };
 
@@ -129,11 +141,6 @@ export function DataWorthCalculator() {
   const shareToLinkedIn = () => {
     const url = window.location.href;
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
-  };
-
-  const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    alert('Link copied to clipboard!');
   };
 
   if (showResults && result) {
@@ -160,7 +167,7 @@ export function DataWorthCalculator() {
         </div>
 
         {/* Detailed Breakdown */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 hover:border-zinc-300 hover:shadow-md transition-all duration-300">
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
               Annual Value
@@ -178,7 +185,17 @@ export function DataWorthCalculator() {
             <p className="text-2xl font-bold text-zinc-900">
               ${result.lifetime.toLocaleString()}
             </p>
-            <p className="text-sm text-zinc-600 mt-2">Over {yearsActive} years</p>
+            <p className="text-sm text-zinc-600 mt-2">Over {yearsActive} years (nominal)</p>
+          </div>
+
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 hover:border-emerald-300 hover:shadow-md transition-all duration-300">
+            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-2">
+              Lifetime (Inflation-Adj)
+            </p>
+            <p className="text-2xl font-bold text-zinc-900">
+              ${result.lifetimeInflationAdjusted.toLocaleString()}
+            </p>
+            <p className="text-sm text-zinc-600 mt-2">Present value (3% inflation)</p>
           </div>
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 hover:border-zinc-300 hover:shadow-md transition-all duration-300">
@@ -193,7 +210,7 @@ export function DataWorthCalculator() {
 
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 hover:border-emerald-300 hover:shadow-md transition-all duration-300">
             <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-2">
-              Inflation-Adjusted
+              60-Year (Inflation-Adj)
             </p>
             <p className="text-2xl font-bold text-zinc-900">
               ${result.projected60yrInflationAdjusted.toLocaleString()}
@@ -217,7 +234,7 @@ export function DataWorthCalculator() {
               While you can&apos;t directly claim this money from tech companies, <span className="font-bold text-zinc-900">HiiiPower helps you start getting your data&apos;s worth</span>. Join a social network where you own your data, control your privacy, and keep the value you create.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button size="lg" onClick={() => window.location.href = '/#join'}>
+              <Button size="lg" onClick={onJoin || (() => window.location.href = '/#join')}>
                 Join the Waitlist
               </Button>
               <Button variant="secondary" size="lg" onClick={() => window.location.href = '/'}>
@@ -236,9 +253,6 @@ export function DataWorthCalculator() {
             </Button>
             <Button variant="secondary" size="md" onClick={shareToLinkedIn}>
               Share to LinkedIn
-            </Button>
-            <Button variant="secondary" size="md" onClick={copyLink}>
-              Copy Link
             </Button>
           </div>
         </div>

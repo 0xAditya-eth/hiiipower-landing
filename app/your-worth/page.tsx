@@ -5,12 +5,15 @@ import { DynamicBackground } from "@/components/dynamic-bg";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { DataWorthCalculator } from "@/components/data-worth-calculator";
+import { WaitlistModal } from "@/components/waitlist-modal";
 
 export default function YourWorthPage() {
+  const [modalOpen, setModalOpen] = React.useState(false);
+
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
       <DynamicBackground />
-      <Nav onJoin={() => {}} />
+      <Nav onJoin={() => setModalOpen(true)} hideJoinButton={true} />
       
       <main className="relative z-10 pt-28 pb-16 sm:pt-32 sm:pb-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
@@ -24,11 +27,12 @@ export default function YourWorthPage() {
             </p>
           </div>
 
-          <DataWorthCalculator />
+          <DataWorthCalculator onJoin={() => setModalOpen(true)} />
         </div>
       </main>
 
       <Footer />
+      <WaitlistModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 }
