@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { PhoneMockup } from "@/components/phone-mockup";
+import Image from "next/image";
 
 type HeroProps = {
   onJoin: () => void;
@@ -90,7 +90,29 @@ export function Hero({ onJoin }: HeroProps) {
 
           {/* Product preview */}
           <div className="relative lg:pl-8">
-            <PhoneMockup />
+            <motion.div
+              className="relative mx-auto w-full max-w-[340px]"
+              initial={{ opacity: 0, y: 40, rotate: 2 }}
+              animate={{ opacity: 1, y: 0, rotate: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {/* Glow effect */}
+              <div className="absolute -inset-4 rounded-[3rem] bg-gradient-to-br from-zinc-200/80 to-zinc-300/40 blur-2xl" aria-hidden />
+              
+              {/* Phone container */}
+              <div className="relative rounded-[3rem] border-[8px] border-zinc-900 bg-zinc-900 p-2 shadow-2xl shadow-zinc-900/30">
+                <div className="rounded-[2.25rem] overflow-hidden bg-white">
+                  <Image
+                    src="/discover-feed.png"
+                    alt="HiiiPower Discover feed"
+                    width={340}
+                    height={735}
+                    className="w-full h-auto"
+                    priority
+                  />
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>
