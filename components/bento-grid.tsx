@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 type Outcome = {
   title: string;
@@ -8,6 +9,10 @@ type Outcome = {
   how: string;
   principles: string[];
   icon: string;
+  cta?: {
+    text: string;
+    href: string;
+  };
 };
 
 const OUTCOMES: Outcome[] = [
@@ -38,6 +43,10 @@ const OUTCOMES: Outcome[] = [
     how: "You own your data. You control who sees it, export it, or delete it — and we never sell your information.",
     principles: ["You own your data", "No ad tracking", "Transparent privacy controls"],
     icon: "🔒",
+    cta: {
+      text: "Calculate what they've extracted from you →",
+      href: "/your-worth",
+    },
   },
 ];
 
@@ -93,6 +102,16 @@ export function BentoGrid() {
                   </li>
                 ))}
               </ul>
+
+              {item.cta && (
+                <div className="mt-5 pt-5 border-t border-zinc-100">
+                  <a href={item.cta.href}>
+                    <Button variant="ghost" size="sm" className="w-full text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50">
+                      {item.cta.text}
+                    </Button>
+                  </a>
+                </div>
+              )}
             </motion.article>
           ))}
         </div>
