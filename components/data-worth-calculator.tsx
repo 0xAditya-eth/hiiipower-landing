@@ -22,44 +22,48 @@ const REGIONS = [
 ];
 
 const PLATFORMS = [
-  { id: "google", label: "Google / YouTube" },
-  { id: "meta", label: "Meta (Facebook, Instagram, WhatsApp)" },
-  { id: "amazon", label: "Amazon" },
-  { id: "x", label: "X (formerly Twitter)" },
-  { id: "openai", label: "OpenAI / ChatGPT" },
-  { id: "tiktok", label: "TikTok" },
+  { id: "google", label: "Google / YouTube", weight: 0.25 },
+  { id: "meta", label: "Meta (Facebook, Instagram, WhatsApp)", weight: 0.30 },
+  { id: "amazon", label: "Amazon", weight: 0.20 },
+  { id: "x", label: "X (formerly Twitter)", weight: 0.10 },
+  { id: "tiktok", label: "TikTok", weight: 0.15 },
 ];
 
-const INTENSITY_OPTIONS = [
-  { value: 0.7, label: "Light", description: "Casual browsing, low daily screen time" },
-  { value: 1.0, label: "Average", description: "Standard daily usage" },
-  { value: 1.4, label: "Heavy", description: "Constant connectivity, power user" },
+const USAGE_SCENARIOS = [
+  { 
+    value: "conservative" as const, 
+    label: "Light User", 
+    description: "Casual browsing, low daily screen time",
+    multiplier: 0.7
+  },
+  { 
+    value: "central" as const, 
+    label: "Average User", 
+    description: "Standard daily usage across platforms",
+    multiplier: 1.0
+  },
+  { 
+    value: "expansive" as const, 
+    label: "Heavy User", 
+    description: "Constant connectivity, power user",
+    multiplier: 1.4
+  },
 ];
 
 type CalculationResult = {
-  annual: {
-    conservative: number;
-    central: number;
-    expansive: number;
-  };
-  lifetime: {
-    conservative: number;
-    central: number;
-    expansive: number;
-  };
-  projected60yr: {
-    conservative: number;
-    central: number;
-    expansive: number;
-  };
+  annual: number;
+  lifetime: number;
+  projected60yr: number;
+  projected60yrInflationAdjusted: number;
+  scenario: "conservative" | "central" | "expansive";
 };
 
 export function DataWorthCalculator() {
   const [region, setRegion] = useState<keyof typeof REGIONAL_VALUES>("global");
   const [yearsActive, setYearsActive] = useState(10);
+  const [usageScenario, setUsageScenario] = useState<"conservative" | "central" | "expansive">("central");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
-  const [intensity, setIntensity] = useState(1.0);
   const [showResults, setShowResults] = useState(false);
   const [result, setResult] = useState<CalculationResult | null>(null);
 
@@ -74,34 +78,37 @@ export function DataWorthCalculator() {
   const calculateWorth = () => {
     const regionalBase = REGIONAL_VALUES[region];
     
-    // Platform coverage weight (defaults to 1.0 if no platforms selected or advanced section not used)
-    const platformWeight = showAdvanced && selectedPlatforms.length > 0
-      ? selectedPlatforms.length / PLATFORMS.length
-      : 1.0;
+    // Get base value for selected scenario
+    const baseAnnualValue = regionalBase[usageScenario];
+    
+    // Platform weight calculation (weighted average)
+    // If advanced section is used and platforms selected, calculate weighted coverage
+    // Otherwise assume full platform coverage (1.0)
+    let platformWeight = 1.0;
+    if (showAdvanced && selectedPlatforms.length > 0) {
+      const totalWeight = PLATFORMS.reduce((sum, p) => sum + p.weight, 0);
+      const selectedWeight = PLATFORMS
+        .filter(p => selectedPlatforms.includes(p.id))
+        .reduce((sum, p) => sum + p.weight, 0);
+      platformWeight = selectedWeight / totalWeight;
+    }
 
-    // Calculate for each scenario
-    const conservative = regionalBase.conservative * platformWeight * intensity;
-    const central = regionalBase.central * platformWeight * intensity;
-    const expansive = regionalBase.expansive * platformWeight * intensity;
-
+    const annualValue = baseAnnualValue * platformWeight;
     const years = Math.min(yearsActive, 60);
 
+    // Inflation adjustment: 3% annual inflation rate (common assumption in PDAV frameworks)
+    // Present value of future 60-year stream
+    const inflationRate = 0.03;
+    const discountedValue = Array.from({ length: 60 }, (_, i) => {
+      return annualValue / Math.pow(1 + inflationRate, i + 1);
+    }).reduce((sum, val) => sum + val, 0);
+
     const calculatedResult: CalculationResult = {
-      annual: {
-        conservative: Math.round(conservative),
-        central: Math.round(central),
-        expansive: Math.round(expansive),
-      },
-      lifetime: {
-        conservative: Math.round(conservative * years),
-        central: Math.round(central * years),
-        expansive: Math.round(expansive * years),
-      },
-      projected60yr: {
-        conservative: Math.round(conservative * 60),
-        central: Math.round(central * 60),
-        expansive: Math.round(expansive * 60),
-      },
+      annual: Math.round(annualValue),
+      lifetime: Math.round(annualValue * years),
+      projected60yr: Math.round(annualValue * 60),
+      projected60yrInflationAdjusted: Math.round(discountedValue),
+      scenario: usageScenario,
     };
 
     setResult(calculatedResult);
@@ -114,7 +121,7 @@ export function DataWorthCalculator() {
   };
 
   const shareToTwitter = () => {
-    const text = `I just calculated my data's worth. Tech platforms have extracted an estimated $${result?.lifetime.central.toLocaleString()} in value from my personal data so far. Calculate yours:`;
+    const text = `I just calculated my data's worth. Tech platforms have extracted an estimated $${result?.lifetime.toLocaleString()} in value from my personal data so far. Calculate yours:`;
     const url = window.location.href;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
   };
@@ -143,25 +150,25 @@ export function DataWorthCalculator() {
             Your Data&apos;s Commercial Value
           </p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-900 mb-4">
-            ${result.lifetime.central.toLocaleString()}
+            ${result.lifetime.toLocaleString()}
           </h2>
           <p className="text-lg text-zinc-600 max-w-2xl mx-auto">
             Your personal data has generated an estimated{" "}
-            <span className="font-bold text-zinc-900">${result.lifetime.central.toLocaleString()}</span>{" "}
-            in commercial value so far.
+            <span className="font-bold text-zinc-900">${result.lifetime.toLocaleString()}</span>{" "}
+            in commercial value so far based on {result.scenario} usage patterns.
           </p>
         </div>
 
         {/* Detailed Breakdown */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 hover:border-zinc-300 hover:shadow-md transition-all duration-300">
             <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-2">
               Annual Value
             </p>
             <p className="text-2xl font-bold text-zinc-900">
-              ${result.annual.central.toLocaleString()}
+              ${result.annual.toLocaleString()}
             </p>
-            <p className="text-sm text-zinc-600 mt-2">Per year average</p>
+            <p className="text-sm text-zinc-600 mt-2">Per year</p>
           </div>
 
           <div className="rounded-2xl border border-zinc-200 bg-white p-6 hover:border-zinc-300 hover:shadow-md transition-all duration-300">
@@ -169,7 +176,7 @@ export function DataWorthCalculator() {
               Lifetime So Far
             </p>
             <p className="text-2xl font-bold text-zinc-900">
-              ${result.lifetime.central.toLocaleString()}
+              ${result.lifetime.toLocaleString()}
             </p>
             <p className="text-sm text-zinc-600 mt-2">Over {yearsActive} years</p>
           </div>
@@ -179,59 +186,43 @@ export function DataWorthCalculator() {
               60-Year Projection
             </p>
             <p className="text-2xl font-bold text-zinc-900">
-              ${result.projected60yr.central.toLocaleString()}
+              ${result.projected60yr.toLocaleString()}
             </p>
-            <p className="text-sm text-zinc-600 mt-2">Projected lifetime</p>
+            <p className="text-sm text-zinc-600 mt-2">Nominal value</p>
+          </div>
+
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 hover:border-emerald-300 hover:shadow-md transition-all duration-300">
+            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-2">
+              Inflation-Adjusted
+            </p>
+            <p className="text-2xl font-bold text-zinc-900">
+              ${result.projected60yrInflationAdjusted.toLocaleString()}
+            </p>
+            <p className="text-sm text-zinc-600 mt-2">Present value (3% inflation)</p>
           </div>
         </div>
 
-        {/* Scenario Comparison */}
-        <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 p-6 sm:p-8">
-          <h3 className="text-xl font-bold text-zinc-900 mb-6">Scenario Comparison</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white rounded-xl border border-zinc-200 p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                  Conservative
-                </span>
-                <span className="text-xs text-zinc-400">(0.7×)</span>
-              </div>
-              <p className="text-xl font-bold text-zinc-900 mb-1">
-                ${result.lifetime.conservative.toLocaleString()}
-              </p>
-              <p className="text-sm text-zinc-600">
-                ${result.annual.conservative.toLocaleString()}/yr • ${result.projected60yr.conservative.toLocaleString()} lifetime
-              </p>
+        {/* HiiiPower CTA */}
+        <div className="rounded-2xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50 to-white p-8 sm:p-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500 mb-6">
+              <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
             </div>
-
-            <div className="bg-emerald-50 rounded-xl border-2 border-emerald-500 p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
-                  Central (Your Result)
-                </span>
-                <span className="text-xs text-emerald-600">(1.0×)</span>
-              </div>
-              <p className="text-xl font-bold text-zinc-900 mb-1">
-                ${result.lifetime.central.toLocaleString()}
-              </p>
-              <p className="text-sm text-zinc-600">
-                ${result.annual.central.toLocaleString()}/yr • ${result.projected60yr.central.toLocaleString()} lifetime
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl border border-zinc-200 p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                  Expansive
-                </span>
-                <span className="text-xs text-zinc-400">(1.4×)</span>
-              </div>
-              <p className="text-xl font-bold text-zinc-900 mb-1">
-                ${result.lifetime.expansive.toLocaleString()}
-              </p>
-              <p className="text-sm text-zinc-600">
-                ${result.annual.expansive.toLocaleString()}/yr • ${result.projected60yr.expansive.toLocaleString()} lifetime
-              </p>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 mb-4">
+              Take Back Control of Your Data
+            </h3>
+            <p className="text-lg text-zinc-600 mb-6 leading-relaxed">
+              While you can&apos;t directly claim this money from tech companies, <span className="font-bold text-zinc-900">HiiiPower helps you start getting your data&apos;s worth</span>. Join a social network where you own your data, control your privacy, and keep the value you create.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button size="lg" onClick={() => window.location.href = '/#join'}>
+                Join the Waitlist
+              </Button>
+              <Button variant="secondary" size="lg" onClick={() => window.location.href = '/'}>
+                Learn More About HiiiPower
+              </Button>
             </div>
           </div>
         </div>
@@ -334,6 +325,42 @@ export function DataWorthCalculator() {
               </div>
             </div>
           </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-zinc-900 mb-3">
+              Your Usage Level <span className="text-red-500">*</span>
+            </label>
+            <p className="text-sm text-zinc-500 mb-4">
+              Select the usage pattern that best describes your online activity
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {USAGE_SCENARIOS.map((option) => (
+                <label
+                  key={option.value}
+                  className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                    usageScenario === option.value
+                      ? "border-zinc-900 bg-zinc-50 shadow-sm"
+                      : "border-zinc-200 hover:border-zinc-300"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="usage"
+                    value={option.value}
+                    checked={usageScenario === option.value}
+                    onChange={() => setUsageScenario(option.value)}
+                    className="sr-only"
+                  />
+                  <span className="text-sm font-bold text-zinc-900 mb-1">
+                    {option.label}
+                  </span>
+                  <span className="text-xs text-zinc-500">
+                    {option.description}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Advanced Options */}
@@ -373,56 +400,27 @@ export function DataWorthCalculator() {
                       Platforms Used
                     </label>
                     <p className="text-sm text-zinc-500 mb-4">
-                      Select the platforms you actively use. Each contributes to your total data value.
+                      Select the platforms you actively use. Each platform has different data extraction values (Google/YouTube: 25%, Meta: 30%, Amazon: 20%, X: 10%, TikTok: 15%).
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {PLATFORMS.map((platform) => (
                         <label
                           key={platform.id}
-                          className="flex items-center gap-3 p-3 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer transition-colors"
+                          className="flex items-center justify-between gap-3 p-3 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer transition-colors"
                         >
-                          <input
-                            type="checkbox"
-                            checked={selectedPlatforms.includes(platform.id)}
-                            onChange={() => togglePlatform(platform.id)}
-                            className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
-                          />
-                          <span className="text-sm font-medium text-zinc-900">
-                            {platform.label}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Usage Intensity */}
-                  <div>
-                    <label className="block text-sm font-semibold text-zinc-900 mb-3">
-                      Usage Intensity
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      {INTENSITY_OPTIONS.map((option) => (
-                        <label
-                          key={option.value}
-                          className={`flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                            intensity === option.value
-                              ? "border-zinc-900 bg-zinc-50"
-                              : "border-zinc-200 hover:border-zinc-300"
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="intensity"
-                            value={option.value}
-                            checked={intensity === option.value}
-                            onChange={() => setIntensity(option.value)}
-                            className="sr-only"
-                          />
-                          <span className="text-sm font-bold text-zinc-900 mb-1">
-                            {option.label}
-                          </span>
-                          <span className="text-xs text-zinc-500">
-                            {option.description}
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedPlatforms.includes(platform.id)}
+                              onChange={() => togglePlatform(platform.id)}
+                              className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
+                            />
+                            <span className="text-sm font-medium text-zinc-900">
+                              {platform.label}
+                            </span>
+                          </div>
+                          <span className="text-xs text-zinc-500 font-medium">
+                            {Math.round(platform.weight * 100)}%
                           </span>
                         </label>
                       ))}
