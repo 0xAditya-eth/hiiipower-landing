@@ -21,7 +21,7 @@ export default function TermsOfService() {
               Terms of Service
             </h1>
             <p className="text-sm text-zinc-500 mb-8">
-              Effective date: August 5, 2026
+              Effective date: August 12, 2026
             </p>
 
             <div className="prose prose-zinc max-w-none">
