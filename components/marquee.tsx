@@ -1,5 +1,12 @@
 const ITEMS = [
+  "No bots",
+  "No ads",
+  "No filters",
+  "No algorithms",
   "Real-time content only",
+  "Verified humans",
+  "You own your data",
+  "No follower counts",
 ];
 
 export function Marquee() {

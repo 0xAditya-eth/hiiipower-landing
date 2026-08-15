@@ -56,7 +56,7 @@ function MomentsVisual() {
         />
         <div className="absolute bottom-3 left-3 right-3">
           <p className="text-xs font-medium text-white/90 bg-black/30 backdrop-blur-sm rounded-lg px-2.5 py-1.5 inline-block">
-            📍 Golden Gate Park, SF
+            📍 Himalayas, Nepal
           </p>
         </div>
       </div>
