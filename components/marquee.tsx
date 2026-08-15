@@ -3,7 +3,7 @@ const ITEMS = [
   "No ads",
   "No filters",
   "No algorithms",
-  "Real-time only",
+  "Real-time content only",
   "Verified humans",
   "You own your data",
   "No follower counts",

@@ -106,7 +106,7 @@ export function BentoGrid() {
               {item.cta && (
                 <div className="mt-5 pt-5 border-t border-zinc-100">
                   <a href={item.cta.href}>
-                    <Button variant="ghost" size="sm" className="w-full text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50">
+                    <Button variant="ghost" size="sm" className="w-full text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 underline decoration-emerald-400 decoration-2 underline-offset-4 hover:decoration-emerald-600">
                       {item.cta.text}
                     </Button>
                   </a>

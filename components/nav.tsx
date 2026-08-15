@@ -15,9 +15,10 @@ const LINKS = [
 type NavProps = {
   onJoin: () => void;
   hideJoinButton?: boolean;
+  minimalMode?: boolean;
 };
 
-export function Nav({ onJoin, hideJoinButton = false }: NavProps) {
+export function Nav({ onJoin, hideJoinButton = false, minimalMode = false }: NavProps) {
   const [scrolled, setScrolled] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
 
@@ -35,20 +36,56 @@ export function Nav({ onJoin, hideJoinButton = false }: NavProps) {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <a href="#" className="flex items-center">
+        <a href={minimalMode ? "/" : "#"} className="flex items-center">
           <Logo />
         </a>
 
-        <nav className="hidden lg:flex items-center gap-1">
-          {LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="px-3.5 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 rounded-lg hover:bg-zinc-100/80 transition-colors"
-            >
-              {link.label}
-            </a>
-          ))}
+        {!minimalMode ? (
+          <>
+            <nav className="hidden lg:flex items-center gap-1">
+              {LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="px-3.5 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 rounded-lg hover:bg-zinc-100/80 transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <a
+                href="https://docs.hiiipower.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 rounded-lg hover:bg-zinc-100/80 transition-colors"
+              >
+                Docs
+              </a>
+            </nav>
+
+            <div className="flex items-center gap-2">
+              {!hideJoinButton && (
+                <Button size="sm" onClick={onJoin} className="hidden sm:inline-flex">
+                  Join waitlist
+                </Button>
+              )}
+              <button
+                type="button"
+                className="lg:hidden p-2 rounded-lg text-zinc-600 hover:bg-zinc-100"
+                onClick={() => setMenuOpen((o) => !o)}
+                aria-label="Toggle menu"
+                aria-expanded={menuOpen}
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
+                  {menuOpen ? (
+                    <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  ) : (
+                    <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  )}
+                </svg>
+              </button>
+            </div>
+          </>
+        ) : (
           <a
             href="https://docs.hiiipower.app"
             target="_blank"
@@ -57,33 +94,10 @@ export function Nav({ onJoin, hideJoinButton = false }: NavProps) {
           >
             Docs
           </a>
-        </nav>
-
-        <div className="flex items-center gap-2">
-          {!hideJoinButton && (
-            <Button size="sm" onClick={onJoin} className="hidden sm:inline-flex">
-              Join waitlist
-            </Button>
-          )}
-          <button
-            type="button"
-            className="lg:hidden p-2 rounded-lg text-zinc-600 hover:bg-zinc-100"
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-label="Toggle menu"
-            aria-expanded={menuOpen}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
-              {menuOpen ? (
-                <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              ) : (
-                <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              )}
-            </svg>
-          </button>
-        </div>
+        )}
       </div>
 
-      {menuOpen && (
+      {menuOpen && !minimalMode && (
         <div className="lg:hidden border-t border-zinc-200/60 bg-white/95 backdrop-blur-xl px-4 py-4 space-y-1">
           {LINKS.map((link) => (
             <a

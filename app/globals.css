@@ -58,6 +58,12 @@ body {
   animation: marquee 30s linear infinite;
 }
 
+@media (max-width: 768px) {
+  .animate-marquee {
+    animation: marquee 15s linear infinite;
+  }
+}
+
 /* Improve momentum scrolling */
 .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
