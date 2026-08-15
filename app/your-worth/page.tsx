@@ -13,7 +13,7 @@ export default function YourWorthPage() {
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
       <DynamicBackground />
-      <Nav onJoin={() => setModalOpen(true)} hideJoinButton={true} />
+      <Nav onJoin={() => setModalOpen(true)} hideJoinButton={true} minimalMode={true} />
       
       <main className="relative z-10 pt-28 pb-16 sm:pt-32 sm:pb-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">

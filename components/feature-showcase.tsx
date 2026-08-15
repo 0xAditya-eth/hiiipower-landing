@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 type Pillar = {
   id: string;
@@ -12,14 +13,25 @@ type Pillar = {
 };
 
 function PeopleVisual() {
+  const faces = [
+    { name: "Alex Rivera", image: "/face1.jpg" },
+    { name: "Sam Chen", image: "/face2.jpg" },
+    { name: "Jordan Lee", image: "/face3.jpg" },
+  ];
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
       <div className="space-y-3">
-        {["Alex Rivera", "Sam Chen", "Jordan Lee"].map((name, i) => (
-          <div key={name} className="flex items-center gap-3 p-3 rounded-xl bg-zinc-50">
-            <div className={`h-10 w-10 rounded-full bg-gradient-to-br ${i === 0 ? "from-amber-300 to-orange-400" : i === 1 ? "from-sky-300 to-blue-400" : "from-emerald-300 to-teal-400"}`} />
+        {faces.map((person) => (
+          <div key={person.name} className="flex items-center gap-3 p-3 rounded-xl bg-zinc-50">
+            <Image
+              src={person.image}
+              alt={person.name}
+              width={40}
+              height={40}
+              className="h-10 w-10 rounded-full object-cover"
+            />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-zinc-900 truncate">{name}</p>
+              <p className="text-sm font-semibold text-zinc-900 truncate">{person.name}</p>
               <p className="text-xs text-emerald-600 font-medium">✓ Verified human</p>
             </div>
           </div>
@@ -35,11 +47,13 @@ function PeopleVisual() {
 function MomentsVisual() {
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm">
-      <div className="h-40 bg-gradient-to-br from-violet-200 via-fuchsia-200 to-pink-200 relative">
-        <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/50 backdrop-blur-sm rounded-full px-2.5 py-1">
-          <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-[10px] font-semibold text-white">LIVE · 0:42</span>
-        </div>
+      <div className="h-40 relative">
+        <Image
+          src="/golden-gate-park.jpg"
+          alt="Golden Gate Park, SF"
+          fill
+          className="object-cover"
+        />
         <div className="absolute bottom-3 left-3 right-3">
           <p className="text-xs font-medium text-white/90 bg-black/30 backdrop-blur-sm rounded-lg px-2.5 py-1.5 inline-block">
             📍 Golden Gate Park, SF
@@ -96,7 +110,7 @@ const PILLARS: Pillar[] = [
     eyebrow: "Pillar 03",
     title: "Real Power",
     description: "Your data, your attention, your mental health — it all belongs to you. No addictive algorithms, no vanity metrics, no selling your life to advertisers.",
-    bullets: ["You own your data", "Chronological feed, no algorithm", "No likes, followers, or public metrics"],
+    bullets: ["You own your data", "Chronological feed, no algorithm", "No likes, followers count, or public metrics"],
     visual: <PowerVisual />,
   },
 ];
