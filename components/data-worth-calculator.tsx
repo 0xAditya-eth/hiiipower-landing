@@ -22,7 +22,7 @@ const REGIONS = [
   { value: "northAmerica", label: "Rest of North America" },
   { value: "ukEurope", label: "United Kingdom & Europe" },
   { value: "restOfWorld", label: "Rest of the World" },
-  { value: "global", label: "Default to global average" },
+  { value: "global", label: "Global Average" },
 ];
 
 const PLATFORMS = [
