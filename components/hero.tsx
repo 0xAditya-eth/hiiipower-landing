@@ -10,7 +10,7 @@ type HeroProps = {
 
 export function Hero({ onJoin }: HeroProps) {
   return (
-    <section className="relative z-10 pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-36 lg:pb-28">
+    <section className="relative z-10 pt-20 pb-16 sm:pt-24 sm:pb-20 lg:pt-28 lg:pb-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Copy */}
@@ -55,7 +55,15 @@ export function Hero({ onJoin }: HeroProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.35 }}
             >
-              <Button size="lg" onClick={onJoin}>
+              <Button 
+                size="lg" 
+                onClick={() => {
+                  const joinSection = document.getElementById("join");
+                  if (joinSection) {
+                    joinSection.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+              >
                 Join the waitlist
               </Button>
               <Button

@@ -26,7 +26,7 @@ export function Footer() {
               <Logo />
             </a>
             <p className="mt-4 text-sm text-zinc-500 leading-relaxed max-w-xs">
-              The social network where authenticity wins. Real people. Real moments. Real power.
+              The social network where authenticity wins.<br />Real people. Real moments. Real power.
             </p>
           </div>
 
@@ -54,7 +54,7 @@ export function Footer() {
           <p className="text-xs text-zinc-400 text-center">
             &copy; {new Date().getFullYear()} HiiiPower Technologies Private Limited. All rights reserved.
           </p>
-          <p className="text-xs text-zinc-400 text-center">Built for real people.</p>
+          <p className="text-xs text-zinc-400 text-center">Built for humans.</p>
         </div>
       </div>
     </footer>
