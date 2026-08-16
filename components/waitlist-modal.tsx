@@ -120,7 +120,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                 >
                   <div className="text-center">
                     <h4 className="text-2xl font-extrabold text-zinc-900">Join the waitlist</h4>
-                    <p className="mt-2 text-sm text-zinc-500">Get early access when we launch.</p>
+                    <p className="mt-2 text-sm text-zinc-500">Be the first to access HiiiPower.</p>
                   </div>
                   {error && (
                     <p className="text-sm text-red-600 text-center bg-red-50 rounded-xl px-4 py-2.5 border border-red-100">
@@ -155,6 +155,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                       {submitting ? "Submitting..." : "Submit"}
                     </Button>
                   </div>
+                  <p className="text-xs text-zinc-400 text-center">No spam. One email when we launch.</p>
                 </motion.form>
               )}
             </AnimatePresence>

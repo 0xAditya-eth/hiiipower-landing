@@ -19,17 +19,16 @@ const REGIONAL_VALUES = {
 
 const REGIONS = [
   { value: "usa", label: "United States" },
-  { value: "northAmerica", label: "North America (Canada + USA)" },
+  { value: "northAmerica", label: "Rest of North America" },
   { value: "ukEurope", label: "United Kingdom & Europe" },
   { value: "restOfWorld", label: "Rest of the World" },
-  { value: "global", label: "Global Average (Fallback default)" },
+  { value: "global", label: "Global Average" },
 ];
 
 const PLATFORMS = [
-  { id: "google", label: "Google / YouTube", weight: 0.25 },
-  { id: "meta", label: "Meta (Facebook, Instagram, WhatsApp)", weight: 0.30 },
-  { id: "amazon", label: "Amazon", weight: 0.20 },
-  { id: "x", label: "X (formerly Twitter)", weight: 0.10 },
+  { id: "google", label: "Google", weight: 0.35 },
+  { id: "meta", label: "Meta (Facebook, Instagram, WhatsApp)", weight: 0.35 },
+  { id: "x", label: "X (formerly Twitter)", weight: 0.15 },
   { id: "tiktok", label: "TikTok", weight: 0.15 },
 ];
 
@@ -388,27 +387,22 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
                       Platforms Used
                     </label>
                     <p className="text-sm text-zinc-500 mb-4">
-                      Select the platforms you actively use. Each platform has different data extraction values (Google/YouTube: 25%, Meta: 30%, Amazon: 20%, X: 10%, TikTok: 15%).
+                      Select the platforms you actively use.
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {PLATFORMS.map((platform) => (
                         <label
                           key={platform.id}
-                          className="flex items-center justify-between gap-3 p-3 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer transition-colors"
+                          className="flex items-center gap-3 p-3 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer transition-colors"
                         >
-                          <div className="flex items-center gap-3">
-                            <input
-                              type="checkbox"
-                              checked={selectedPlatforms.includes(platform.id)}
-                              onChange={() => togglePlatform(platform.id)}
-                              className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
-                            />
-                            <span className="text-sm font-medium text-zinc-900">
-                              {platform.label}
-                            </span>
-                          </div>
-                          <span className="text-xs text-zinc-500 font-medium">
-                            {Math.round(platform.weight * 100)}%
+                          <input
+                            type="checkbox"
+                            checked={selectedPlatforms.includes(platform.id)}
+                            onChange={() => togglePlatform(platform.id)}
+                            className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
+                          />
+                          <span className="text-sm font-medium text-zinc-900">
+                            {platform.label}
                           </span>
                         </label>
                       ))}
