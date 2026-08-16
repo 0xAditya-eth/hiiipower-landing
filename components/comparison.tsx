@@ -155,20 +155,39 @@ function CompareRow({
   onDeactivate: () => void;
   onTogglePin: (index: number) => void;
 }) {
+  const [isTouchDevice, setIsTouchDevice] = React.useState(false);
+
+  React.useEffect(() => {
+    // Detect if device supports touch
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
+
+  const handleMouseEnter = () => {
+    if (!isTouchDevice) {
+      onActivate(index);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!isTouchDevice) {
+      onDeactivate();
+    }
+  };
+
   return (
     <div
       className={`border-b border-zinc-100 last:border-0 transition-colors ${
         isExpanded ? "bg-zinc-50/60" : "hover:bg-zinc-50/40"
       }`}
-      onMouseEnter={() => onActivate(index)}
-      onMouseLeave={onDeactivate}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <button
         type="button"
         className="w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-300"
         onClick={() => onTogglePin(index)}
-        onFocus={() => onActivate(index)}
-        onBlur={onDeactivate}
+        onFocus={handleMouseEnter}
+        onBlur={handleMouseLeave}
         aria-expanded={isExpanded}
       >
         {/* Desktop layout */}
@@ -226,12 +245,46 @@ function CompareRow({
 export function Comparison() {
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
   const [pinnedIndex, setPinnedIndex] = React.useState<number | null>(null);
+  const [isScrolling, setIsScrolling] = React.useState(false);
+  const scrollTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  const activeIndex = pinnedIndex ?? hoveredIndex;
+  const activeIndex = pinnedIndex ?? (isScrolling ? null : hoveredIndex);
 
   function handleTogglePin(index: number) {
     setPinnedIndex((current) => (current === index ? null : index));
   }
+
+  // Detect when user is scrolling to prevent hover expansion
+  React.useEffect(() => {
+    let isTouch = false;
+
+    const handleTouchStart = () => {
+      isTouch = true;
+    };
+
+    const handleScroll = () => {
+      if (isTouch) return; // Don't interfere with touch scrolling
+      
+      setIsScrolling(true);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsScrolling(false);
+      }, 150);
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <section id="compare" className="relative z-10 py-14 sm:py-16">

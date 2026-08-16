@@ -10,7 +10,7 @@ type HeroProps = {
 
 export function Hero({ onJoin }: HeroProps) {
   return (
-    <section className="relative z-10 pt-28 pb-16 sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-28">
+    <section className="relative z-10 pt-32 pb-16 sm:pt-20 sm:pb-20 lg:pt-20 lg:pb-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Copy */}
