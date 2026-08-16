@@ -2,6 +2,7 @@
 
 import { Logo } from "@/components/logo";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const FOOTER_LINKS = {
   Product: [
@@ -28,9 +29,9 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-12">
           <div className="col-span-2 sm:col-span-1">
-            <a href="/" className="inline-flex">
+            <Link href="/" className="inline-flex">
               <Logo />
-            </a>
+            </Link>
             <p className="mt-4 text-sm text-zinc-500 leading-relaxed max-w-xs">
               The social network where authenticity wins.<br />Real people. Real moments. Real power.
             </p>
