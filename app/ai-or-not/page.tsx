@@ -222,19 +222,6 @@ export default function AIOrNotPage() {
                   </div>
                 </div>
 
-                {/* Social Sharing */}
-                <div className="rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8">
-                  <h3 className="text-lg font-bold text-zinc-900 mb-4">Share Your Results</h3>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button variant="primary" size="md" onClick={shareToTwitter}>
-                      Share to X/Twitter
-                    </Button>
-                    <Button variant="secondary" size="md" onClick={shareToLinkedIn}>
-                      Share to LinkedIn
-                    </Button>
-                  </div>
-                </div>
-
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
                   <Button
                     size="lg"
@@ -251,6 +238,19 @@ export default function AIOrNotPage() {
                   >
                     Play again
                   </Button>
+                </div>
+
+                {/* Social Sharing */}
+                <div className="rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8">
+                  <h3 className="text-lg font-bold text-zinc-900 mb-4">Share Your Results</h3>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button variant="primary" size="md" onClick={shareToTwitter}>
+                      Share to X/Twitter
+                    </Button>
+                    <Button variant="secondary" size="md" onClick={shareToLinkedIn}>
+                      Share to LinkedIn
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             )}

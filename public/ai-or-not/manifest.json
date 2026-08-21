@@ -1,71 +1,71 @@
 [
   {
-    "src": "/ai-or-not/real-1.jpg",
-    "isAI": false,
-    "credit": "Photo by Gabrielle Henderson",
-    "license": "Unsplash License",
-    "licenseUrl": "https://unsplash.com/license"
-  },
-  {
-    "src": "/ai-or-not/ai-1.jpg",
+    "src": "/ai-or-not/ai-rain-street.jpg",
     "isAI": true,
-    "credit": "Photo by Christopher Campbell (AI-styled processing)",
-    "license": "Unsplash License",
-    "licenseUrl": "https://unsplash.com/license"
+    "credit": "AI generated for HiiiPower /ai-or-not",
+    "license": "HiiiPower License",
+    "licenseUrl": "https://hiiipower.app"
   },
   {
-    "src": "/ai-or-not/real-2.jpg",
+    "src": "/ai-or-not/real-rain-street.jpg",
     "isAI": false,
-    "credit": "Photo by Alexander Krivitskiy",
+    "credit": "Photo by Aditya Chinchure",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
-    "src": "/ai-or-not/ai-2.jpg",
+    "src": "/ai-or-not/ai-kitchen.jpg",
     "isAI": true,
-    "credit": "Photo by Nicky Lowe (AI-styled processing)",
-    "license": "Unsplash License",
-    "licenseUrl": "https://unsplash.com/license"
+    "credit": "AI generated for HiiiPower /ai-or-not",
+    "license": "HiiiPower License",
+    "licenseUrl": "https://hiiipower.app"
   },
   {
-    "src": "/ai-or-not/real-3.jpg",
+    "src": "/ai-or-not/real-kitchen.jpg",
     "isAI": false,
-    "credit": "Photo by Michael Dam",
+    "credit": "Photo by Becca Tapert",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
-    "src": "/ai-or-not/ai-3.jpg",
+    "src": "/ai-or-not/ai-bus-portrait.jpg",
     "isAI": true,
-    "credit": "Photo by Dmitry Ratushny (AI-styled processing)",
-    "license": "Unsplash License",
-    "licenseUrl": "https://unsplash.com/license"
+    "credit": "AI generated for HiiiPower /ai-or-not",
+    "license": "HiiiPower License",
+    "licenseUrl": "https://hiiipower.app"
   },
   {
-    "src": "/ai-or-not/real-4.jpg",
+    "src": "/ai-or-not/real-bus-portrait.jpg",
     "isAI": false,
-    "credit": "Photo by Brooke Cagle",
+    "credit": "Photo by Ayo Ogunseinde",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
-    "src": "/ai-or-not/ai-4.jpg",
+    "src": "/ai-or-not/ai-forest.jpg",
     "isAI": true,
-    "credit": "Photo by Kenzie Kraft (AI-styled processing)",
-    "license": "Unsplash License",
-    "licenseUrl": "https://unsplash.com/license"
+    "credit": "AI generated for HiiiPower /ai-or-not",
+    "license": "HiiiPower License",
+    "licenseUrl": "https://hiiipower.app"
   },
   {
-    "src": "/ai-or-not/real-5.jpg",
+    "src": "/ai-or-not/real-forest.jpg",
     "isAI": false,
-    "credit": "Photo by Matheus Ferrero",
+    "credit": "Photo by Lukasz Szmigiel",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
-    "src": "/ai-or-not/ai-5.jpg",
+    "src": "/ai-or-not/ai-home-office.jpg",
     "isAI": true,
-    "credit": "Photo by Edward Cisneros (AI-styled processing)",
+    "credit": "AI generated for HiiiPower /ai-or-not",
+    "license": "HiiiPower License",
+    "licenseUrl": "https://hiiipower.app"
+  },
+  {
+    "src": "/ai-or-not/real-home-office.jpg",
+    "isAI": false,
+    "credit": "Photo by Mikey Harris",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   }
