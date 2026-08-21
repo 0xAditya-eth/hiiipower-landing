@@ -16,6 +16,36 @@ export const metadata: Metadata = {
   title: "HiiiPower — Real People. Real Moments. Real Power.",
   description:
     "HiiiPower is the social network where authenticity wins. No bots. No filters. Just you — raw, real, and in control.",
+  metadataBase: new URL("https://hiiipower.app"),
+  openGraph: {
+    title: "HiiiPower — Real People. Real Moments. Real Power.",
+    description:
+      "HiiiPower is the social network where authenticity wins. No bots. No filters. Just you — raw, real, and in control.",
+    url: "https://hiiipower.app",
+    siteName: "HiiiPower",
+    images: [
+      {
+        url: "/discover-feed.png",
+        width: 340,
+        height: 735,
+        alt: "HiiiPower social network",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HiiiPower — Real People. Real Moments. Real Power.",
+    description:
+      "HiiiPower is the social network where authenticity wins. No bots. No filters. Just you — raw, real, and in control.",
+    images: ["/discover-feed.png"],
+    creator: "@hiiipower_zk",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

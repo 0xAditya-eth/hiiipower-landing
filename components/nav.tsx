@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 
@@ -36,9 +37,9 @@ export function Nav({ onJoin, hideJoinButton = false, minimalMode = false }: Nav
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <a href={minimalMode ? "/" : "#"} className="flex items-center">
+        <Link href="/" className="flex items-center">
           <Logo />
-        </a>
+        </Link>
 
         {!minimalMode ? (
           <>

@@ -57,12 +57,7 @@ export function Hero({ onJoin }: HeroProps) {
             >
               <Button 
                 size="lg" 
-                onClick={() => {
-                  const joinSection = document.getElementById("join");
-                  if (joinSection) {
-                    joinSection.scrollIntoView({ behavior: "smooth" });
-                  }
-                }}
+                onClick={onJoin}
               >
                 Join the waitlist
               </Button>

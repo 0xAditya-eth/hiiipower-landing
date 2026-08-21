@@ -110,7 +110,7 @@ const PILLARS: Pillar[] = [
     eyebrow: "Pillar 03",
     title: "Real Power",
     description: "Your data, your attention, your mental health — it all belongs to you. No addictive algorithms, no vanity metrics, no selling your life to advertisers.",
-    bullets: ["You own your data", "Chronological feed, no algorithm", "No likes, followers count, or public metrics"],
+    bullets: ["You own your data", "Chronological feed, no algorithm", "No likes, follower counts, or public metrics"],
     visual: <PowerVisual />,
   },
 ];
