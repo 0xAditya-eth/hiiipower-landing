@@ -1,0 +1,72 @@
+[
+  {
+    "src": "/ai-or-not/ai-rain-street.jpg",
+    "isAI": true,
+    "credit": "AI generated for HiiiPower /ai-or-not",
+    "license": "HiiiPower License",
+    "licenseUrl": "https://hiiipower.app"
+  },
+  {
+    "src": "/ai-or-not/real-rain-street.jpg",
+    "isAI": false,
+    "credit": "Photo by Aditya Chinchure",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license"
+  },
+  {
+    "src": "/ai-or-not/ai-kitchen.jpg",
+    "isAI": true,
+    "credit": "AI generated for HiiiPower /ai-or-not",
+    "license": "HiiiPower License",
+    "licenseUrl": "https://hiiipower.app"
+  },
+  {
+    "src": "/ai-or-not/real-kitchen.jpg",
+    "isAI": false,
+    "credit": "Photo by Becca Tapert",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license"
+  },
+  {
+    "src": "/ai-or-not/ai-bus-portrait.jpg",
+    "isAI": true,
+    "credit": "AI generated for HiiiPower /ai-or-not",
+    "license": "HiiiPower License",
+    "licenseUrl": "https://hiiipower.app"
+  },
+  {
+    "src": "/ai-or-not/real-bus-portrait.jpg",
+    "isAI": false,
+    "credit": "Photo by Ayo Ogunseinde",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license"
+  },
+  {
+    "src": "/ai-or-not/ai-forest.jpg",
+    "isAI": true,
+    "credit": "AI generated for HiiiPower /ai-or-not",
+    "license": "HiiiPower License",
+    "licenseUrl": "https://hiiipower.app"
+  },
+  {
+    "src": "/ai-or-not/real-forest.jpg",
+    "isAI": false,
+    "credit": "Photo by Lukasz Szmigiel",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license"
+  },
+  {
+    "src": "/ai-or-not/ai-home-office.jpg",
+    "isAI": true,
+    "credit": "AI generated for HiiiPower /ai-or-not",
+    "license": "HiiiPower License",
+    "licenseUrl": "https://hiiipower.app"
+  },
+  {
+    "src": "/ai-or-not/real-home-office.jpg",
+    "isAI": false,
+    "credit": "Photo by Mikey Harris",
+    "license": "Unsplash License",
+    "licenseUrl": "https://unsplash.com/license"
+  }
+]

@@ -98,7 +98,7 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
     }
 
     const annualValue = baseAnnualValue * platformWeight;
-    const years = Math.min(yearsActive, 60);
+    const years = Math.min(yearsActive, 25);
 
     // Inflation adjustment: 3% annual inflation rate (common assumption in PDAV frameworks)
     const inflationRate = 0.03;
@@ -221,8 +221,8 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
 
         {/* Social Sharing */}
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8">
-          <h3 className="text-lg font-bold text-zinc-900 mb-4">Share Your Results</h3>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <h3 className="text-lg font-bold text-zinc-900 mb-4 text-center">Share Your Results</h3>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button variant="primary" size="md" onClick={shareToTwitter}>
               Share to X/Twitter
             </Button>
@@ -303,7 +303,7 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
               <input
                 type="range"
                 min="1"
-                max="60"
+                max="25"
                 value={yearsActive}
                 onChange={(e) => setYearsActive(Number(e.target.value))}
                 className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-zinc-900"

@@ -36,6 +36,10 @@ const OUTCOMES: Outcome[] = [
     how: "Every user is identity-verified. Posts are captured live from the camera and location-verified. What you see is what happened.",
     principles: ["Verified humans only", "Live camera capture", "Location-verified posts"],
     icon: "🤝",
+    cta: {
+      text: "Can you tell AI from real? →",
+      href: "/ai-or-not",
+    },
   },
   {
     title: "Your data & privacy",
