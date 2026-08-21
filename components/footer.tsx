@@ -18,6 +18,11 @@ const FOOTER_LINKS = {
     { label: "Terms of Service", href: "/tos" },
     { label: "Privacy Policy", href: "/privacy" },
   ],
+  Connect: [
+    { label: "Instagram", href: "https://instagram.com/hiiipower_app", external: true },
+    { label: "X (Twitter)", href: "https://x.com/hiiipower_zk", external: true },
+    { label: "Support", href: "mailto:support@hiiipower.app", external: true },
+  ],
 };
 
 export function Footer() {
@@ -27,7 +32,7 @@ export function Footer() {
   return (
     <footer className="relative z-10 border-t border-zinc-200/60 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-12">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-12">
           <div className="col-span-2 sm:col-span-1">
             <Link href="/" className="inline-flex">
               <Logo />

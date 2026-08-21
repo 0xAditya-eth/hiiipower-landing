@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const FAQS = [
   {
     q: "When is HiiiPower launching?",
-    a: "We're currently in private development and accepting waitlist signups. Early access members will be the first to try the app and help shape its direction.",
+    a: "The waitlist is open now. iOS early access starts in early September 2026. Waitlist members get in first.",
   },
   {
     q: "How does identity verification work?",
