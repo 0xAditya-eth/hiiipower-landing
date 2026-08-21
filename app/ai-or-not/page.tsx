@@ -5,6 +5,7 @@ import { DynamicBackground } from "@/components/dynamic-bg";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
+import { WaitlistModal } from "@/components/waitlist-modal";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
@@ -26,6 +27,7 @@ export default function AIOrNotPage() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [lastGuessCorrect, setLastGuessCorrect] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     document.title = "AI or Not · HiiiPower";
@@ -64,18 +66,10 @@ export default function AIOrNotPage() {
     }, 1000);
   };
 
-  const handlePlayAgain = () => {
-    const shuffled = [...images].sort(() => Math.random() - 0.5);
-    setImages(shuffled);
-    setGameState("quiz");
-    setCurrentIndex(0);
-    setScore(0);
-    setImageLoaded(false);
-  };
-
   const shareToTwitter = () => {
-    const text = `I got ${score}/${images.length}. Beat me if you can.\n\nhttps://hiiipower.app/ai-or-not`;
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+    const text = `I scored ${score}/${images.length} telling AI from real. The rest of the internet is a guessing game. HiiiPower is live camera only.`;
+    const url = "https://hiiipower.app/ai-or-not";
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
   };
 
   const shareToLinkedIn = () => {
@@ -86,7 +80,7 @@ export default function AIOrNotPage() {
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
       <DynamicBackground />
-      <Nav onJoin={() => {}} hideJoinButton={true} minimalMode={true} />
+      <Nav onJoin={() => setModalOpen(true)} hideJoinButton={true} minimalMode={true} />
 
       <main className="relative z-10 pt-28 pb-16 sm:pt-32 sm:pb-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
@@ -101,10 +95,10 @@ export default function AIOrNotPage() {
                 className="text-center"
               >
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 leading-tight">
-                  AI or Not
+                  Can You Tell What&apos;s Real?
                 </h1>
                 <p className="mt-6 text-lg sm:text-xl text-zinc-500 leading-relaxed max-w-2xl mx-auto">
-                  Can you tell what&apos;s real? Tap AI or Real.
+                  Feeds are full of generated faces, filters, and fake personas. Ten pictures. Tap AI or Real. See how much of the internet you can still trust with your eyes.
                 </p>
                 <div className="mt-10">
                   <Button size="lg" onClick={handleStart}>
@@ -209,41 +203,46 @@ export default function AIOrNotPage() {
               >
                 <div className="text-center">
                   <p className="text-lg text-zinc-500 mb-4">
-                    {score} of {images.length}. Now forget the score.
+                    {score} of {images.length}
                   </p>
                   <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-900 leading-tight mb-6">
-                    This question shouldn&apos;t exist.
+                    This shouldn&apos;t be a skill.
                   </h2>
-                  <div className="max-w-2xl mx-auto space-y-4 text-lg text-zinc-600 leading-relaxed">
-                    <p>You just interrogated a picture. That used to be insane.</p>
-                    <p>
-                      Live camera. Verified humans. You don&apos;t play this here.
-                    </p>
-                  </div>
+                  <p className="max-w-2xl mx-auto text-lg text-zinc-600 leading-relaxed">
+                    You just interrogated a picture to decide if a person was real. That&apos;s what the other apps did to the feed.
+                  </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-                  <Button
-                    size="lg"
-                    onClick={() =>
-                      (window.location.href = "https://www.hiiipower.app?source=ai-or-not")
-                    }
-                  >
-                    Join the waitlist →
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="secondary"
-                    onClick={handlePlayAgain}
-                  >
-                    Play again
-                  </Button>
+                {/* HiiiPower CTA */}
+                <div className="rounded-2xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50 to-white p-8 sm:p-10">
+                  <div className="max-w-3xl mx-auto text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500 mb-6">
+                      <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 mb-4">
+                      Take Back What&apos;s Real
+                    </h3>
+                    <p className="text-lg text-zinc-600 mb-6 leading-relaxed">
+                      Every other app made you a detective. HiiiPower is live camera. Verified humans. No uploads, no filters. You keep the moment and the data. The guessing game ends here.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <Button size="lg" onClick={() => setModalOpen(true)}>
+                        Join the waitlist →
+                      </Button>
+                      <Button variant="secondary" size="lg" onClick={() => window.location.href = '/'}>
+                        Learn more
+                      </Button>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Social Sharing */}
                 <div className="rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8">
-                  <h3 className="text-lg font-bold text-zinc-900 mb-4">Share Your Results</h3>
-                  <div className="flex flex-col sm:flex-row gap-3">
+                  <h3 className="text-lg font-bold text-zinc-900 mb-4 text-center">Share Your Results</h3>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button variant="primary" size="md" onClick={shareToTwitter}>
                       Share to X/Twitter
                     </Button>
@@ -259,6 +258,7 @@ export default function AIOrNotPage() {
       </main>
 
       <Footer />
+      <WaitlistModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 }
