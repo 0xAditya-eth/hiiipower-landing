@@ -98,7 +98,7 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
     }
 
     const annualValue = baseAnnualValue * platformWeight;
-    const years = Math.min(yearsActive, 60);
+    const years = Math.min(yearsActive, 25);
 
     // Inflation adjustment: 3% annual inflation rate (common assumption in PDAV frameworks)
     const inflationRate = 0.03;
@@ -303,7 +303,7 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
               <input
                 type="range"
                 min="1"
-                max="60"
+                max="25"
                 value={yearsActive}
                 onChange={(e) => setYearsActive(Number(e.target.value))}
                 className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-zinc-900"
