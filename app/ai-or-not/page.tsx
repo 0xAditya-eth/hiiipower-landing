@@ -73,6 +73,17 @@ export default function AIOrNotPage() {
     setImageLoaded(false);
   };
 
+  const shareToTwitter = () => {
+    const text = `I got ${score}/${images.length} on AI or Real. Can you tell what's real?`;
+    const url = "https://hiiipower.app/ai-or-not";
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+  };
+
+  const shareToLinkedIn = () => {
+    const url = "https://hiiipower.app/ai-or-not";
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+  };
+
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
       <DynamicBackground />
@@ -209,6 +220,19 @@ export default function AIOrNotPage() {
                     <p>
                       HiiiPower is live camera. Verified humans. The question goes away.
                     </p>
+                  </div>
+                </div>
+
+                {/* Social Sharing */}
+                <div className="rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8">
+                  <h3 className="text-lg font-bold text-zinc-900 mb-4">Share Your Results</h3>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button variant="primary" size="md" onClick={shareToTwitter}>
+                      Share to X/Twitter
+                    </Button>
+                    <Button variant="secondary" size="md" onClick={shareToLinkedIn}>
+                      Share to LinkedIn
+                    </Button>
                   </div>
                 </div>
 
