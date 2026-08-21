@@ -74,9 +74,8 @@ export default function AIOrNotPage() {
   };
 
   const shareToTwitter = () => {
-    const text = `I got ${score}/${images.length} on AI or Real. Can you tell what's real?`;
-    const url = "https://hiiipower.app/ai-or-not";
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+    const text = `I got ${score}/${images.length}. Beat me if you can.\n\nhttps://hiiipower.app/ai-or-not`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   const shareToLinkedIn = () => {
@@ -216,9 +215,9 @@ export default function AIOrNotPage() {
                     This question shouldn&apos;t exist.
                   </h2>
                   <div className="max-w-2xl mx-auto space-y-4 text-lg text-zinc-600 leading-relaxed">
-                    <p>Every other feed is a guessing game. Filters, fakes, AI faces.</p>
+                    <p>You just interrogated a picture. That used to be insane.</p>
                     <p>
-                      HiiiPower is live camera. Verified humans. The question goes away.
+                      Live camera. Verified humans. You don&apos;t play this here.
                     </p>
                   </div>
                 </div>
