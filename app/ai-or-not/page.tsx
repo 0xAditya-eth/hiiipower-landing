@@ -242,7 +242,7 @@ export default function AIOrNotPage() {
                       (window.location.href = "https://www.hiiipower.app?source=ai-or-not")
                     }
                   >
-                    Join the waitlist
+                    Join the waitlist →
                   </Button>
                   <Button
                     size="lg"
