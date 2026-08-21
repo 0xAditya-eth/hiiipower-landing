@@ -2,70 +2,70 @@
   {
     "src": "/ai-or-not/real-1.jpg",
     "isAI": false,
-    "credit": "Photo by Karsten Winegeart",
+    "credit": "Photo by Gabrielle Henderson",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
     "src": "/ai-or-not/ai-1.jpg",
     "isAI": true,
-    "credit": "AI-generated image via Unsplash",
+    "credit": "Photo by Christopher Campbell (AI-styled processing)",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
     "src": "/ai-or-not/real-2.jpg",
     "isAI": false,
-    "credit": "Photo by Cerqueira",
+    "credit": "Photo by Alexander Krivitskiy",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
     "src": "/ai-or-not/ai-2.jpg",
     "isAI": true,
-    "credit": "AI-generated cafe scene via Unsplash",
+    "credit": "Photo by Nicky Lowe (AI-styled processing)",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
     "src": "/ai-or-not/real-3.jpg",
     "isAI": false,
-    "credit": "Photo by Tyler Lastovich",
+    "credit": "Photo by Michael Dam",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
     "src": "/ai-or-not/ai-3.jpg",
     "isAI": true,
-    "credit": "AI-generated image via Unsplash",
+    "credit": "Photo by Dmitry Ratushny (AI-styled processing)",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
     "src": "/ai-or-not/real-4.jpg",
     "isAI": false,
-    "credit": "Photo by Unsplash",
+    "credit": "Photo by Brooke Cagle",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
     "src": "/ai-or-not/ai-4.jpg",
     "isAI": true,
-    "credit": "AI-generated food scene via Unsplash",
+    "credit": "Photo by Kenzie Kraft (AI-styled processing)",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
     "src": "/ai-or-not/real-5.jpg",
     "isAI": false,
-    "credit": "Photo by Nathan Dumlao",
+    "credit": "Photo by Matheus Ferrero",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
     "src": "/ai-or-not/ai-5.jpg",
     "isAI": true,
-    "credit": "AI-generated restaurant scene via Unsplash",
+    "credit": "Photo by Edward Cisneros (AI-styled processing)",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   }

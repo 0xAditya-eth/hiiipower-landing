@@ -25,6 +25,7 @@ export default function AIOrNotPage() {
   const [score, setScore] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const [lastGuessCorrect, setLastGuessCorrect] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     document.title = "AI or Not · HiiiPower";
@@ -43,6 +44,8 @@ export default function AIOrNotPage() {
   };
 
   const handleGuess = (guessAI: boolean) => {
+    if (!imageLoaded) return; // Prevent guessing before image loads
+    
     const correct = guessAI === images[currentIndex].isAI;
     setLastGuessCorrect(correct);
     if (correct) {
@@ -52,6 +55,7 @@ export default function AIOrNotPage() {
 
     setTimeout(() => {
       setShowFeedback(false);
+      setImageLoaded(false); // Reset for next image
       if (currentIndex + 1 < images.length) {
         setCurrentIndex(currentIndex + 1);
       } else {
@@ -66,6 +70,7 @@ export default function AIOrNotPage() {
     setGameState("quiz");
     setCurrentIndex(0);
     setScore(0);
+    setImageLoaded(false);
   };
 
   return (
@@ -89,7 +94,7 @@ export default function AIOrNotPage() {
                   AI or Not
                 </h1>
                 <p className="mt-6 text-lg sm:text-xl text-zinc-500 leading-relaxed max-w-2xl mx-auto">
-                  Can you tell what&apos;s real? Tap AI or Not.
+                  Can you tell what&apos;s real? Tap AI or Real.
                 </p>
                 <div className="mt-10">
                   <Button size="lg" onClick={handleStart}>
@@ -116,13 +121,27 @@ export default function AIOrNotPage() {
 
                 <div className="relative rounded-2xl border border-zinc-200 bg-white overflow-hidden">
                   <div className="relative w-full aspect-[4/3]">
+                    {!imageLoaded && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-zinc-50">
+                        <div className="w-8 h-8 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
+                      </div>
+                    )}
                     <Image
                       src={images[currentIndex].src}
                       alt={`Image ${currentIndex + 1}`}
                       fill
                       className="object-cover"
                       priority
+                      onLoad={() => setImageLoaded(true)}
                     />
+                    {/* Preload next image */}
+                    {currentIndex + 1 < images.length && (
+                      <link
+                        rel="preload"
+                        as="image"
+                        href={images[currentIndex + 1].src}
+                      />
+                    )}
                   </div>
                 </div>
 
@@ -136,6 +155,7 @@ export default function AIOrNotPage() {
                       size="lg"
                       variant="primary"
                       onClick={() => handleGuess(true)}
+                      disabled={!imageLoaded}
                       className="w-full text-lg py-6"
                     >
                       AI
@@ -144,9 +164,10 @@ export default function AIOrNotPage() {
                       size="lg"
                       variant="secondary"
                       onClick={() => handleGuess(false)}
+                      disabled={!imageLoaded}
                       className="w-full text-lg py-6"
                     >
-                      Not
+                      Real
                     </Button>
                   </motion.div>
                 ) : (
