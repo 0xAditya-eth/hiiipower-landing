@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -54,6 +54,16 @@ type CalculationResult = {
   scenario: "conservative" | "central" | "expansive";
 };
 
+// Map scenario keys to user-friendly labels
+const getScenarioLabel = (scenario: "conservative" | "central" | "expansive"): string => {
+  const mapping = {
+    conservative: "Light User",
+    central: "Average User",
+    expansive: "Heavy User",
+  };
+  return mapping[scenario];
+};
+
 export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
   const [region, setRegion] = useState<keyof typeof REGIONAL_VALUES>("global");
   const [yearsActive, setYearsActive] = useState(10);
@@ -61,6 +71,20 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
   const [showResults, setShowResults] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const [result, setResult] = useState<CalculationResult | null>(null);
+  const resultHeroRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to results after they render
+  useEffect(() => {
+    if (showResults && resultHeroRef.current) {
+      // Small delay to ensure the DOM has updated
+      setTimeout(() => {
+        resultHeroRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 100);
+    }
+  }, [showResults]);
 
   const calculateWorth = () => {
     setIsCalculating(true);
@@ -207,7 +231,11 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
         className="space-y-8"
       >
         {/* Hero Result */}
-        <div className="rounded-2xl border border-zinc-200 bg-white p-8 sm:p-12 text-center">
+        <div 
+          ref={resultHeroRef}
+          className="rounded-2xl border border-zinc-200 bg-white p-8 sm:p-12 text-center"
+          style={{ scrollMarginTop: '6rem' }}
+        >
           <p className="text-sm font-semibold text-zinc-500 uppercase tracking-widest mb-4">
             Your Data&apos;s Commercial Value
           </p>
@@ -217,7 +245,7 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
           <p className="text-lg text-zinc-600 max-w-2xl mx-auto">
             Your personal data has generated an estimated{" "}
             <span className="font-bold text-zinc-900">${result.lifetime.toLocaleString()}</span>{" "}
-            in commercial value so far based on {result.scenario} usage patterns.
+            in commercial value so far based on {getScenarioLabel(result.scenario)} usage patterns.
           </p>
         </div>
 
