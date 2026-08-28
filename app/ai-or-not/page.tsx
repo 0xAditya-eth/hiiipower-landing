@@ -55,7 +55,6 @@ export default function AIOrNotPage() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentSeed, setCurrentSeed] = useState<number>(0);
-  const [showCopyFeedback, setShowCopyFeedback] = useState(false);
 
   useEffect(() => {
     document.title = "AI or Not · HiiiPower";
@@ -109,14 +108,76 @@ export default function AIOrNotPage() {
     return `AI or Not\n${grid}\n${score}/${images.length}\nhiiipower.app/ai-or-not?r=${currentSeed}`;
   };
 
-  const copyShareText = async () => {
+  const shareToX = () => {
     const shareText = getShareText();
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+  };
+
+  const generateStoryImage = (): Promise<Blob> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d')!;
+
+      // Background gradient
+      const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+      gradient.addColorStop(0, '#f9fafb');
+      gradient.addColorStop(1, '#ffffff');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Title
+      ctx.fillStyle = '#18181b';
+      ctx.font = 'bold 80px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('AI or Not', 540, 400);
+
+      // Grid
+      const grid = guesses.map((correct: boolean) => correct ? '🟩' : '⬛').join('');
+      ctx.font = '100px Arial';
+      ctx.fillText(grid, 540, 800);
+
+      // Score
+      ctx.fillStyle = '#18181b';
+      ctx.font = 'bold 120px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText(`${score}/${images.length}`, 540, 1000);
+
+      // URL
+      ctx.fillStyle = '#52525b';
+      ctx.font = '48px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText('hiiipower.app', 540, 1400);
+
+      canvas.toBlob((blob) => {
+        resolve(blob!);
+      }, 'image/png');
+    });
+  };
+
+  const shareToInstagramStory = async () => {
     try {
-      await navigator.clipboard.writeText(shareText);
-      setShowCopyFeedback(true);
-      setTimeout(() => setShowCopyFeedback(false), 2000);
+      const imageBlob = await generateStoryImage();
+      const file = new File([imageBlob], 'ai-or-not-story.png', { type: 'image/png' });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'AI or Not',
+          text: getShareText()
+        });
+      } else {
+        // Fallback: download the image
+        const url = URL.createObjectURL(imageBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ai-or-not-story.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error('Failed to share to Instagram Story:', err);
     }
   };
 
@@ -263,45 +324,23 @@ export default function AIOrNotPage() {
                 transition={{ duration: 0.5 }}
                 className="space-y-8"
               >
-                {/* Score Result */}
+                {/* Score */}
                 <div className="text-center">
-                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-900 leading-tight mb-6">
-                    You got {score}/{images.length}.
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+                    {score}/{images.length}
                   </h2>
-                  <p className="max-w-2xl mx-auto text-lg text-zinc-600 leading-relaxed mb-4">
-                    {score <= 5 ? (
-                      <>
-                        Half the feed is generated now. Faces, rooms, people who don&apos;t exist. You just used your own eyes and still couldn&apos;t tell. That isn&apos;t a skill issue. That&apos;s the product.
-                      </>
-                    ) : (
-                      <>
-                        You did better than most. You still had to guess. A feed that needs a quiz to know who&apos;s real is already broken.
-                      </>
-                    )}
+                </div>
+
+                {/* Feeling Copy */}
+                <div className="text-center">
+                  <p className="max-w-2xl mx-auto text-lg text-zinc-600 leading-relaxed">
+                    You shouldn&apos;t have to guess what&apos;s real.
+                    <br />
+                    They let AI in so you&apos;d stop knowing the difference.
                   </p>
                 </div>
 
-                {/* Share Card with Preview */}
-                <div className="rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8">
-                  <div className="text-center mb-6">
-                    <div className="inline-block bg-zinc-50 rounded-xl p-6 mb-4">
-                      <pre className="text-sm font-mono text-zinc-900 whitespace-pre-wrap">
-                        {getShareText()}
-                      </pre>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <Button 
-                      size="lg" 
-                      onClick={copyShareText}
-                      className="w-full"
-                    >
-                      {showCopyFeedback ? '✓ Copied!' : 'Copy & Share'}
-                    </Button>
-                  </div>
-                </div>
-
-                {/* HiiiPower CTA */}
+                {/* Green Waitlist Box */}
                 <div className="rounded-2xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50 to-white p-8 sm:p-10">
                   <div className="max-w-3xl mx-auto text-center">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500 mb-6">
@@ -310,18 +349,37 @@ export default function AIOrNotPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
                     </div>
+                    <h3 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 mb-4">
+                      Take back your reality.
+                    </h3>
                     <p className="text-lg text-zinc-600 mb-6 leading-relaxed">
-                      HiiiPower is live camera, no filters, verified humans. This question doesn&apos;t exist there.
+                      Switch to a feed that&apos;s real, that doesn&apos;t wear on your mental well-being with addictive algorithms, and never uses your content to train AI.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <div className="flex justify-center">
                       <Button size="lg" onClick={() => setModalOpen(true)}>
                         Join the waitlist
                       </Button>
-                      <Button variant="secondary" size="lg" onClick={playAnotherRound}>
-                        Play another round
-                      </Button>
                     </div>
                   </div>
+                </div>
+
+                {/* Share Buttons */}
+                <div className="space-y-3">
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Button variant="primary" size="lg" onClick={shareToX}>
+                      Share to X
+                    </Button>
+                    <Button variant="secondary" size="lg" onClick={shareToInstagramStory}>
+                      Share to Instagram Story
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Play Another Round */}
+                <div className="text-center">
+                  <Button variant="ghost" size="lg" onClick={playAnotherRound}>
+                    Play another round
+                  </Button>
                 </div>
               </motion.div>
             )}
