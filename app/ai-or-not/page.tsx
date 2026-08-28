@@ -19,37 +19,104 @@ type ImageData = {
 
 type GameState = "intro" | "quiz" | "end";
 
+type DailyResult = {
+  date: string;
+  score: number;
+  guesses: boolean[];
+};
+
+function getISTDateString(date?: Date): string {
+  const d = date || new Date();
+  const istDate = new Date(d.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+  const year = istDate.getFullYear();
+  const month = String(istDate.getMonth() + 1).padStart(2, '0');
+  const day = String(istDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getFormattedDateForShare(dateStr: string): string {
+  const [, month, day] = dateStr.split('-');
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${parseInt(day)} ${months[parseInt(month) - 1]}`;
+}
+
+function seededShuffle<T>(array: T[], seed: number): T[] {
+  const arr = [...array];
+  let currentSeed = seed;
+  
+  const seededRandom = () => {
+    currentSeed = (currentSeed * 9301 + 49297) % 233280;
+    return currentSeed / 233280;
+  };
+  
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  
+  return arr;
+}
+
+function getDailySeed(dateStr: string): number {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return (year * 10000 + month * 100 + day) % 21;
+}
+
+function getDailyImages(allImages: ImageData[], dateStr: string): ImageData[] {
+  const seed = getDailySeed(dateStr);
+  return seededShuffle(allImages, seed);
+}
+
 export default function AIOrNotPage() {
   const [gameState, setGameState] = useState<GameState>("intro");
   const [images, setImages] = useState<ImageData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [guesses, setGuesses] = useState<boolean[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
   const [lastGuessCorrect, setLastGuessCorrect] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [currentDate, setCurrentDate] = useState<string>("");
+  const [isFirstCompletion, setIsFirstCompletion] = useState(true);
+  const [showCopyFeedback, setShowCopyFeedback] = useState(false);
 
   useEffect(() => {
     document.title = "AI or Not · HiiiPower";
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const dateParam = urlParams.get('date');
+    const targetDate = dateParam || getISTDateString();
+    setCurrentDate(targetDate);
+    
     fetch("/ai-or-not/manifest.json")
       .then((res) => res.json())
       .then((data: ImageData[]) => {
-        const shuffled = [...data].sort(() => Math.random() - 0.5);
-        setImages(shuffled);
+        const dailyImages = getDailyImages(data, targetDate);
+        setImages(dailyImages);
       });
+    
+    const stored = localStorage.getItem(`aiOrNot_${targetDate}`);
+    if (stored) {
+      setIsFirstCompletion(false);
+    }
   }, []);
 
   const handleStart = () => {
     setGameState("quiz");
     setCurrentIndex(0);
     setScore(0);
+    setGuesses([]);
   };
 
   const handleGuess = (guessAI: boolean) => {
-    if (!imageLoaded) return; // Prevent guessing before image loads
+    if (!imageLoaded) return;
     
     const correct = guessAI === images[currentIndex].isAI;
     setLastGuessCorrect(correct);
+    const newGuesses = [...guesses, correct];
+    setGuesses(newGuesses);
+    
     if (correct) {
       setScore(score + 1);
     }
@@ -57,24 +124,50 @@ export default function AIOrNotPage() {
 
     setTimeout(() => {
       setShowFeedback(false);
-      setImageLoaded(false); // Reset for next image
+      setImageLoaded(false);
       if (currentIndex + 1 < images.length) {
         setCurrentIndex(currentIndex + 1);
       } else {
+        if (isFirstCompletion) {
+          const result: DailyResult = {
+            date: currentDate,
+            score: correct ? score + 1 : score,
+            guesses: newGuesses
+          };
+          localStorage.setItem(`aiOrNot_${currentDate}`, JSON.stringify(result));
+          setIsFirstCompletion(false);
+        }
         setGameState("end");
       }
     }, 1000);
   };
 
-  const shareToTwitter = () => {
-    const text = `I scored ${score}/${images.length} telling AI from real. The rest of the internet is a guessing game. HiiiPower is live camera only.`;
-    const url = "https://hiiipower.app/ai-or-not";
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+  const getShareText = (): string => {
+    const stored = localStorage.getItem(`aiOrNot_${currentDate}`);
+    const resultToShare = stored ? JSON.parse(stored) : { guesses, score };
+    const guessesToUse = resultToShare.guesses;
+    const scoreToUse = resultToShare.score;
+    
+    const grid = guessesToUse.map((correct: boolean) => correct ? '🟩' : '⬛').join('');
+    const formattedDate = getFormattedDateForShare(currentDate);
+    
+    return `AI or Not  ${formattedDate}\n${grid}\n${scoreToUse}/${images.length}\nhiiipower.app/ai-or-not`;
   };
 
-  const shareToLinkedIn = () => {
-    const url = "https://hiiipower.app/ai-or-not";
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+  const copyShareText = async () => {
+    const shareText = getShareText();
+    try {
+      await navigator.clipboard.writeText(shareText);
+      setShowCopyFeedback(true);
+      setTimeout(() => setShowCopyFeedback(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const shareToTwitter = () => {
+    const shareText = getShareText();
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
   };
 
   return (
@@ -213,42 +306,49 @@ export default function AIOrNotPage() {
                   </p>
                 </div>
 
-                {/* HiiiPower CTA */}
-                <div className="rounded-2xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50 to-white p-8 sm:p-10">
+                {/* Share Card - Primary CTA */}
+                <div className="rounded-2xl border-2 border-zinc-900 bg-white p-6 sm:p-8">
+                  <div className="text-center mb-6">
+                    <div className="inline-block bg-zinc-50 rounded-xl p-6 mb-4">
+                      <pre className="text-sm font-mono text-zinc-900 whitespace-pre-wrap">
+                        {getShareText()}
+                      </pre>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Button 
+                      size="lg" 
+                      onClick={copyShareText}
+                      className="relative"
+                    >
+                      {showCopyFeedback ? '✓ Copied!' : 'Copy & Share'}
+                    </Button>
+                    <Button variant="secondary" size="lg" onClick={shareToTwitter}>
+                      Share to X
+                    </Button>
+                  </div>
+                </div>
+
+                {/* HiiiPower CTA - Secondary */}
+                <div className="rounded-2xl border border-zinc-200 bg-gradient-to-br from-emerald-50 to-white p-8">
                   <div className="max-w-3xl mx-auto text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500 mb-6">
-                      <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-500 mb-4">
+                      <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
                     </div>
-                    <h3 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 mb-4">
+                    <h3 className="text-xl sm:text-2xl font-bold text-zinc-900 mb-3">
                       Take Back What&apos;s Real
                     </h3>
-                    <p className="text-lg text-zinc-600 mb-6 leading-relaxed">
-                      Every other app made you a detective. HiiiPower is live camera. Verified humans. No uploads, no filters. You keep the moment and the data. The guessing game ends here.
+                    <p className="text-base text-zinc-600 mb-4 leading-relaxed">
+                      Every other app made you a detective. HiiiPower is live camera. Verified humans. No uploads, no filters.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <Button size="lg" onClick={() => setModalOpen(true)}>
-                        Join the waitlist →
-                      </Button>
-                      <Button variant="secondary" size="lg" onClick={() => window.location.href = '/'}>
-                        Learn more
+                      <Button size="md" onClick={() => setModalOpen(true)}>
+                        Join the waitlist
                       </Button>
                     </div>
-                  </div>
-                </div>
-
-                {/* Social Sharing */}
-                <div className="rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8">
-                  <h3 className="text-lg font-bold text-zinc-900 mb-4 text-center">Share Your Results</h3>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <Button variant="primary" size="md" onClick={shareToTwitter}>
-                      Share to X/Twitter
-                    </Button>
-                    <Button variant="secondary" size="md" onClick={shareToLinkedIn}>
-                      Share to LinkedIn
-                    </Button>
                   </div>
                 </div>
               </motion.div>
