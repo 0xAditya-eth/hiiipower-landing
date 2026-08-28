@@ -13,7 +13,6 @@ const REGIONAL_VALUES = {
   usa: { central: 6563, conservative: 4594, expansive: 9188 },
   northAmerica: { central: 4643, conservative: 3250, expansive: 6500 },
   ukEurope: { central: 1604, conservative: 1123, expansive: 2246 },
-  india: { central: 265, conservative: 186, expansive: 371 }, // Using Rest of World coefficients - India not specified in PDAV report
   restOfWorld: { central: 265, conservative: 186, expansive: 371 },
   global: { central: 694, conservative: 486, expansive: 972 },
 };
@@ -22,7 +21,6 @@ const REGIONS = [
   { value: "usa", label: "United States" },
   { value: "northAmerica", label: "Rest of North America" },
   { value: "ukEurope", label: "United Kingdom & Europe" },
-  { value: "india", label: "India" },
   { value: "restOfWorld", label: "Rest of the World" },
   { value: "global", label: "Global Average" },
 ];
