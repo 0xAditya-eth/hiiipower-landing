@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 type DataWorthCalculatorProps = {
@@ -27,12 +27,6 @@ const REGIONS = [
   { value: "global", label: "Global Average" },
 ];
 
-const PLATFORMS = [
-  { id: "google", label: "Google", weight: 0.35 },
-  { id: "meta", label: "Meta (Facebook, Instagram, WhatsApp)", weight: 0.35 },
-  { id: "x", label: "X (formerly Twitter)", weight: 0.15 },
-  { id: "tiktok", label: "TikTok", weight: 0.15 },
-];
 
 const USAGE_SCENARIOS = [
   { 
@@ -66,60 +60,46 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
   const [region, setRegion] = useState<keyof typeof REGIONAL_VALUES>("global");
   const [yearsActive, setYearsActive] = useState(10);
   const [usageScenario, setUsageScenario] = useState<"conservative" | "central" | "expansive">("central");
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
   const [result, setResult] = useState<CalculationResult | null>(null);
 
-  const togglePlatform = (platformId: string) => {
-    setSelectedPlatforms((prev) =>
-      prev.includes(platformId)
-        ? prev.filter((id) => id !== platformId)
-        : [...prev, platformId]
-    );
-  };
-
   const calculateWorth = () => {
-    const regionalBase = REGIONAL_VALUES[region];
+    setIsCalculating(true);
     
-    // Get base value for selected scenario
-    const baseAnnualValue = regionalBase[usageScenario];
-    
-    // Platform weight calculation (weighted average)
-    // If advanced section is used and platforms selected, calculate weighted coverage
-    // Otherwise assume full platform coverage (1.0)
-    let platformWeight = 1.0;
-    if (showAdvanced && selectedPlatforms.length > 0) {
-      const totalWeight = PLATFORMS.reduce((sum, p) => sum + p.weight, 0);
-      const selectedWeight = PLATFORMS
-        .filter(p => selectedPlatforms.includes(p.id))
-        .reduce((sum, p) => sum + p.weight, 0);
-      platformWeight = selectedWeight / totalWeight;
-    }
+    // Show calculating state for 2.5 seconds
+    setTimeout(() => {
+      const regionalBase = REGIONAL_VALUES[region];
+      
+      // Get base value for selected scenario
+      const baseAnnualValue = regionalBase[usageScenario];
+      
+      // Always use full platform coverage (platformWeight = 1.0)
+      const annualValue = baseAnnualValue * 1.0;
+      const years = Math.min(yearsActive, 25);
 
-    const annualValue = baseAnnualValue * platformWeight;
-    const years = Math.min(yearsActive, 25);
+      // Inflation adjustment: 3% annual inflation rate (common assumption in PDAV frameworks)
+      const inflationRate = 0.03;
+      
+      // Inflation-adjusted lifetime so far (PAST years - inflate to present)
+      // Data from past years is worth MORE in today's dollars
+      const lifetimeInflated = Array.from({ length: years }, (_, i) => {
+        // i=0 is most recent year, i=years-1 is oldest year
+        const yearsAgo = years - 1 - i;
+        return annualValue * Math.pow(1 + inflationRate, yearsAgo);
+      }).reduce((sum, val) => sum + val, 0);
 
-    // Inflation adjustment: 3% annual inflation rate (common assumption in PDAV frameworks)
-    const inflationRate = 0.03;
-    
-    // Inflation-adjusted lifetime so far (PAST years - inflate to present)
-    // Data from past years is worth MORE in today's dollars
-    const lifetimeInflated = Array.from({ length: years }, (_, i) => {
-      // i=0 is most recent year, i=years-1 is oldest year
-      const yearsAgo = years - 1 - i;
-      return annualValue * Math.pow(1 + inflationRate, yearsAgo);
-    }).reduce((sum, val) => sum + val, 0);
+      const calculatedResult: CalculationResult = {
+        annual: Math.round(annualValue),
+        lifetime: Math.round(annualValue * years),
+        lifetimeInflationAdjusted: Math.round(lifetimeInflated),
+        scenario: usageScenario,
+      };
 
-    const calculatedResult: CalculationResult = {
-      annual: Math.round(annualValue),
-      lifetime: Math.round(annualValue * years),
-      lifetimeInflationAdjusted: Math.round(lifetimeInflated),
-      scenario: usageScenario,
-    };
-
-    setResult(calculatedResult);
-    setShowResults(true);
+      setResult(calculatedResult);
+      setIsCalculating(false);
+      setShowResults(true);
+    }, 2500);
   };
 
   const resetCalculator = () => {
@@ -133,9 +113,91 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
   };
 
-  const shareToLinkedIn = () => {
-    const url = window.location.href;
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+  const generateStoryImage = (): Promise<Blob> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d')!;
+
+      // Background gradient
+      const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+      gradient.addColorStop(0, '#18181b');
+      gradient.addColorStop(1, '#3f3f46');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Main content
+      ctx.textAlign = 'center';
+      
+      // Title
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 48px system-ui, -apple-system, sans-serif';
+      ctx.fillText('Your Data\'s Commercial Value', 540, 600);
+
+      // Value
+      ctx.font = 'bold 120px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = '#10b981';
+      ctx.fillText(`$${result?.lifetime.toLocaleString()}`, 540, 800);
+
+      // Description
+      ctx.fillStyle = '#d4d4d8';
+      ctx.font = '36px system-ui, -apple-system, sans-serif';
+      const description = 'I calculated my data\'s worth';
+      ctx.fillText(description, 540, 950);
+
+      // URL
+      ctx.fillStyle = '#a1a1aa';
+      ctx.font = 'bold 32px system-ui, -apple-system, sans-serif';
+      ctx.fillText('hiiipower.app/your-worth', 540, 1100);
+
+      // Logo/Brand area
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 42px system-ui, -apple-system, sans-serif';
+      ctx.fillText('HiiiPower', 540, 1700);
+
+      canvas.toBlob((blob) => {
+        resolve(blob!);
+      }, 'image/png');
+    });
+  };
+
+  const shareToInstagram = async () => {
+    try {
+      const blob = await generateStoryImage();
+      const file = new File([blob], 'data-worth-story.png', { type: 'image/png' });
+
+      // Check if Web Share API is available and supports files
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'My Data\'s Worth',
+          text: `I calculated my data's worth: $${result?.lifetime.toLocaleString()}`,
+        });
+      } else {
+        // Fallback: download the image
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'data-worth-story.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Error sharing to Instagram:', error);
+      // If share fails, try download fallback
+      const blob = await generateStoryImage();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'data-worth-story.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
   };
 
   if (showResults && result) {
@@ -226,8 +288,8 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
             <Button variant="primary" size="md" onClick={shareToTwitter}>
               Share to X/Twitter
             </Button>
-            <Button variant="secondary" size="md" onClick={shareToLinkedIn}>
-              Share to LinkedIn
+            <Button variant="secondary" size="md" onClick={shareToInstagram}>
+              Share to Instagram
             </Button>
           </div>
         </div>
@@ -352,78 +414,25 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
           </div>
         </div>
 
-        {/* Advanced Options */}
-        <div className="border-t border-zinc-200 pt-6">
-          <button
-            type="button"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="flex items-center justify-between w-full text-left group"
-          >
-            <span className="text-sm font-semibold text-zinc-900 group-hover:text-zinc-700">
-              Advanced Customization (Optional)
-            </span>
-            <svg
-              className={`h-5 w-5 text-zinc-500 transition-transform ${showAdvanced ? "rotate-180" : ""}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-
-          <AnimatePresence>
-            {showAdvanced && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <div className="space-y-6 pt-6">
-                  {/* Platforms */}
-                  <div>
-                    <label className="block text-sm font-semibold text-zinc-900 mb-3">
-                      Platforms Used
-                    </label>
-                    <p className="text-sm text-zinc-500 mb-4">
-                      Select the platforms you actively use.
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {PLATFORMS.map((platform) => (
-                        <label
-                          key={platform.id}
-                          className="flex items-center gap-3 p-3 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer transition-colors"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={selectedPlatforms.includes(platform.id)}
-                            onChange={() => togglePlatform(platform.id)}
-                            className="h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
-                          />
-                          <span className="text-sm font-medium text-zinc-900">
-                            {platform.label}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
         {/* Calculate Button */}
         <div className="pt-4">
           <Button
             size="lg"
             onClick={calculateWorth}
             className="w-full"
+            disabled={isCalculating}
           >
-            Calculate My Data&apos;s Worth
+            {isCalculating ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Calculating...
+              </span>
+            ) : (
+              "Calculate My Data's Worth"
+            )}
           </Button>
           <p className="text-xs text-zinc-500 text-center mt-4">
             All calculations are performed 100% client-side. No data is collected or stored.
