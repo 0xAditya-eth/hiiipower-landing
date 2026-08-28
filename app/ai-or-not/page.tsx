@@ -19,23 +19,70 @@ type ImageData = {
 
 type GameState = "intro" | "quiz" | "end";
 
+function seededShuffle<T>(array: T[], seed: number): T[] {
+  const arr = [...array];
+  let currentSeed = seed;
+  
+  const seededRandom = () => {
+    currentSeed = (currentSeed * 9301 + 49297) % 233280;
+    return currentSeed / 233280;
+  };
+  
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  
+  return arr;
+}
+
+function generateRandomSeed(): number {
+  return Math.floor(Math.random() * 1000000);
+}
+
+function getRoundImages(allImages: ImageData[], seed: number): ImageData[] {
+  // Separate AI and real images
+  const aiImages = allImages.filter(img => img.isAI);
+  const realImages = allImages.filter(img => !img.isAI);
+  
+  // Shuffle each group with the seed
+  const shuffledAI = seededShuffle(aiImages, seed);
+  const shuffledReal = seededShuffle(realImages, seed);
+  
+  // Take first 5 from each group
+  const selectedAI = shuffledAI.slice(0, 5);
+  const selectedReal = shuffledReal.slice(0, 5);
+  
+  // Combine and shuffle with seed+1
+  const combined = [...selectedAI, ...selectedReal];
+  return seededShuffle(combined, seed + 1);
+}
+
 export default function AIOrNotPage() {
   const [gameState, setGameState] = useState<GameState>("intro");
   const [images, setImages] = useState<ImageData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [guesses, setGuesses] = useState<boolean[]>([]);
   const [showFeedback, setShowFeedback] = useState(false);
   const [lastGuessCorrect, setLastGuessCorrect] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [currentSeed, setCurrentSeed] = useState<number>(0);
 
   useEffect(() => {
     document.title = "AI or Not · HiiiPower";
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const roundParam = urlParams.get('r');
+    const seed = roundParam ? parseInt(roundParam, 10) : generateRandomSeed();
+    setCurrentSeed(seed);
+    
     fetch("/ai-or-not/manifest.json")
       .then((res) => res.json())
       .then((data: ImageData[]) => {
-        const shuffled = [...data].sort(() => Math.random() - 0.5);
-        setImages(shuffled);
+        const roundImages = getRoundImages(data, seed);
+        setImages(roundImages);
       });
   }, []);
 
@@ -43,13 +90,17 @@ export default function AIOrNotPage() {
     setGameState("quiz");
     setCurrentIndex(0);
     setScore(0);
+    setGuesses([]);
   };
 
   const handleGuess = (guessAI: boolean) => {
-    if (!imageLoaded) return; // Prevent guessing before image loads
+    if (!imageLoaded) return;
     
     const correct = guessAI === images[currentIndex].isAI;
     setLastGuessCorrect(correct);
+    const newGuesses = [...guesses, correct];
+    setGuesses(newGuesses);
+    
     if (correct) {
       setScore(score + 1);
     }
@@ -57,7 +108,7 @@ export default function AIOrNotPage() {
 
     setTimeout(() => {
       setShowFeedback(false);
-      setImageLoaded(false); // Reset for next image
+      setImageLoaded(false);
       if (currentIndex + 1 < images.length) {
         setCurrentIndex(currentIndex + 1);
       } else {
@@ -66,15 +117,101 @@ export default function AIOrNotPage() {
     }, 1000);
   };
 
-  const shareToTwitter = () => {
-    const text = `I scored ${score}/${images.length} telling AI from real. The rest of the internet is a guessing game. HiiiPower is live camera only.`;
-    const url = "https://hiiipower.app/ai-or-not";
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+  const getShareText = (): string => {
+    const grid = guesses.map((correct: boolean) => correct ? '🟩' : '⬛').join('');
+    return `AI or Not\n${grid}\n${score}/${images.length}\nhiiipower.app/ai-or-not?r=${currentSeed}`;
   };
 
-  const shareToLinkedIn = () => {
-    const url = "https://hiiipower.app/ai-or-not";
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+  const shareToX = () => {
+    const shareText = getShareText();
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+  };
+
+  const generateStoryImage = (): Promise<Blob> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext('2d')!;
+
+      // Background gradient
+      const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+      gradient.addColorStop(0, '#f9fafb');
+      gradient.addColorStop(1, '#ffffff');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1080, 1920);
+
+      // Title
+      ctx.fillStyle = '#18181b';
+      ctx.font = 'bold 80px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('AI or Not', 540, 400);
+
+      // Grid
+      const grid = guesses.map((correct: boolean) => correct ? '🟩' : '⬛').join('');
+      ctx.font = '100px Arial';
+      ctx.fillText(grid, 540, 800);
+
+      // Score
+      ctx.fillStyle = '#18181b';
+      ctx.font = 'bold 120px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText(`${score}/${images.length}`, 540, 1000);
+
+      // URL
+      ctx.fillStyle = '#52525b';
+      ctx.font = '48px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText('hiiipower.app', 540, 1400);
+
+      canvas.toBlob((blob) => {
+        resolve(blob!);
+      }, 'image/png');
+    });
+  };
+
+  const shareToInstagramStory = async () => {
+    try {
+      const imageBlob = await generateStoryImage();
+      const file = new File([imageBlob], 'ai-or-not-story.png', { type: 'image/png' });
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'AI or Not',
+          text: getShareText()
+        });
+      } else {
+        // Fallback: download the image
+        const url = URL.createObjectURL(imageBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ai-or-not-story.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('Failed to share to Instagram Story:', err);
+    }
+  };
+
+  const playAnotherRound = () => {
+    const newSeed = generateRandomSeed();
+    setCurrentSeed(newSeed);
+    
+    fetch("/ai-or-not/manifest.json")
+      .then((res) => res.json())
+      .then((data: ImageData[]) => {
+        const roundImages = getRoundImages(data, newSeed);
+        setImages(roundImages);
+        setGameState("intro");
+        setCurrentIndex(0);
+        setScore(0);
+        setGuesses([]);
+        setImageLoaded(false);
+        
+        window.history.pushState({}, '', `/ai-or-not?r=${newSeed}`);
+      });
   };
 
   return (
@@ -201,19 +338,40 @@ export default function AIOrNotPage() {
                 transition={{ duration: 0.5 }}
                 className="space-y-8"
               >
+                {/* Score */}
                 <div className="text-center">
                   <p className="text-lg text-zinc-500 mb-4">
-                    {score} of {images.length}
+                    You got {score}/{images.length}.
                   </p>
+                </div>
+
+                {/* Result Grid */}
+                <div className="flex justify-center">
+                  <div className="flex flex-nowrap gap-1 sm:gap-1.5">
+                    {guesses.map((correct, index) => (
+                      <div
+                        key={index}
+                        className={`w-6 h-6 sm:w-8 sm:h-8 rounded-sm ${
+                          correct ? 'bg-[#22c55e]' : 'bg-zinc-900'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Heading and Body */}
+                <div className="text-center">
                   <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-900 leading-tight mb-6">
                     This shouldn&apos;t be a skill.
                   </h2>
                   <p className="max-w-2xl mx-auto text-lg text-zinc-600 leading-relaxed">
-                    You just interrogated a picture to decide if a person was real. That&apos;s what the other apps did to the feed.
+                    You shouldn&apos;t have to guess what&apos;s real.
+                    <br />
+                    They let AI in so you&apos;d stop knowing the difference.
                   </p>
                 </div>
 
-                {/* HiiiPower CTA */}
+                {/* Green Waitlist Box */}
                 <div className="rounded-2xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50 to-white p-8 sm:p-10">
                   <div className="max-w-3xl mx-auto text-center">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500 mb-6">
@@ -223,33 +381,39 @@ export default function AIOrNotPage() {
                       </svg>
                     </div>
                     <h3 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 mb-4">
-                      Take Back What&apos;s Real
+                      Take back your reality.
                     </h3>
                     <p className="text-lg text-zinc-600 mb-6 leading-relaxed">
-                      Every other app made you a detective. HiiiPower is live camera. Verified humans. No uploads, no filters. You keep the moment and the data. The guessing game ends here.
+                      Switch to a feed that&apos;s real, that doesn&apos;t wear on your mental well-being with addictive algorithms, and never uses your content to train AI.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <Button size="lg" onClick={() => setModalOpen(true)}>
-                        Join the waitlist →
+                        Join the waitlist
                       </Button>
                       <Button variant="secondary" size="lg" onClick={() => window.location.href = '/'}>
-                        Learn more
+                        Learn More About HiiiPower
                       </Button>
                     </div>
                   </div>
                 </div>
 
-                {/* Social Sharing */}
-                <div className="rounded-2xl border border-zinc-200 bg-white p-6 sm:p-8">
-                  <h3 className="text-lg font-bold text-zinc-900 mb-4 text-center">Share Your Results</h3>
+                {/* Share Buttons */}
+                <div className="space-y-3">
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <Button variant="primary" size="md" onClick={shareToTwitter}>
-                      Share to X/Twitter
+                    <Button variant="primary" size="lg" onClick={shareToX}>
+                      Share to X
                     </Button>
-                    <Button variant="secondary" size="md" onClick={shareToLinkedIn}>
-                      Share to LinkedIn
+                    <Button variant="secondary" size="lg" onClick={shareToInstagramStory}>
+                      Share to Instagram
                     </Button>
                   </div>
+                </div>
+
+                {/* Play Another Round */}
+                <div className="text-center">
+                  <Button variant="ghost" size="lg" onClick={playAnotherRound}>
+                    Play another round
+                  </Button>
                 </div>
               </motion.div>
             )}
