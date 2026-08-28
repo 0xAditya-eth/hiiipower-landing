@@ -41,7 +41,21 @@ function generateRandomSeed(): number {
 }
 
 function getRoundImages(allImages: ImageData[], seed: number): ImageData[] {
-  return seededShuffle(allImages, seed);
+  // Separate AI and real images
+  const aiImages = allImages.filter(img => img.isAI);
+  const realImages = allImages.filter(img => !img.isAI);
+  
+  // Shuffle each group with the seed
+  const shuffledAI = seededShuffle(aiImages, seed);
+  const shuffledReal = seededShuffle(realImages, seed);
+  
+  // Take first 5 from each group
+  const selectedAI = shuffledAI.slice(0, 5);
+  const selectedReal = shuffledReal.slice(0, 5);
+  
+  // Combine and shuffle with seed+1
+  const combined = [...selectedAI, ...selectedReal];
+  return seededShuffle(combined, seed + 1);
 }
 
 export default function AIOrNotPage() {
