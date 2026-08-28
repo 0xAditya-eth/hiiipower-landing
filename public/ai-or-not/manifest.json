@@ -2,142 +2,142 @@
   {
     "src": "/ai-or-not/ai-01.jpg",
     "isAI": true,
-    "credit": "AI generated (StyleGAN / This Person Does Not Exist)",
-    "license": "PD-algorithm",
-    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Woman_1.jpg"
+    "credit": "AI generated (FLUX.2)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-02.jpg",
     "isAI": true,
-    "credit": "AI generated (StyleGAN / This Person Does Not Exist)",
-    "license": "PD-algorithm",
-    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Man_2.jpg"
+    "credit": "AI generated (FLUX.2)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-03.jpg",
     "isAI": true,
-    "credit": "AI generated (StyleGAN / This Person Does Not Exist)",
-    "license": "PD-algorithm",
-    "licenseUrl": "https://commons.wikimedia.org/wiki/File:Light_brown_hair_woman.jpg"
+    "credit": "AI generated (FLUX.2)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-04.jpg",
     "isAI": true,
-    "credit": "AI generated (StyleGAN2)",
-    "license": "PD-algorithm",
-    "licenseUrl": "https://commons.wikimedia.org/wiki/File:This_Person_Does_Not_Exist_example.jpg"
+    "credit": "AI generated (FLUX.2)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-05.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
-    "license": "Pollinations AI",
-    "licenseUrl": "https://pollinations.ai"
+    "credit": "AI generated (FLUX.2)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-06.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
-    "license": "Pollinations AI",
-    "licenseUrl": "https://pollinations.ai"
+    "credit": "AI generated (FLUX.2)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-07.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
-    "license": "Pollinations AI",
-    "licenseUrl": "https://pollinations.ai"
+    "credit": "AI generated (FLUX.2)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-08.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
-    "license": "Pollinations AI",
-    "licenseUrl": "https://pollinations.ai"
+    "credit": "AI generated (FLUX.2)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-09.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
-    "license": "Pollinations AI",
-    "licenseUrl": "https://pollinations.ai"
+    "credit": "AI generated (SD3 Defactify)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Rajarshi-Roy-research/Defactify_Image_Dataset"
   },
   {
     "src": "/ai-or-not/ai-10.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
-    "license": "Pollinations AI",
-    "licenseUrl": "https://pollinations.ai"
+    "credit": "AI generated (FLUX.2)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-11.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
-    "license": "Pollinations AI",
-    "licenseUrl": "https://pollinations.ai"
+    "credit": "AI generated (FLUX.2)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-12.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX.1)",
-    "license": "PD-algorithm",
-    "licenseUrl": "https://commons.wikimedia.org/wiki/File:A_cat_sitting_in_front_of_PC_(Wikipedia_open).jpg"
+    "credit": "AI generated (FLUX.2)",
+    "license": "Hugging Face Dataset",
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-13.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
+    "credit": "AI generated (FLUX.2)",
     "license": "Hugging Face Dataset",
-    "licenseUrl": "https://huggingface.co/datasets/Kariander1/flux_1k_captions"
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-14.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
+    "credit": "AI generated (SD3 Defactify)",
     "license": "Hugging Face Dataset",
-    "licenseUrl": "https://huggingface.co/datasets/Kariander1/flux_1k_captions"
+    "licenseUrl": "https://huggingface.co/datasets/Rajarshi-Roy-research/Defactify_Image_Dataset"
   },
   {
     "src": "/ai-or-not/ai-15.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
+    "credit": "AI generated (FLUX.2)",
     "license": "Hugging Face Dataset",
-    "licenseUrl": "https://huggingface.co/datasets/Kariander1/flux_1k_captions"
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-16.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
+    "credit": "AI generated (FLUX.2)",
     "license": "Hugging Face Dataset",
-    "licenseUrl": "https://huggingface.co/datasets/Kariander1/flux_1k_captions"
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-17.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
+    "credit": "AI generated (FLUX.2)",
     "license": "Hugging Face Dataset",
-    "licenseUrl": "https://huggingface.co/datasets/Kariander1/flux_1k_captions"
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-18.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
+    "credit": "AI generated (FLUX.2)",
     "license": "Hugging Face Dataset",
-    "licenseUrl": "https://huggingface.co/datasets/Kariander1/flux_1k_captions"
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/ai-19.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
+    "credit": "AI generated (SD3 Defactify)",
     "license": "Hugging Face Dataset",
-    "licenseUrl": "https://huggingface.co/datasets/Kariander1/flux_1k_captions"
+    "licenseUrl": "https://huggingface.co/datasets/Rajarshi-Roy-research/Defactify_Image_Dataset"
   },
   {
     "src": "/ai-or-not/ai-20.jpg",
     "isAI": true,
-    "credit": "AI generated (FLUX)",
+    "credit": "AI generated (FLUX.2)",
     "license": "Hugging Face Dataset",
-    "licenseUrl": "https://huggingface.co/datasets/Kariander1/flux_1k_captions"
+    "licenseUrl": "https://huggingface.co/datasets/Sarim-Hash/liars-dividend-flux2-images"
   },
   {
     "src": "/ai-or-not/real-01.jpg",
