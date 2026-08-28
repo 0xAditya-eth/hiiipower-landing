@@ -338,11 +338,26 @@ export default function AIOrNotPage() {
                 transition={{ duration: 0.5 }}
                 className="space-y-8"
               >
-                {/* Score and Heading */}
+                {/* Score */}
                 <div className="text-center">
                   <p className="text-lg text-zinc-500 mb-4">
                     You got {score}/{images.length}.
                   </p>
+                </div>
+
+                {/* Result Grid */}
+                <div className="text-center">
+                  <div className="inline-flex flex-wrap gap-2 justify-center text-4xl">
+                    {guesses.map((correct, index) => (
+                      <span key={index}>
+                        {correct ? '🟩' : '⬛'}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Heading and Body */}
+                <div className="text-center">
                   <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-900 leading-tight mb-6">
                     This shouldn&apos;t be a skill.
                   </h2>
