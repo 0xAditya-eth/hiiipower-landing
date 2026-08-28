@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "HiiiPower — Real People. Real Moments. Real Power.",
   description:
     "HiiiPower is the social network where authenticity wins. No bots. No filters. Just you — raw, real, and in control.",
-  metadataBase: new URL("https://hiiipower.app"),
+  metadataBase: new URL("https://www.hiiipower.app"),
   openGraph: {
     title: "HiiiPower — Real People. Real Moments. Real Power.",
     description:

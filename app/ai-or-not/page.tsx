@@ -119,7 +119,7 @@ export default function AIOrNotPage() {
 
   const getShareText = (): string => {
     const grid = guesses.map((correct: boolean) => correct ? '🟩' : '⬛').join('');
-    return `AI or Not\n${grid}\n${score}/${images.length}\nhiiipower.app/ai-or-not?r=${currentSeed}`;
+    return `Can you tell which are fake? I got ${score}/10.\n\n${grid}\nhttps://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
   };
 
   const shareToX = () => {
@@ -134,33 +134,48 @@ export default function AIOrNotPage() {
       canvas.height = 1920;
       const ctx = canvas.getContext('2d')!;
 
-      // Background gradient
-      const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
-      gradient.addColorStop(0, '#f9fafb');
-      gradient.addColorStop(1, '#ffffff');
-      ctx.fillStyle = gradient;
+      // Background - near black
+      ctx.fillStyle = '#09090b';
       ctx.fillRect(0, 0, 1080, 1920);
 
       // Title
-      ctx.fillStyle = '#18181b';
-      ctx.font = 'bold 80px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 96px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('AI or Not', 540, 400);
+      ctx.fillText('AI or Not', 540, 600);
 
-      // Grid
-      const grid = guesses.map((correct: boolean) => correct ? '🟩' : '⬛').join('');
-      ctx.font = '100px Arial';
-      ctx.fillText(grid, 540, 800);
+      // Hook line
+      ctx.fillStyle = '#a1a1aa';
+      ctx.font = '42px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText('Can you tell which are fake?', 540, 700);
 
-      // Score
-      ctx.fillStyle = '#18181b';
-      ctx.font = 'bold 120px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillText(`${score}/${images.length}`, 540, 1000);
+      // Score text
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 64px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText(`You got ${score}/10.`, 540, 860);
+
+      // Draw result grid as rectangles (one row of 10)
+      const boxSize = 60;
+      const gap = 12;
+      const totalWidth = (boxSize * 10) + (gap * 9);
+      const startX = (1080 - totalWidth) / 2;
+      const startY = 940;
+
+      guesses.forEach((correct: boolean, index: number) => {
+        ctx.fillStyle = correct ? '#22c55e' : '#27272a';
+        const x = startX + (index * (boxSize + gap));
+        ctx.fillRect(x, startY, boxSize, boxSize);
+      });
+
+      // CTA text
+      ctx.fillStyle = '#a1a1aa';
+      ctx.font = '38px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText('Play this round →', 540, 1200);
 
       // URL
-      ctx.fillStyle = '#52525b';
-      ctx.font = '48px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillText('hiiipower.app', 540, 1400);
+      ctx.fillStyle = '#71717a';
+      ctx.font = '36px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText('hiiipower.app/ai-or-not', 540, 1270);
 
       canvas.toBlob((blob) => {
         resolve(blob!);
@@ -173,11 +188,13 @@ export default function AIOrNotPage() {
       const imageBlob = await generateStoryImage();
       const file = new File([imageBlob], 'ai-or-not-story.png', { type: 'image/png' });
 
+      const shareText = `Can you tell which are fake? I got ${score}/10.\n\nhttps://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
+
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
           title: 'AI or Not',
-          text: getShareText()
+          text: shareText
         });
       } else {
         // Fallback: download the image
