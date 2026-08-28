@@ -346,12 +346,15 @@ export default function AIOrNotPage() {
                 </div>
 
                 {/* Result Grid */}
-                <div className="text-center">
-                  <div className="inline-flex flex-wrap gap-2 justify-center text-4xl">
+                <div className="flex justify-center">
+                  <div className="flex flex-nowrap gap-1 sm:gap-1.5">
                     {guesses.map((correct, index) => (
-                      <span key={index}>
-                        {correct ? '🟩' : '⬛'}
-                      </span>
+                      <div
+                        key={index}
+                        className={`w-6 h-6 sm:w-8 sm:h-8 rounded-sm ${
+                          correct ? 'bg-[#22c55e]' : 'bg-zinc-900'
+                        }`}
+                      />
                     ))}
                   </div>
                 </div>
