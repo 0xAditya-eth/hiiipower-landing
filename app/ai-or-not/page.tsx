@@ -324,15 +324,14 @@ export default function AIOrNotPage() {
                 transition={{ duration: 0.5 }}
                 className="space-y-8"
               >
-                {/* Score */}
+                {/* Score and Heading */}
                 <div className="text-center">
-                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-900 leading-tight">
-                    {score}/{images.length}
+                  <p className="text-lg text-zinc-500 mb-4">
+                    You got {score}/{images.length}.
+                  </p>
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-900 leading-tight mb-6">
+                    This shouldn&apos;t be a skill.
                   </h2>
-                </div>
-
-                {/* Feeling Copy */}
-                <div className="text-center">
                   <p className="max-w-2xl mx-auto text-lg text-zinc-600 leading-relaxed">
                     You shouldn&apos;t have to guess what&apos;s real.
                     <br />
@@ -355,9 +354,12 @@ export default function AIOrNotPage() {
                     <p className="text-lg text-zinc-600 mb-6 leading-relaxed">
                       Switch to a feed that&apos;s real, that doesn&apos;t wear on your mental well-being with addictive algorithms, and never uses your content to train AI.
                     </p>
-                    <div className="flex justify-center">
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <Button size="lg" onClick={() => setModalOpen(true)}>
                         Join the waitlist
+                      </Button>
+                      <Button variant="secondary" size="lg" onClick={() => window.location.href = '/'}>
+                        Learn More About HiiiPower
                       </Button>
                     </div>
                   </div>
@@ -370,7 +372,7 @@ export default function AIOrNotPage() {
                       Share to X
                     </Button>
                     <Button variant="secondary" size="lg" onClick={shareToInstagramStory}>
-                      Share to Instagram Story
+                      Share to Instagram
                     </Button>
                   </div>
                 </div>
