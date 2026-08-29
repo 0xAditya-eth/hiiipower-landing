@@ -119,12 +119,13 @@ export default function AIOrNotPage() {
 
   const getShareText = (): string => {
     const grid = guesses.map((correct: boolean) => correct ? '🟩' : '⬛').join('');
-    return `Can you tell which are fake? I got ${score}/10.\n\n${grid}\nhttps://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
+    return `${grid}\n\nScored ${score}/${images.length} on the Real or Slop test.\n\nNGL, it's getting scary hard to tell what's actually real.\n\nCurious if anyone on my timeline can pull off 100%.\n\nTake the challenge here 👇`;
   };
 
   const shareToX = () => {
     const shareText = getShareText();
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+    const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
   };
 
   const generateStoryImage = (): Promise<Blob> => {
