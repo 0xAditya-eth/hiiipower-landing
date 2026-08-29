@@ -69,6 +69,7 @@ export default function AIOrNotPage() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentSeed, setCurrentSeed] = useState<number>(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     document.title = "AI or Not · HiiiPower";
@@ -84,6 +85,17 @@ export default function AIOrNotPage() {
         const roundImages = getRoundImages(data, seed);
         setImages(roundImages);
       });
+
+    // Mobile/desktop detection
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    setIsMobile(mediaQuery.matches);
+    
+    const handleResize = (e: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(e.matches);
+    };
+    
+    mediaQuery.addEventListener('change', handleResize);
+    return () => mediaQuery.removeEventListener('change', handleResize);
   }, []);
 
   const handleStart = () => {
@@ -126,6 +138,13 @@ export default function AIOrNotPage() {
     const shareText = getShareText();
     const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+  };
+
+  const shareToLinkedIn = () => {
+    const shareText = getShareText();
+    const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
+    const fullText = `${shareText}\n\n${shareUrl}`;
+    window.open(`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(fullText)}`, '_blank');
   };
 
   const generateStoryImage = (): Promise<Blob> => {
@@ -421,9 +440,15 @@ export default function AIOrNotPage() {
                     <Button variant="primary" size="lg" onClick={shareToX}>
                       Share to X
                     </Button>
-                    <Button variant="secondary" size="lg" onClick={shareToInstagramStory}>
-                      Share to Instagram
-                    </Button>
+                    {isMobile ? (
+                      <Button variant="secondary" size="lg" onClick={shareToInstagramStory}>
+                        Share to Instagram
+                      </Button>
+                    ) : (
+                      <Button variant="secondary" size="lg" onClick={shareToLinkedIn}>
+                        Share to LinkedIn
+                      </Button>
+                    )}
                   </div>
                 </div>
 
