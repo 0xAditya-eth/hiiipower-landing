@@ -71,7 +71,23 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
   const [showResults, setShowResults] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const [result, setResult] = useState<CalculationResult | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const resultHeroRef = useRef<HTMLDivElement>(null);
+
+  // Detect mobile vs desktop
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(e.matches);
+    };
+    
+    // Set initial value
+    handleChange(mediaQuery);
+    
+    // Listen for changes
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   // Scroll to results after they render
   useEffect(() => {
@@ -137,6 +153,17 @@ Curious if anyone on my timeline is worth more to platforms than me.
 Find out what your data is worth 👇`;
     const url = 'https://www.hiiipower.app/your-worth';
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+  };
+
+  const shareToLinkedIn = () => {
+    const text = `Turns out Big Tech has extracted an estimated $${result?.lifetime.toLocaleString()} from my data so far.
+
+Curious if anyone on my timeline is worth more to platforms than me.
+
+Find out what your data is worth 👇
+
+https://www.hiiipower.app/your-worth`;
+    window.open(`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`, '_blank');
   };
 
   const generateStoryImage = (): Promise<Blob> => {
@@ -318,9 +345,15 @@ Find out what your data is worth 👇`;
             <Button variant="primary" size="md" onClick={shareToTwitter}>
               Share to X/Twitter
             </Button>
-            <Button variant="secondary" size="md" onClick={shareToInstagram}>
-              Share to Instagram
-            </Button>
+            {isMobile ? (
+              <Button variant="secondary" size="md" onClick={shareToInstagram}>
+                Share to Instagram
+              </Button>
+            ) : (
+              <Button variant="secondary" size="md" onClick={shareToLinkedIn}>
+                Share to LinkedIn
+              </Button>
+            )}
           </div>
         </div>
 
