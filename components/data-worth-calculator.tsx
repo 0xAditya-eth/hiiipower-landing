@@ -130,8 +130,12 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
   };
 
   const shareToTwitter = () => {
-    const text = `I just calculated my data's worth. Tech platforms have extracted an estimated $${result?.lifetime.toLocaleString()} in value from my personal data so far. Calculate yours:`;
-    const url = window.location.href;
+    const text = `Turns out Big Tech has extracted an estimated $${result?.lifetime.toLocaleString()} from my data so far.
+
+Curious if anyone on my timeline is worth more to platforms than me.
+
+Find out what your data is worth 👇`;
+    const url = 'https://www.hiiipower.app/your-worth';
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
   };
 
