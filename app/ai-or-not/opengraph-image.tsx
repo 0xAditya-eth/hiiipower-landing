@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = "AI or Not — Can you tell what's real?"
+export const alt = "Real or AI? — 10 photos. Half are Slop."
 export const size = {
   width: 1200,
   height: 630,
@@ -32,7 +32,7 @@ export default async function Image() {
             letterSpacing: '-0.02em',
           }}
         >
-          AI or Not
+          Real or AI?
         </div>
 
         {/* Hook line */}
@@ -44,7 +44,7 @@ export default async function Image() {
             textAlign: 'center',
           }}
         >
-          10 photos. Half are AI.
+          10 photos. Half are Slop.
         </div>
 
         {/* Grid of 10 empty squares */}
