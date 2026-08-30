@@ -32,7 +32,7 @@ export default async function Image() {
             letterSpacing: '-0.02em',
           }}
         >
-          Find your data's worth.
+          Find your data&apos;s worth.
         </div>
 
         {/* Hook line */}
