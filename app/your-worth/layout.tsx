@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Your Worth?",
+  title: "Find your data's worth.",
   description: "What Big Tech made off your data.",
   openGraph: {
-    title: "Your Worth?",
+    title: "Find your data's worth.",
     description: "What Big Tech made off your data.",
     url: "https://www.hiiipower.app/your-worth",
     siteName: "HiiiPower",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
         url: "/your-worth/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Your Worth? — What Big Tech made off your data.",
+        alt: "Find your data's worth. — What Big Tech made off your data.",
       },
     ],
     locale: "en_US",
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Your Worth?",
+    title: "Find your data's worth.",
     description: "What Big Tech made off your data.",
     images: ["/your-worth/opengraph-image"],
     creator: "@hiiipower_zk",

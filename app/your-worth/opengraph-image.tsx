@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = "Your Worth? — What Big Tech made off your data."
+export const alt = "Find your data's worth. — What Big Tech made off your data."
 export const size = {
   width: 1200,
   height: 630,
@@ -32,7 +32,7 @@ export default async function Image() {
             letterSpacing: '-0.02em',
           }}
         >
-          Your Worth?
+          Find your data's worth.
         </div>
 
         {/* Hook line */}
