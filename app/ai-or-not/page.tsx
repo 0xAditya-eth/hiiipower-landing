@@ -154,32 +154,32 @@ export default function AIOrNotPage() {
       canvas.height = 1920;
       const ctx = canvas.getContext('2d')!;
 
-      // Background - near black
+      // Background - black
       ctx.fillStyle = '#09090b';
       ctx.fillRect(0, 0, 1080, 1920);
 
       // Title
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 96px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.font = 'bold 84px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('AI or Not', 540, 600);
+      ctx.fillText('Real or AI?', 540, 320);
 
-      // Hook line
-      ctx.fillStyle = '#a1a1aa';
-      ctx.font = '42px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillText('Can you tell which are fake?', 540, 700);
+      // Subtitle
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '40px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText('10 photos. Half are Slop.', 540, 390);
 
-      // Score text
+      // Score - very large
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 64px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillText(`You got ${score}/10.`, 540, 860);
+      ctx.font = 'bold 180px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText(`${score}/10`, 540, 620);
 
       // Draw result grid as rectangles (one row of 10)
-      const boxSize = 60;
-      const gap = 12;
+      const boxSize = 58;
+      const gap = 10;
       const totalWidth = (boxSize * 10) + (gap * 9);
       const startX = (1080 - totalWidth) / 2;
-      const startY = 940;
+      const startY = 720;
 
       guesses.forEach((correct: boolean, index: number) => {
         ctx.fillStyle = correct ? '#22c55e' : '#27272a';
@@ -187,15 +187,20 @@ export default function AIOrNotPage() {
         ctx.fillRect(x, startY, boxSize, boxSize);
       });
 
-      // CTA text
-      ctx.fillStyle = '#a1a1aa';
+      // Body copy - line 1
+      ctx.fillStyle = '#e5e7eb';
       ctx.font = '38px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillText('Play this round →', 540, 1200);
+      ctx.fillText("NGL, it's getting scary hard to tell", 540, 1100);
+      ctx.fillText("what's actually real.", 540, 1160);
 
-      // URL
+      // Body copy - line 2
+      ctx.fillText('Curious if anyone on my timeline', 540, 1260);
+      ctx.fillText('can pull off 100%.', 540, 1320);
+
+      // Footer URL
       ctx.fillStyle = '#71717a';
       ctx.font = '36px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillText('hiiipower.app/ai-or-not', 540, 1270);
+      ctx.fillText('hiiipower.app/ai-or-not', 540, 1650);
 
       canvas.toBlob((blob) => {
         resolve(blob!);
@@ -208,13 +213,15 @@ export default function AIOrNotPage() {
       const imageBlob = await generateStoryImage();
       const file = new File([imageBlob], 'ai-or-not-story.png', { type: 'image/png' });
 
-      const shareText = `Can you tell which are fake? I got ${score}/10.\n\nhttps://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
+      const shareText = getShareText();
+      const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
+      const fullText = `${shareText}\n\n${shareUrl}`;
 
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: 'AI or Not',
-          text: shareText
+          title: 'Real or AI?',
+          text: fullText
         });
       } else {
         // Fallback: download the image
