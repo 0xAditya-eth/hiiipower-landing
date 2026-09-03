@@ -69,6 +69,7 @@ export default function AIOrNotPage() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentSeed, setCurrentSeed] = useState<number>(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     document.title = "AI or Not · HiiiPower";
@@ -84,6 +85,17 @@ export default function AIOrNotPage() {
         const roundImages = getRoundImages(data, seed);
         setImages(roundImages);
       });
+
+    // Mobile/desktop detection
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    setIsMobile(mediaQuery.matches);
+    
+    const handleResize = (e: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(e.matches);
+    };
+    
+    mediaQuery.addEventListener('change', handleResize);
+    return () => mediaQuery.removeEventListener('change', handleResize);
   }, []);
 
   const handleStart = () => {
@@ -119,12 +131,20 @@ export default function AIOrNotPage() {
 
   const getShareText = (): string => {
     const grid = guesses.map((correct: boolean) => correct ? '🟩' : '⬛').join('');
-    return `AI or Not\n${grid}\n${score}/${images.length}\nhiiipower.app/ai-or-not?r=${currentSeed}`;
+    return `${grid}\n\nScored ${score}/${images.length} on the Real or Slop test.\n\nNGL, it's getting scary hard to tell what's actually real.\n\nCurious if anyone on my timeline can pull off 100%.\n\nTake the challenge here 👇`;
   };
 
   const shareToX = () => {
     const shareText = getShareText();
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, '_blank');
+    const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+  };
+
+  const shareToLinkedIn = () => {
+    const shareText = getShareText();
+    const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
+    const fullText = `${shareText}\n\n${shareUrl}`;
+    window.open(`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(fullText)}`, '_blank');
   };
 
   const generateStoryImage = (): Promise<Blob> => {
@@ -134,33 +154,53 @@ export default function AIOrNotPage() {
       canvas.height = 1920;
       const ctx = canvas.getContext('2d')!;
 
-      // Background gradient
-      const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
-      gradient.addColorStop(0, '#f9fafb');
-      gradient.addColorStop(1, '#ffffff');
-      ctx.fillStyle = gradient;
+      // Background - black
+      ctx.fillStyle = '#09090b';
       ctx.fillRect(0, 0, 1080, 1920);
 
       // Title
-      ctx.fillStyle = '#18181b';
-      ctx.font = 'bold 80px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 84px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('AI or Not', 540, 400);
+      ctx.fillText('Real or AI?', 540, 320);
 
-      // Grid
-      const grid = guesses.map((correct: boolean) => correct ? '🟩' : '⬛').join('');
-      ctx.font = '100px Arial';
-      ctx.fillText(grid, 540, 800);
+      // Subtitle
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '40px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText('10 photos. Half are Slop.', 540, 390);
 
-      // Score
-      ctx.fillStyle = '#18181b';
-      ctx.font = 'bold 120px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillText(`${score}/${images.length}`, 540, 1000);
+      // Score - very large
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 180px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText(`${score}/10`, 540, 620);
 
-      // URL
-      ctx.fillStyle = '#52525b';
-      ctx.font = '48px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillText('hiiipower.app', 540, 1400);
+      // Draw result grid as rectangles (one row of 10)
+      const boxSize = 58;
+      const gap = 10;
+      const totalWidth = (boxSize * 10) + (gap * 9);
+      const startX = (1080 - totalWidth) / 2;
+      const startY = 720;
+
+      guesses.forEach((correct: boolean, index: number) => {
+        ctx.fillStyle = correct ? '#22c55e' : '#27272a';
+        const x = startX + (index * (boxSize + gap));
+        ctx.fillRect(x, startY, boxSize, boxSize);
+      });
+
+      // Body copy - line 1
+      ctx.fillStyle = '#e5e7eb';
+      ctx.font = '38px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText("NGL, it's getting scary hard to tell", 540, 1100);
+      ctx.fillText("what's actually real.", 540, 1160);
+
+      // Body copy - line 2
+      ctx.fillText('Curious if anyone on my timeline', 540, 1260);
+      ctx.fillText('can pull off 100%.', 540, 1320);
+
+      // Footer URL
+      ctx.fillStyle = '#71717a';
+      ctx.font = '36px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText('hiiipower.app/ai-or-not', 540, 1650);
 
       canvas.toBlob((blob) => {
         resolve(blob!);
@@ -173,11 +213,15 @@ export default function AIOrNotPage() {
       const imageBlob = await generateStoryImage();
       const file = new File([imageBlob], 'ai-or-not-story.png', { type: 'image/png' });
 
+      const shareText = getShareText();
+      const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
+      const fullText = `${shareText}\n\n${shareUrl}`;
+
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: 'AI or Not',
-          text: getShareText()
+          title: 'Real or AI?',
+          text: fullText
         });
       } else {
         // Fallback: download the image
@@ -403,9 +447,15 @@ export default function AIOrNotPage() {
                     <Button variant="primary" size="lg" onClick={shareToX}>
                       Share to X
                     </Button>
-                    <Button variant="secondary" size="lg" onClick={shareToInstagramStory}>
-                      Share to Instagram
-                    </Button>
+                    {isMobile ? (
+                      <Button variant="secondary" size="lg" onClick={shareToInstagramStory}>
+                        Share to Instagram
+                      </Button>
+                    ) : (
+                      <Button variant="secondary" size="lg" onClick={shareToLinkedIn}>
+                        Share to LinkedIn
+                      </Button>
+                    )}
                   </div>
                 </div>
 
