@@ -71,7 +71,23 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
   const [showResults, setShowResults] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
   const [result, setResult] = useState<CalculationResult | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const resultHeroRef = useRef<HTMLDivElement>(null);
+
+  // Detect mobile vs desktop
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(e.matches);
+    };
+    
+    // Set initial value
+    handleChange(mediaQuery);
+    
+    // Listen for changes
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   // Scroll to results after they render
   useEffect(() => {
@@ -130,9 +146,24 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
   };
 
   const shareToTwitter = () => {
-    const text = `I just calculated my data's worth. Tech platforms have extracted an estimated $${result?.lifetime.toLocaleString()} in value from my personal data so far. Calculate yours:`;
-    const url = window.location.href;
+    const text = `Turns out Big Tech has extracted an estimated $${result?.lifetime.toLocaleString()} from my data so far.
+
+Curious if anyone on my timeline is worth more to platforms than me.
+
+Find out what your data is worth 👇`;
+    const url = 'https://www.hiiipower.app/your-worth';
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+  };
+
+  const shareToLinkedIn = () => {
+    const text = `Turns out Big Tech has extracted an estimated $${result?.lifetime.toLocaleString()} from my data so far.
+
+Curious if anyone on my timeline is worth more to platforms than me.
+
+Find out what your data is worth 👇
+
+https://www.hiiipower.app/your-worth`;
+    window.open(`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(text)}`, '_blank');
   };
 
   const generateStoryImage = (): Promise<Blob> => {
@@ -142,41 +173,46 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
       canvas.height = 1920;
       const ctx = canvas.getContext('2d')!;
 
-      // Background gradient
-      const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
-      gradient.addColorStop(0, '#18181b');
-      gradient.addColorStop(1, '#3f3f46');
-      ctx.fillStyle = gradient;
+      // Background - solid black
+      ctx.fillStyle = '#09090b';
       ctx.fillRect(0, 0, 1080, 1920);
 
       // Main content
       ctx.textAlign = 'center';
       
-      // Title
+      // Top: "Find your data's worth." (white)
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 48px system-ui, -apple-system, sans-serif';
-      ctx.fillText('Your Data\'s Commercial Value', 540, 600);
+      ctx.font = 'bold 56px system-ui, -apple-system, sans-serif';
+      ctx.fillText("Find your data's worth.", 540, 300);
 
-      // Value
-      ctx.font = 'bold 120px system-ui, -apple-system, sans-serif';
-      ctx.fillStyle = '#10b981';
-      ctx.fillText(`$${result?.lifetime.toLocaleString()}`, 540, 800);
-
-      // Description
-      ctx.fillStyle = '#d4d4d8';
-      ctx.font = '36px system-ui, -apple-system, sans-serif';
-      const description = 'I calculated my data\'s worth';
-      ctx.fillText(description, 540, 950);
-
-      // URL
+      // Below: "What Big Tech made off your data." (zinc-400)
       ctx.fillStyle = '#a1a1aa';
-      ctx.font = 'bold 32px system-ui, -apple-system, sans-serif';
-      ctx.fillText('hiiipower.app/your-worth', 540, 1100);
+      ctx.font = '36px system-ui, -apple-system, sans-serif';
+      ctx.fillText('What Big Tech made off your data.', 540, 380);
 
-      // Logo/Brand area
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 42px system-ui, -apple-system, sans-serif';
-      ctx.fillText('HiiiPower', 540, 1700);
+      // Big dollar value (green)
+      ctx.font = 'bold 160px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = '#22c55e';
+      ctx.fillText(`$${result?.lifetime.toLocaleString()}`, 540, 700);
+
+      // Multi-line text body
+      ctx.fillStyle = '#d4d4d8';
+      ctx.font = '42px system-ui, -apple-system, sans-serif';
+      
+      // Line 1: "Turns out Big Tech has extracted this"
+      ctx.fillText('Turns out Big Tech has extracted this', 540, 900);
+      // Line 2: "from my data so far."
+      ctx.fillText('from my data so far.', 540, 960);
+
+      // Line 3: "Curious if anyone on my timeline is"
+      ctx.fillText('Curious if anyone on my timeline is', 540, 1100);
+      // Line 4: "worth more to platforms than me."
+      ctx.fillText('worth more to platforms than me.', 540, 1160);
+
+      // Footer
+      ctx.fillStyle = '#71717a';
+      ctx.font = 'bold 32px system-ui, -apple-system, sans-serif';
+      ctx.fillText('hiiipower.app/your-worth', 540, 1700);
 
       canvas.toBlob((blob) => {
         resolve(blob!);
@@ -193,8 +229,8 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
           files: [file],
-          title: 'My Data\'s Worth',
-          text: `I calculated my data's worth: $${result?.lifetime.toLocaleString()}`,
+          title: 'Find your data\'s worth.',
+          text: `Turns out Big Tech has extracted an estimated $${result?.lifetime.toLocaleString()} from my data so far.`,
         });
       } else {
         // Fallback: download the image
@@ -314,9 +350,15 @@ export function DataWorthCalculator({ onJoin }: DataWorthCalculatorProps) {
             <Button variant="primary" size="md" onClick={shareToTwitter}>
               Share to X/Twitter
             </Button>
-            <Button variant="secondary" size="md" onClick={shareToInstagram}>
-              Share to Instagram
-            </Button>
+            {isMobile ? (
+              <Button variant="secondary" size="md" onClick={shareToInstagram}>
+                Share to Instagram
+              </Button>
+            ) : (
+              <Button variant="secondary" size="md" onClick={shareToLinkedIn}>
+                Share to LinkedIn
+              </Button>
+            )}
           </div>
         </div>
 
