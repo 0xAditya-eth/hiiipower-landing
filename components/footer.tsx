@@ -22,7 +22,7 @@ const FOOTER_LINKS = {
   Connect: [
     { label: "Instagram", href: "https://instagram.com/hiiipower_app", external: true },
     { label: "X (Twitter)", href: "https://x.com/hiiipower_zk", external: true },
-    { label: "Support", href: "mailto:support@hiiipower.app", external: true },
+    { label: "Support", href: "/support" },
   ],
 };
 
