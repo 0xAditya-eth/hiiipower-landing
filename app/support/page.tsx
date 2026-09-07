@@ -23,7 +23,7 @@ export default function SupportPage() {
 
             <div className="prose prose-zinc max-w-none">
               <p className="text-zinc-700 leading-relaxed mb-6">
-                Need help? Have questions? We're here for you.
+                Need help? Have questions? We&apos;re here for you.
               </p>
 
               <p className="text-zinc-700 leading-relaxed mb-4">
