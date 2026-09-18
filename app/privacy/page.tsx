@@ -21,12 +21,12 @@ export default function PrivacyPolicy() {
               Privacy Policy
             </h1>
             <p className="text-sm text-zinc-500 mb-8">
-              Effective date: August 12, 2026
+              Effective date: August 5, 2026
             </p>
 
             <div className="prose prose-zinc max-w-none">
               <p className="text-zinc-600 leading-relaxed mb-6">
-                <strong>Operator:</strong> HiiiPower Technologies Private Limited (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;)<br />
+                <strong>Operator:</strong> HiiiPower (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;)<br />
                 <strong>Contact / privacy requests:</strong> support@hiiipower.app<br />
                 <strong>Public URL:</strong> https://hiiipower.app/privacy<br />
                 <strong>Related:</strong>{" "}
@@ -117,7 +117,7 @@ export default function PrivacyPolicy() {
                 2.7 Social graph and safety
               </h3>
               <ul className="list-disc pl-6 space-y-2 text-zinc-700 leading-relaxed mb-6">
-                <li>Follow / follower relationships and private-access requests</li>
+                <li>Outer Circle and Inner Circle relationships and access requests</li>
                 <li>Blocks and reports you submit or that involve you (reason codes and optional details)</li>
                 <li>Notifications related to social activity</li>
               </ul>
@@ -178,7 +178,7 @@ export default function PrivacyPolicy() {
                 <li><strong>Privy</strong> — email OTP authentication and embedded wallets</li>
                 <li><strong>Cloud hosting / database</strong> — API, realtime, and data storage</li>
                 <li><strong>Email delivery</strong> — transactional messages</li>
-                <li><strong>Maps / geocoding providers</strong> (e.g. Google Maps, LocationIQ) — location features</li>
+                <li><strong>Maps / geocoding providers</strong> (Apple Maps via the device, LocationIQ) — location features</li>
                 <li><strong>IPFS pinning / gateways</strong> (e.g. Infura, Pinata, or another provider we configure) — media and metadata storage for posts</li>
                 <li><strong>Push infrastructure</strong> (e.g. Expo / APNs) — notifications</li>
               </ul>
@@ -228,7 +228,7 @@ export default function PrivacyPolicy() {
                 <li>System settings — revoke camera, microphone, photos, location, and notification permissions</li>
               </ul>
               <p className="text-zinc-700 leading-relaxed mb-6">
-                You can also email <strong>support@hiiipower.app</strong>. We aim to respond within a reasonable period (and within 24 hours for safety reports where feasible).
+                You can also email <strong>support@hiiipower.app</strong>. We aim to respond within a reasonable period (and within 2–3 business days for safety reports where feasible).
               </p>
 
               <h2 className="text-2xl font-semibold text-zinc-900 mt-8 mb-4">

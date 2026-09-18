@@ -21,12 +21,12 @@ export default function TermsOfService() {
               Terms of Service
             </h1>
             <p className="text-sm text-zinc-500 mb-8">
-              Effective date: August 12, 2026
+              Effective date: August 5, 2026
             </p>
 
             <div className="prose prose-zinc max-w-none">
               <p className="text-zinc-600 leading-relaxed mb-6">
-                <strong>Operator:</strong> HiiiPower Technologies Private Limited (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;)<br />
+                <strong>Operator:</strong> HiiiPower (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;)<br />
                 <strong>Contact:</strong> support@hiiipower.app<br />
                 <strong>Public URL:</strong> https://hiiipower.app/tos
               </p>
@@ -89,7 +89,7 @@ export default function TermsOfService() {
                 5. Safety tools
               </h2>
               <p className="text-zinc-700 leading-relaxed mb-4">
-                The Service provides in-app tools to <strong>report</strong> content or users and to <strong>block</strong> users. Reports are reviewed by our team; we aim to act on reports within 24 hours. You can also contact support@hiiipower.app.
+                The Service provides in-app tools to <strong>report</strong> content or users and to <strong>block</strong> users. Reports are reviewed by our team; we aim to act on reports within 2–3 business days. You can also contact support@hiiipower.app.
               </p>
               <p className="text-zinc-700 leading-relaxed mb-6">
                 Blocking hides mutual visibility in feeds, profiles, comments, and messaging to the extent technically feasible.
