@@ -66,7 +66,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="absolute inset-0 bg-zinc-900/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-[var(--ink)]/55 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -74,7 +74,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
             onClick={resetAndClose}
           />
           <motion.div
-            className="relative z-10 w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-7 sm:p-8 shadow-2xl"
+            className="relative z-10 w-full max-w-md rounded-lg border border-[var(--line)] bg-[var(--paper)] p-7 sm:p-8 shadow-2xl"
             initial={{ opacity: 0, y: 24, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
@@ -83,7 +83,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
           >
             <button
               onClick={resetAndClose}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
+              className="absolute top-4 right-4 p-1.5 rounded-md text-[var(--muted)] hover:text-[var(--ink)] hover:bg-black/[0.04] transition-colors"
               aria-label="Close"
             >
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
@@ -101,11 +101,13 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                   transition={{ duration: 0.2 }}
                   className="text-center pt-2"
                 >
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-900 text-2xl">
-                    🎉
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-md bg-[var(--accent)] text-white text-sm font-bold tracking-wide">
+                    OK
                   </div>
-                  <h4 className="text-2xl font-extrabold text-zinc-900 mb-2">You&apos;re on the list!</h4>
-                  <p className="text-zinc-500 mb-6">We&apos;ll reach out with early access details soon.</p>
+                  <h4 className="font-display text-2xl font-bold text-[var(--ink)] mb-2">
+                    You&apos;re on the list!
+                  </h4>
+                  <p className="text-[var(--muted)] mb-6">We&apos;ll reach out with early access details soon.</p>
                   <Button onClick={resetAndClose}>Close</Button>
                 </motion.div>
               ) : (
@@ -119,31 +121,31 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                   transition={{ duration: 0.2 }}
                 >
                   <div className="text-center">
-                    <h4 className="text-2xl font-extrabold text-zinc-900">Join the waitlist</h4>
-                    <p className="mt-2 text-sm text-zinc-500">Be the first to access HiiiPower.</p>
+                    <h4 className="font-display text-2xl font-bold text-[var(--ink)]">Join the waitlist</h4>
+                    <p className="mt-2 text-sm text-[var(--muted)]">Be the first to access HiiiPower.</p>
                   </div>
                   {error && (
-                    <p className="text-sm text-red-600 text-center bg-red-50 rounded-xl px-4 py-2.5 border border-red-100">
+                    <p className="text-sm text-[var(--warn)] text-center bg-[var(--warn)]/10 rounded-md px-4 py-2.5 border border-[var(--warn)]/20">
                       {error}
                     </p>
                   )}
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-zinc-700">Name</label>
+                    <label className="mb-1.5 block text-sm font-medium text-[var(--ink)]">Name</label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-300 transition-all"
+                      className="w-full rounded-md border border-[var(--line)] bg-white px-4 py-2.5 text-[var(--ink)] placeholder:text-[var(--muted)]/70 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/25 focus:border-[var(--accent)] transition-all"
                       placeholder="Jane Doe"
                     />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-zinc-700">Email</label>
+                    <label className="mb-1.5 block text-sm font-medium text-[var(--ink)]">Email</label>
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-300 transition-all"
+                      className="w-full rounded-md border border-[var(--line)] bg-white px-4 py-2.5 text-[var(--ink)] placeholder:text-[var(--muted)]/70 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/25 focus:border-[var(--accent)] transition-all"
                       placeholder="jane@example.com"
                     />
                   </div>
@@ -155,7 +157,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                       {submitting ? "Submitting..." : "Submit"}
                     </Button>
                   </div>
-                  <p className="text-xs text-zinc-400 text-center">No spam. One email when we launch.</p>
+                  <p className="text-xs text-[var(--muted)] text-center">No spam. One email when we launch.</p>
                 </motion.form>
               )}
             </AnimatePresence>

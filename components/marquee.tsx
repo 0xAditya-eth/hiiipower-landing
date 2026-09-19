@@ -13,11 +13,14 @@ export function Marquee() {
   const doubled = [...ITEMS, ...ITEMS];
 
   return (
-    <section className="relative z-10 border-y border-zinc-200/60 bg-zinc-50/80 backdrop-blur-sm py-4 overflow-hidden">
+    <section className="relative z-10 border-y border-[var(--line)] py-3.5 overflow-hidden bg-[var(--surface)]/60">
       <div className="flex animate-marquee whitespace-nowrap">
         {doubled.map((item, i) => (
-          <span key={i} className="inline-flex items-center mx-6 text-sm font-medium text-zinc-500">
-            <span className="mr-6 text-zinc-300">✦</span>
+          <span
+            key={i}
+            className="inline-flex items-center mx-5 text-sm font-medium tracking-wide text-[var(--muted)]"
+          >
+            <span className="mr-5 h-1.5 w-1.5 rounded-full bg-[var(--accent)]" aria-hidden />
             {item}
           </span>
         ))}
