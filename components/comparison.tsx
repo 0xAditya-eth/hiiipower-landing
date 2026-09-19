@@ -109,18 +109,18 @@ function CompareCell({
 }) {
   const isUs = type === "hiiipower";
   return (
-    <div className={`px-3 py-2.5 sm:px-4 sm:py-3 ${isUs ? "bg-emerald-50/50" : "bg-red-50/30"}`}>
+    <div className={`px-3 py-2.5 sm:px-4 sm:py-3 ${isUs ? "bg-[var(--accent-soft)]/40" : "bg-[var(--warn)]/[0.06]"}`}>
       <div className="flex items-start gap-2">
         <span
           className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
-            isUs ? "bg-emerald-100 text-emerald-600" : "bg-red-100 text-red-500"
+            isUs ? "bg-[var(--accent)]/15 text-[var(--accent)]" : "bg-[var(--warn)]/15 text-[var(--warn)]"
           }`}
           aria-hidden
         >
           {isUs ? "✓" : "✕"}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-xs sm:text-sm font-semibold text-zinc-800 leading-snug">{headline}</p>
+          <p className="text-xs sm:text-sm font-semibold text-[var(--ink)] leading-snug">{headline}</p>
           <AnimatePresence initial={false}>
             {expanded && (
               <motion.p
@@ -128,7 +128,7 @@ function CompareCell({
                 animate={{ opacity: 1, height: "auto", marginTop: 8 }}
                 exit={{ opacity: 0, height: 0, marginTop: 0 }}
                 transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden text-[11px] sm:text-xs text-zinc-500 leading-relaxed"
+                className="overflow-hidden text-[11px] sm:text-xs text-[var(--muted)] leading-relaxed"
               >
                 {detail}
               </motion.p>
@@ -158,42 +158,36 @@ function CompareRow({
   const [isTouchDevice, setIsTouchDevice] = React.useState(false);
 
   React.useEffect(() => {
-    // Detect if device supports touch
-    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
   }, []);
 
   const handleMouseEnter = () => {
-    if (!isTouchDevice) {
-      onActivate(index);
-    }
+    if (!isTouchDevice) onActivate(index);
   };
 
   const handleMouseLeave = () => {
-    if (!isTouchDevice) {
-      onDeactivate();
-    }
+    if (!isTouchDevice) onDeactivate();
   };
 
   return (
     <div
-      className={`border-b border-zinc-100 last:border-0 transition-colors ${
-        isExpanded ? "bg-zinc-50/60" : "hover:bg-zinc-50/40"
+      className={`border-b border-[var(--line)] last:border-0 transition-colors ${
+        isExpanded ? "bg-black/[0.02]" : "hover:bg-black/[0.015]"
       }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <button
         type="button"
-        className="w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-zinc-300"
+        className="w-full text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--accent)]/40"
         onClick={() => onTogglePin(index)}
         onFocus={handleMouseEnter}
         onBlur={handleMouseLeave}
         aria-expanded={isExpanded}
       >
-        {/* Desktop layout */}
         <div className="hidden lg:grid grid-cols-[minmax(7rem,12%)_1fr_1fr]">
-          <div className="flex items-center px-4 py-3 border-r border-zinc-100 bg-zinc-50/80">
-            <span className="text-xs font-bold text-zinc-800">{row.topic}</span>
+          <div className="flex items-center px-4 py-3 border-r border-[var(--line)] bg-[var(--surface)]/50">
+            <span className="text-xs font-bold text-[var(--ink)]">{row.topic}</span>
           </div>
           <CompareCell
             type="traditional"
@@ -209,12 +203,11 @@ function CompareRow({
           />
         </div>
 
-        {/* Mobile layout */}
-        <div className="lg:hidden px-3 py-2.5 sm:px-4">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs font-bold text-zinc-800">{row.topic}</span>
+        <div className="lg:hidden px-0 py-2.5">
+          <div className="flex items-center gap-2 mb-2 px-1">
+            <span className="text-xs font-bold text-[var(--ink)]">{row.topic}</span>
             <svg
-              className={`ml-auto h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+              className={`ml-auto h-3.5 w-3.5 text-[var(--muted)] transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
               viewBox="0 0 16 16"
               fill="none"
               aria-hidden
@@ -222,7 +215,7 @@ function CompareRow({
               <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <div className="grid sm:grid-cols-2 gap-px rounded-lg overflow-hidden border border-zinc-200 bg-zinc-200">
+          <div className="grid sm:grid-cols-2 gap-px border-y border-[var(--line)] bg-[var(--line)]">
             <CompareCell
               type="traditional"
               headline={row.traditional.headline}
@@ -254,7 +247,6 @@ export function Comparison() {
     setPinnedIndex((current) => (current === index ? null : index));
   }
 
-  // Detect when user is scrolling to prevent hover expansion
   React.useEffect(() => {
     let isTouch = false;
 
@@ -263,58 +255,53 @@ export function Comparison() {
     };
 
     const handleScroll = () => {
-      if (isTouch) return; // Don't interfere with touch scrolling
-      
+      if (isTouch) return;
       setIsScrolling(true);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
-      scrollTimeoutRef.current = setTimeout(() => {
-        setIsScrolling(false);
-      }, 150);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = setTimeout(() => setIsScrolling(false), 150);
     };
 
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('scroll', handleScroll);
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-      }
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     };
   }, []);
 
   return (
-    <section id="compare" className="relative z-10 py-14 sm:py-16">
+    <section id="compare" className="relative z-10 py-16 sm:py-20 border-y border-[var(--line)] bg-[var(--surface)]/30">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div className="mb-8 sm:mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
           <div className="max-w-xl">
-            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2">The difference</p>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 leading-tight">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)] mb-2">
+              The difference
+            </p>
+            <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[var(--ink)] leading-tight">
               Side by side with the apps you know.
             </h2>
           </div>
-          <p className="text-sm text-zinc-500 max-w-sm sm:text-right leading-snug">
+          <p className="text-sm text-[var(--muted)] max-w-sm sm:text-right leading-snug">
             Hover or tap a topic to see the full comparison.
           </p>
         </div>
 
         <motion.div
-          className="rounded-xl border border-zinc-200 bg-white shadow-sm overflow-hidden"
+          className="overflow-hidden border-y border-[var(--line)]"
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.4 }}
           onMouseLeave={() => setHoveredIndex(null)}
         >
-          <div className="hidden lg:grid grid-cols-[minmax(7rem,12%)_1fr_1fr] border-b border-zinc-200 bg-zinc-50">
+          <div className="hidden lg:grid grid-cols-[minmax(7rem,12%)_1fr_1fr] border-b border-[var(--line)] bg-[var(--surface)]/60">
             <div className="px-4 py-2.5" />
-            <div className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-red-400 border-r border-zinc-200">
+            <div className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--warn)] border-r border-[var(--line)]">
               Typical social apps
             </div>
-            <div className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-emerald-600">
+            <div className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--accent)]">
               HiiiPower
             </div>
           </div>

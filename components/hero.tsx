@@ -10,121 +10,105 @@ type HeroProps = {
 
 export function Hero({ onJoin }: HeroProps) {
   return (
-    <section className="relative z-10 pt-32 pb-16 sm:pt-20 sm:pb-20 lg:pt-20 lg:pb-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Copy */}
-          <div className="max-w-xl lg:max-w-none">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <span className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-zinc-600 shadow-sm">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                </span>
-                Now accepting waitlist signups
-              </span>
-            </motion.div>
+    <section className="relative z-10 min-h-[100svh] flex flex-col justify-end overflow-hidden">
+      {/* Full-bleed atmosphere plane */}
+      <div className="absolute inset-0" aria-hidden>
+        <div className="absolute inset-0 overflow-hidden">
+          <Image
+            src="/golden-gate-park.jpg"
+            alt=""
+            fill
+            priority
+            className="object-cover object-[70%_40%] animate-hero-drift saturate-[0.95] contrast-[1.08] brightness-[0.92]"
+            sizes="100vw"
+          />
+        </div>
+        {/* Keep copy legible on the left; let the photo dominate right/center */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--background)] from-0% via-[var(--background)]/80 via-40% to-transparent to-75%" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] from-0% via-transparent via-45% to-[var(--background)]/30" />
+        <div
+          className="absolute inset-0 opacity-25 mix-blend-multiply"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            backgroundSize: "160px 160px",
+          }}
+        />
+      </div>
 
-            <motion.h1
-              className="mt-6 text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-zinc-900 leading-[1.08]"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              Social media,{" "}
-              <span className="text-zinc-400">without the</span>{" "}
-              bullshit.
-            </motion.h1>
+      <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-28 pb-16 sm:pb-20 lg:pb-24">
+        <div className="max-w-2xl">
+          <motion.p
+            className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight text-[var(--ink)] leading-[0.95]"
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            HiiiPower
+          </motion.p>
 
-            <motion.p
-              className="mt-6 text-lg sm:text-xl text-zinc-500 leading-relaxed max-w-lg"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              HiiiPower is a social network built on three pillars — real people, real moments, and real power over your data and attention.
-            </motion.p>
+          <motion.h1
+            className="mt-6 sm:mt-8 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-[var(--ink)] leading-snug max-w-xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+          >
+            Social media, without the bullshit.
+          </motion.h1>
 
-            <motion.div
-              className="mt-8 flex flex-col sm:flex-row gap-3"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.35 }}
-            >
-              <Button 
-                size="lg" 
-                onClick={onJoin}
-              >
-                Join the waitlist
-              </Button>
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
-              >
-                See how it works
-              </Button>
-            </motion.div>
+          <motion.p
+            className="mt-4 sm:mt-5 text-base sm:text-lg text-[var(--muted)] leading-relaxed max-w-md"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.22 }}
+          >
+            Verified humans. Live camera posts. Your data, your attention — yours.
+          </motion.p>
 
-            <motion.div
-              className="mt-10 flex items-center gap-6 text-sm text-zinc-500"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
+          <motion.div
+            className="mt-8 flex flex-col sm:flex-row gap-3"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.35 }}
+          >
+            <Button size="lg" onClick={onJoin}>
+              Join the waitlist
+            </Button>
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={() =>
+                document.getElementById("pillars")?.scrollIntoView({ behavior: "smooth" })
+              }
             >
-              <div className="flex items-center gap-2">
-                <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                Real people
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                Real moments
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                Real power
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Product preview */}
-          <div className="relative lg:pl-8">
-            <motion.div
-              className="relative mx-auto w-full max-w-[340px]"
-              initial={{ opacity: 0, y: 40, rotate: 2 }}
-              animate={{ opacity: 1, y: 0, rotate: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {/* Glow effect */}
-              <div className="absolute -inset-4 rounded-[3rem] bg-gradient-to-br from-zinc-200/80 to-zinc-300/40 blur-2xl" aria-hidden />
-              
-              {/* Phone container */}
-              <div className="relative rounded-[3rem] border-[8px] border-zinc-900 bg-zinc-900 p-2 shadow-2xl shadow-zinc-900/30">
-                <div className="rounded-[2.25rem] overflow-hidden bg-white">
-                  <Image
-                    src="/discover-feed.png"
-                    alt="HiiiPower Discover feed"
-                    width={340}
-                    height={735}
-                    className="w-full h-auto"
-                    priority
-                  />
-                </div>
-              </div>
-            </motion.div>
-          </div>
+              See how it works
+            </Button>
+          </motion.div>
         </div>
       </div>
+
+      {/* Edge-bleed product strip on large screens */}
+      <motion.div
+        className="pointer-events-none absolute right-0 top-[18%] bottom-[12%] hidden lg:block w-[42%] xl:w-[46%]"
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.9, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        aria-hidden
+      >
+        <div className="relative h-full w-full">
+          <Image
+            src="/discover-feed.png"
+            alt=""
+            fill
+            className="object-cover object-top opacity-95"
+            sizes="46vw"
+            priority
+          />
+          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[var(--background)] to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[var(--background)] to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[var(--background)]/80 to-transparent" />
+        </div>
+      </motion.div>
     </section>
   );
 }

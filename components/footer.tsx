@@ -6,10 +6,11 @@ import Link from "next/link";
 
 const FOOTER_LINKS = {
   Product: [
-    { label: "Features", href: "#features", homeOnly: true },
+    { label: "Pillars", href: "#pillars", homeOnly: true },
     { label: "How it works", href: "#how-it-works", homeOnly: true },
     { label: "Compare", href: "#compare", homeOnly: true },
     { label: "FAQ", href: "#faq", homeOnly: true },
+    { label: "Real or AI?", href: "/ai-or-not" },
     { label: "Your Worth", href: "/your-worth" },
   ],
   Resources: [
@@ -30,30 +31,37 @@ export function Footer() {
   const isHome = pathname === "/";
 
   return (
-    <footer className="relative z-10 border-t border-zinc-200/60 bg-white">
+    <footer className="relative z-10 border-t border-[var(--line)] bg-[var(--paper)]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-12">
           <div className="col-span-2 sm:col-span-1">
             <Link href="/" className="inline-flex">
               <Logo />
             </Link>
-            <p className="mt-4 text-sm text-zinc-500 leading-relaxed max-w-xs">
-              The social network where authenticity wins.<br />Real people. Real moments. Real power.
+            <p className="mt-4 text-sm text-[var(--muted)] leading-relaxed max-w-xs">
+              The social network where authenticity wins.
+              <br />
+              Real people. Real moments. Real power.
             </p>
           </div>
 
           {Object.entries(FOOTER_LINKS).map(([heading, links]) => (
             <div key={heading}>
-              <h4 className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">{heading}</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--muted)] mb-4">
+                {heading}
+              </h4>
               <ul className="space-y-2.5">
                 {links.map((link) => {
-                  const href = !isHome && "homeOnly" in link && link.homeOnly ? `/${link.href}` : link.href;
+                  const href =
+                    !isHome && "homeOnly" in link && link.homeOnly ? `/${link.href}` : link.href;
                   return (
                     <li key={link.label}>
                       <a
                         href={href}
-                        {...("external" in link && link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                        className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
+                        {...("external" in link && link.external
+                          ? { target: "_blank", rel: "noopener noreferrer" }
+                          : {})}
+                        className="text-sm text-[var(--muted)] hover:text-[var(--ink)] transition-colors"
                       >
                         {link.label}
                       </a>
@@ -65,11 +73,11 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-12 pt-8 border-t border-zinc-100 flex flex-col items-center justify-center gap-4">
-          <p className="text-xs text-zinc-400 text-center">
+        <div className="mt-12 pt-8 border-t border-[var(--line)] flex flex-col items-center justify-center gap-4">
+          <p className="text-xs text-[var(--muted)] text-center">
             &copy; {new Date().getFullYear()} HiiiPower Technologies Private Limited. All rights reserved.
           </p>
-          <p className="text-xs text-zinc-400 text-center">Built for humans.</p>
+          <p className="text-xs text-[var(--muted)] text-center">Built for humans.</p>
         </div>
       </div>
     </footer>
