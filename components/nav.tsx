@@ -9,7 +9,6 @@ const LINKS = [
   { href: "#pillars", label: "Pillars" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#compare", label: "Compare" },
-  { href: "#faq", label: "FAQ" },
   { href: "/ai-or-not", label: "Real or AI?" },
   { href: "/your-worth", label: "Your Worth" },
 ];

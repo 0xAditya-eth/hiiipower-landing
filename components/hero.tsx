@@ -11,7 +11,7 @@ type HeroProps = {
 export function Hero({ onJoin }: HeroProps) {
   return (
     <section className="relative z-10 min-h-[100svh] flex flex-col justify-end overflow-hidden">
-      {/* Full-bleed product plane */}
+      {/* Full-bleed atmosphere plane */}
       <div className="absolute inset-0" aria-hidden>
         <div className="absolute inset-0 overflow-hidden">
           <Image
@@ -19,14 +19,15 @@ export function Hero({ onJoin }: HeroProps) {
             alt=""
             fill
             priority
-            className="object-cover object-center animate-hero-drift saturate-[0.85] contrast-[1.05]"
+            className="object-cover object-[70%_40%] animate-hero-drift saturate-[0.95] contrast-[1.08] brightness-[0.92]"
             sizes="100vw"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--background)] via-[var(--background)]/92 to-[var(--background)]/25 sm:via-[var(--background)]/88 sm:to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-transparent to-[var(--background)]/40" />
+        {/* Keep copy legible on the left; let the photo dominate right/center */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--background)] from-0% via-[var(--background)]/80 via-40% to-transparent to-75%" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--background)] from-0% via-transparent via-45% to-[var(--background)]/30" />
         <div
-          className="absolute inset-0 opacity-40 mix-blend-multiply"
+          className="absolute inset-0 opacity-25 mix-blend-multiply"
           style={{
             backgroundImage:
               "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
