@@ -22,25 +22,54 @@ export default function SupportPage() {
             </h1>
 
             <div className="prose prose-zinc max-w-none">
+              <h2 className="text-2xl font-semibold text-zinc-900 mt-0 mb-4">
+                How can we help?
+              </h2>
+
               <p className="text-zinc-700 leading-relaxed mb-6">
-                Need help? Have questions? We&apos;re here for you.
+                Email <a href="mailto:support@hiiipower.app" className="font-semibold text-zinc-900 underline hover:text-zinc-700 transition-colors">support@hiiipower.app</a> for account help, safety reports, privacy requests, and general product questions.
               </p>
 
-              <p className="text-zinc-700 leading-relaxed mb-4">
-                Email us at:
+              <h3 className="text-xl font-semibold text-zinc-900 mt-8 mb-3">
+                Safety &amp; reports
+              </h3>
+              <p className="text-zinc-700 leading-relaxed mb-6">
+                If you report content or a user in the app, we aim to review and act within <strong>2–3 business days</strong>. You can also email the same address with details.
               </p>
 
-              <p className="mb-6">
-                <a 
-                  href="mailto:support@hiiipower.app" 
-                  className="text-2xl font-semibold text-zinc-900 underline hover:text-zinc-700 transition-colors"
-                >
-                  support@hiiipower.app
-                </a>
-              </p>
+              <h3 className="text-xl font-semibold text-zinc-900 mt-8 mb-3">
+                Account &amp; data
+              </h3>
+              <ul className="list-disc pl-6 space-y-2 text-zinc-700 leading-relaxed mb-6">
+                <li><strong>Deactivate or delete your account:</strong> In the app, open <strong>Settings → Deactivate or Delete Account</strong>.</li>
+                <li><strong>Privacy questions / data requests:</strong> Email <a href="mailto:support@hiiipower.app" className="text-zinc-900 underline hover:text-zinc-700 transition-colors">support@hiiipower.app</a> (see also our{" "}
+                  <a href="/privacy" className="text-zinc-900 underline hover:text-zinc-700 transition-colors">
+                    Privacy Policy
+                  </a>).
+                </li>
+              </ul>
 
-              <p className="text-zinc-600 leading-relaxed">
-                We typically respond within 24 hours. For safety reports, we aim to respond as quickly as possible.
+              <h3 className="text-xl font-semibold text-zinc-900 mt-8 mb-3">
+                Legal
+              </h3>
+              <ul className="list-disc pl-6 space-y-2 text-zinc-700 leading-relaxed mb-6">
+                <li>
+                  <a href="/tos" className="text-zinc-900 underline hover:text-zinc-700 transition-colors">
+                    Terms of Service
+                  </a>
+                </li>
+                <li>
+                  <a href="/privacy" className="text-zinc-900 underline hover:text-zinc-700 transition-colors">
+                    Privacy Policy
+                  </a>
+                </li>
+              </ul>
+
+              <hr className="border-t border-zinc-200 my-8" />
+
+              <p className="text-sm text-zinc-600">
+                <strong>Operator:</strong> HiiiPower<br />
+                <strong>App:</strong> HiiiPower (<code className="text-xs bg-zinc-100 px-2 py-1 rounded">com.HiiiPower.social</code>)
               </p>
             </div>
           </div>
