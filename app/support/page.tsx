@@ -27,7 +27,7 @@ export default function SupportPage() {
               </h2>
 
               <p className="text-zinc-700 leading-relaxed mb-6">
-                Email <strong>support@hiiipower.app</strong> for account help, safety reports, privacy requests, and general product questions.
+                Email <a href="mailto:support@hiiipower.app" className="font-semibold text-zinc-900 underline hover:text-zinc-700 transition-colors">support@hiiipower.app</a> for account help, safety reports, privacy requests, and general product questions.
               </p>
 
               <h3 className="text-xl font-semibold text-zinc-900 mt-8 mb-3">
@@ -42,7 +42,7 @@ export default function SupportPage() {
               </h3>
               <ul className="list-disc pl-6 space-y-2 text-zinc-700 leading-relaxed mb-6">
                 <li><strong>Deactivate or delete your account:</strong> In the app, open <strong>Settings → Deactivate or Delete Account</strong>.</li>
-                <li><strong>Privacy questions / data requests:</strong> Email support@hiiipower.app (see also our{" "}
+                <li><strong>Privacy questions / data requests:</strong> Email <a href="mailto:support@hiiipower.app" className="text-zinc-900 underline hover:text-zinc-700 transition-colors">support@hiiipower.app</a> (see also our{" "}
                   <a href="/privacy" className="text-zinc-900 underline hover:text-zinc-700 transition-colors">
                     Privacy Policy
                   </a>).
