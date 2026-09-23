@@ -82,7 +82,9 @@ export class CanvasFx {
     }));
   }
 
-  setNoise(_amount: number) {}
+  setNoise(_amount: number) {
+    void _amount;
+  }
 
   setStars(amount: number) {
     this.strength = Math.max(0, Math.min(1, amount));

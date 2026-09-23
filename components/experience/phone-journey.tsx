@@ -190,7 +190,7 @@ export function PhoneJourney({ onJoin, entered }: PhoneJourneyProps) {
 
       const rect = el.getBoundingClientRect();
       const scrollable = Math.max(el.offsetHeight - window.innerHeight, 1);
-      let traveled = clamp(-rect.top, 0, scrollable);
+      const traveled = clamp(-rect.top, 0, scrollable);
       let p = traveled / scrollable;
 
       const cap = maxAllowedProgress();

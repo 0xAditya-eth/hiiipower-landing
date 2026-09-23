@@ -56,7 +56,7 @@ export async function POST(request: Request) {
           { upsert: true }
         );
         return NextResponse.json({ ok: true, storage: "mongodb" });
-      } catch (err) {
+      } catch {
         // If MongoDB is misconfigured or temporarily unavailable, fall back to file storage.
         // Continue to file-based storage below.
       }
