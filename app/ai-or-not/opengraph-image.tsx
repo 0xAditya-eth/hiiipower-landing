@@ -1,86 +1,34 @@
-import { ImageResponse } from 'next/og'
+import { ACCENT, MUTED, ogContentType, ogSize, renderOgCard } from "@/lib/og-card";
 
-export const alt = "Real or AI? — 10 photos. Half are Slop."
-export const size = {
-  width: 1200,
-  height: 630,
-}
-export const contentType = 'image/png'
+export const alt = "Real or AI? — 10 photos. Half are Slop.";
+export const size = ogSize;
+export const contentType = ogContentType;
 
 export default async function Image() {
-  return new ImageResponse(
-    (
+  return renderOgCard({
+    title: "Real or AI?",
+    hook: "10 photos. Half are Slop.",
+    children: (
       <div
         style={{
-          height: '100%',
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#09090b',
-          padding: '80px',
+          display: "flex",
+          gap: 12,
+          alignItems: "center",
         }}
       >
-        {/* Title */}
-        <div
-          style={{
-            fontSize: 100,
-            fontWeight: 900,
-            color: '#ffffff',
-            marginBottom: 40,
-            letterSpacing: '-0.02em',
-          }}
-        >
-          Real or AI?
-        </div>
-
-        {/* Hook line */}
-        <div
-          style={{
-            fontSize: 36,
-            color: '#a1a1aa',
-            marginBottom: 60,
-            textAlign: 'center',
-          }}
-        >
-          10 photos. Half are Slop.
-        </div>
-
-        {/* Grid of 10 empty squares */}
-        <div
-          style={{
-            display: 'flex',
-            gap: 16,
-            marginBottom: 80,
-          }}
-        >
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div
-              key={i}
-              style={{
-                width: 50,
-                height: 50,
-                backgroundColor: '#27272a',
-                borderRadius: 8,
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Footer */}
-        <div
-          style={{
-            fontSize: 28,
-            color: '#71717a',
-          }}
-        >
-          hiiipower.app
-        </div>
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div
+            key={i}
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 8,
+              backgroundColor: i < 3 ? ACCENT : "#181818",
+              border: i < 3 ? "none" : `1px solid ${MUTED}33`,
+            }}
+          />
+        ))}
       </div>
     ),
-    {
-      ...size,
-    }
-  )
+  });
 }

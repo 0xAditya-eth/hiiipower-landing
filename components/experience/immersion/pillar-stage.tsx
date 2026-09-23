@@ -106,22 +106,22 @@ export function PeopleStage() {
       />
 
       <div
-        className="absolute inset-y-0 left-1/2 w-[min(92vw,420px)] -translate-x-1/2 lg:inset-y-[12%] lg:left-auto lg:right-[7%] lg:w-[min(52vw,520px)] lg:translate-x-0"
+        className="absolute inset-y-0 left-1/2 w-[min(92vw,420px)] -translate-x-1/2 pt-1 lg:inset-y-[12%] lg:left-auto lg:right-[7%] lg:w-[min(52vw,520px)] lg:translate-x-0 lg:pt-0"
         style={{ opacity: t }}
       >
-        <div className="absolute inset-x-0 top-0 flex justify-between gap-4 px-1">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-white/30">
+        <div className="absolute inset-x-0 top-1 flex justify-between gap-4 px-1 lg:top-0">
+          <p className="text-[9px] uppercase tracking-[0.22em] text-white/30 sm:text-[10px]">
             Other platforms
           </p>
           <p
-            className="text-[10px] uppercase tracking-[0.22em]"
+            className="text-[9px] uppercase tracking-[0.22em] sm:text-[10px]"
             style={{ color: `rgba(255,51,102,${0.25 + lineGlow * 0.55})` }}
           >
             HiiiPower
           </p>
         </div>
 
-        <div className="absolute bottom-2 top-8 left-[58%] w-px -translate-x-1/2">
+        <div className="absolute bottom-2 top-7 left-[58%] w-px -translate-x-1/2 lg:top-8">
           <div
             className="absolute inset-0 bg-gradient-to-b from-transparent via-accent to-transparent"
             style={{
@@ -233,9 +233,10 @@ export function MomentsStage() {
         }}
       />
 
-      <div className="absolute left-1/2 top-1/2 h-[min(96%,440px)] w-[min(82vw,310px)] -translate-x-1/2 -translate-y-1/2 lg:left-auto lg:right-[8%] lg:top-[10%] lg:h-[min(72vh,560px)] lg:w-[min(46vw,420px)] lg:translate-x-0 lg:translate-y-0">
+      {/* Portrait 3:4 card — height-led so the slot never forces a square */}
+      <div className="absolute inset-0 flex items-center justify-center lg:inset-y-auto lg:left-auto lg:right-[8%] lg:top-[10%] lg:block lg:h-[min(72vh,560px)] lg:w-[min(46vw,420px)]">
         <div
-          className="relative h-full w-full overflow-hidden rounded-[1.35rem] border border-white/15 shadow-[0_40px_100px_rgba(0,0,0,0.55)] sm:rounded-[1.5rem] lg:rounded-[1.6rem]"
+          className="relative aspect-[3/4] h-[min(88%,360px)] w-auto max-w-[min(64vw,240px)] overflow-hidden rounded-[1.35rem] border border-white/15 shadow-[0_40px_100px_rgba(0,0,0,0.55)] sm:rounded-[1.5rem] lg:aspect-auto lg:h-full lg:max-h-none lg:w-full lg:max-w-none lg:rounded-[1.6rem]"
           style={{
             opacity: t,
             transform: `translate3d(0, ${(1 - t) * 36}px, 0) scale(${0.92 + t * 0.08})`,
@@ -369,11 +370,11 @@ export function PowerStage() {
             transform: `translate3d(0, ${(1 - reveal) * 18}px, 0)`,
           }}
         >
-          <p className="text-[10px] uppercase tracking-[0.28em] text-white/40 sm:text-[11px]">
+          <p className="text-[9px] uppercase tracking-[0.28em] text-white/40 sm:text-[11px]">
             Average value extracted from a user
           </p>
           <p
-            className="mt-2 font-display text-[clamp(2.2rem,11vw,4.5rem)] font-extrabold leading-none tracking-[-0.04em] tabular-nums text-white sm:mt-3"
+            className="mt-1.5 font-display text-[clamp(1.85rem,9vw,4.5rem)] font-extrabold leading-none tracking-[-0.04em] tabular-nums text-white sm:mt-3"
             style={{
               textShadow:
                 stopped > 0.3
@@ -386,7 +387,7 @@ export function PowerStage() {
         </div>
 
         <div
-          className="relative mx-auto mt-8 h-36 w-full max-w-[480px] scale-[0.88] sm:mt-12 sm:h-44 sm:scale-100 lg:mt-14"
+          className="relative mx-auto mt-5 h-28 w-full max-w-[480px] scale-[0.82] sm:mt-12 sm:h-44 sm:scale-100 lg:mt-14"
           style={{ opacity: 0.25 + reveal * 0.75 }}
         >
           {/* Lines + data flow — flow until lock is full, then trash out */}
@@ -542,7 +543,7 @@ export function PowerStage() {
         </div>
 
         <p
-          className="mt-5 text-center text-[10px] font-semibold uppercase tracking-[0.28em] sm:mt-8 sm:text-[11px]"
+          className="mt-3 text-center text-[9px] font-semibold uppercase tracking-[0.28em] sm:mt-8 sm:text-[11px]"
           style={{
             opacity: 0.08 + stopped * 0.92,
             color: stopped > 0.25 ? "#ff3366" : "rgba(255,255,255,0.35)",

@@ -5,6 +5,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { cinemaEase } from "@/components/experience/motion";
 import { ResultsWaitlistActions } from "@/components/experience/results-waitlist-actions";
+import {
+  STORY,
+  fillCinemaBackground,
+  storyFont,
+} from "@/lib/story-canvas";
 
 const REGIONAL_VALUES = {
   usa: { central: 6563, conservative: 4594, expansive: 9188 },
@@ -324,36 +329,34 @@ https://www.hiiipower.app/your-worth`;
   const generateStoryImage = (): Promise<Blob> => {
     return new Promise((resolve) => {
       const canvas = document.createElement("canvas");
-      canvas.width = 1080;
-      canvas.height = 1920;
+      canvas.width = STORY.width;
+      canvas.height = STORY.height;
       const ctx = canvas.getContext("2d")!;
 
-      ctx.fillStyle = "#060606";
-      ctx.fillRect(0, 0, 1080, 1920);
-
+      fillCinemaBackground(ctx);
       ctx.textAlign = "center";
 
-      ctx.fillStyle = "#f2f1ec";
-      ctx.font = "bold 56px system-ui, -apple-system, sans-serif";
+      ctx.fillStyle = STORY.fg;
+      ctx.font = storyFont("800", 56, "display");
       ctx.fillText("Find your data's worth.", 540, 300);
 
-      ctx.fillStyle = "#8c8b85";
-      ctx.font = "36px system-ui, -apple-system, sans-serif";
+      ctx.fillStyle = STORY.muted;
+      ctx.font = storyFont("500", 34, "body");
       ctx.fillText("What Big Tech made off your data.", 540, 380);
 
-      ctx.font = "bold 160px system-ui, -apple-system, sans-serif";
-      ctx.fillStyle = "#ff3366";
+      ctx.fillStyle = STORY.accent;
+      ctx.font = storyFont("800", 160, "display");
       ctx.fillText(`$${result?.lifetime.toLocaleString()}`, 540, 700);
 
-      ctx.fillStyle = "#f2f1ec";
-      ctx.font = "42px system-ui, -apple-system, sans-serif";
+      ctx.fillStyle = STORY.fg;
+      ctx.font = storyFont("500", 40, "body");
       ctx.fillText("Turns out Big Tech has extracted this", 540, 900);
       ctx.fillText("from my data so far.", 540, 960);
       ctx.fillText("Curious if anyone on my timeline is", 540, 1100);
       ctx.fillText("worth more to platforms than me.", 540, 1160);
 
-      ctx.fillStyle = "#8c8b85";
-      ctx.font = "bold 32px system-ui, -apple-system, sans-serif";
+      ctx.fillStyle = STORY.muted;
+      ctx.font = storyFont("600", 28, "body");
       ctx.fillText("hiiipower.app/your-worth", 540, 1700);
 
       canvas.toBlob((blob) => {

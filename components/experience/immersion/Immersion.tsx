@@ -407,30 +407,31 @@ export function Immersion() {
 
       {/*
         Mobile: equal flex gaps (top → visual → copy → bottom).
+        Pad for fixed nav + scroll HUD so content never sits under them.
         Desktop: absolute right-lane visual + mid-left copy (unchanged).
       */}
-      <div className="pointer-events-none absolute inset-0 z-[18] flex flex-col lg:block">
+      <div className="pointer-events-none absolute inset-0 z-[18] flex flex-col pt-[max(4.5rem,calc(env(safe-area-inset-top)+3.5rem))] pb-[max(5.25rem,calc(env(safe-area-inset-bottom)+4.25rem))] lg:block lg:pt-0 lg:pb-0">
         <div className="min-h-0 flex-1 lg:hidden" aria-hidden />
 
         {/* Visual slot — height from phone aspect; stages overlay full width */}
         <div className="relative w-full shrink-0 lg:absolute lg:inset-0 lg:h-auto">
-          {/* Mobile height sizer (matches phone width × aspect) */}
+          {/* Mobile height sizer — capped by dvh so short phones keep room for copy + HUD */}
           <div
-            className="mx-auto aspect-[9/19.5] w-[min(58vw,220px)] lg:hidden"
+            className="mx-auto aspect-[9/19.5] w-[min(52vw,200px,calc(42dvh*9/19.5))] lg:hidden"
             aria-hidden
           />
 
-          {/* Phone — feed */}
+          {/* Phone — feed. @container + cqw so bezel/notch scale with width. */}
           <div className="absolute inset-0 z-20 flex items-center justify-center lg:justify-end lg:pr-[8%]">
             <div
               ref={phoneRef}
-              className="relative aspect-[9/19.5] h-full max-h-full w-auto max-w-[min(58vw,220px)] will-change-transform lg:h-auto lg:max-h-none lg:w-[300px] lg:max-w-none"
+              className="@container relative aspect-[9/19.5] h-full max-h-full w-auto max-w-[min(52vw,200px,calc(42dvh*9/19.5))] will-change-transform lg:h-auto lg:max-h-none lg:w-[300px] lg:max-w-none"
               style={{ opacity: 0, transformStyle: "preserve-3d" }}
             >
-              <div className="absolute -inset-10 rounded-full bg-accent/20 blur-3xl lg:-inset-16" />
-              <div className="relative h-full rounded-[2.2rem] border-[5px] border-[#1a1a1a] bg-black p-[4px] shadow-[0_50px_140px_rgba(0,0,0,0.85)] ring-1 ring-white/15 sm:rounded-[2.4rem] sm:border-[6px] sm:p-[5px] lg:rounded-[2.6rem]">
-                <div className="pointer-events-none absolute left-1/2 top-2.5 z-10 h-4 w-[72px] -translate-x-1/2 rounded-full bg-black sm:top-3 sm:h-5 sm:w-[86px]" />
-                <div className="relative h-full overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[1.9rem] lg:rounded-[2.05rem]">
+              <div className="absolute -inset-[12cqw] rounded-full bg-accent/20 blur-3xl" />
+              <div className="relative h-full rounded-[14cqw] border-[2cqw] border-[#1a1a1a] bg-black p-[1.6cqw] shadow-[0_50px_140px_rgba(0,0,0,0.85)] ring-1 ring-white/15">
+                <div className="pointer-events-none absolute left-1/2 top-[3.2cqw] z-10 h-[5.5cqw] w-[28cqw] -translate-x-1/2 rounded-full bg-black" />
+                <div className="relative h-full overflow-hidden rounded-[11cqw] bg-black">
                   <FeedScreen />
                 </div>
               </div>
@@ -466,10 +467,10 @@ export function Immersion() {
           className="relative z-20 shrink-0 px-5 sm:px-10 lg:absolute lg:bottom-auto lg:left-10 lg:top-1/2 lg:max-w-xl lg:-translate-y-1/2 lg:px-14"
           style={{ opacity: 0 }}
         >
-          <h2 className="font-display text-[1.65rem] font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h2 className="font-display text-[1.45rem] font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl lg:text-5xl">
             {chapter.title}
           </h2>
-          <p className="mt-3 max-w-sm text-[13px] leading-relaxed text-white/50 sm:mt-4 sm:text-base">
+          <p className="mt-2.5 max-w-sm text-[12.5px] leading-snug text-white/50 sm:mt-4 sm:text-base sm:leading-relaxed">
             {chapter.body}
           </p>
         </div>
@@ -492,7 +493,7 @@ export function Immersion() {
 
       <EmailJoinBar visible={emailBarVisible} />
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 px-6 pb-6">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         <div
           className="mx-auto flex max-w-3xl flex-col items-center gap-3 transition-opacity duration-300"
           style={{ opacity: emailBarVisible ? 0 : 1 }}
@@ -508,7 +509,7 @@ export function Immersion() {
         </div>
       </div>
 
-      <div className="pointer-events-none absolute top-0 inset-x-0 z-40 flex items-center justify-between px-5 py-5 sm:px-8">
+      <div className="pointer-events-none absolute top-0 inset-x-0 z-50 flex items-center justify-between px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-4 sm:px-8">
         <span className="inline-flex items-center gap-2 font-display text-sm font-semibold tracking-tight text-white/90">
           <BrandMark size={18} src="/icon2-inverted.png" invert={false} priority />
           HiiiPower

@@ -18,6 +18,11 @@ import {
   type PanInfo,
 } from "framer-motion";
 import Image from "next/image";
+import {
+  STORY,
+  fillCinemaBackground,
+  storyFont,
+} from "@/lib/story-canvas";
 
 type ImageData = {
   src: string;
@@ -298,52 +303,49 @@ export default function AIOrNotPage() {
   const generateStoryImage = (): Promise<Blob> => {
     return new Promise((resolve) => {
       const canvas = document.createElement("canvas");
-      canvas.width = 1080;
-      canvas.height = 1920;
+      canvas.width = STORY.width;
+      canvas.height = STORY.height;
       const ctx = canvas.getContext("2d")!;
 
-      ctx.fillStyle = "#060606";
-      ctx.fillRect(0, 0, 1080, 1920);
-
-      ctx.fillStyle = "#f2f1ec";
-      ctx.font =
-        'bold 84px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      fillCinemaBackground(ctx);
       ctx.textAlign = "center";
+
+      ctx.fillStyle = STORY.fg;
+      ctx.font = storyFont("800", 84, "display");
       ctx.fillText("Real or AI?", 540, 320);
 
-      ctx.fillStyle = "#8c8b85";
-      ctx.font =
-        '40px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillStyle = STORY.muted;
+      ctx.font = storyFont("500", 38, "body");
       ctx.fillText("10 photos. Half are Slop.", 540, 390);
 
-      ctx.fillStyle = "#ff3366";
-      ctx.font =
-        'bold 180px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillStyle = STORY.accent;
+      ctx.font = storyFont("800", 180, "display");
       ctx.fillText(`${score}/10`, 540, 620);
 
       const boxSize = 58;
       const gap = 10;
       const totalWidth = boxSize * 10 + gap * 9;
-      const startX = (1080 - totalWidth) / 2;
+      const startX = (STORY.width - totalWidth) / 2;
       const startY = 720;
+      const radius = 8;
 
       guesses.forEach((correct: boolean, index: number) => {
-        ctx.fillStyle = correct ? "#ff3366" : "#181818";
         const x = startX + index * (boxSize + gap);
-        ctx.fillRect(x, startY, boxSize, boxSize);
+        ctx.fillStyle = correct ? STORY.accent : STORY.surface;
+        ctx.beginPath();
+        ctx.roundRect(x, startY, boxSize, boxSize, radius);
+        ctx.fill();
       });
 
-      ctx.fillStyle = "#f2f1ec";
-      ctx.font =
-        '38px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillStyle = STORY.fg;
+      ctx.font = storyFont("500", 36, "body");
       ctx.fillText("NGL, it's getting scary hard to tell", 540, 1100);
       ctx.fillText("what's actually real.", 540, 1160);
       ctx.fillText("Curious if anyone on my timeline", 540, 1260);
       ctx.fillText("can pull off 100%.", 540, 1320);
 
-      ctx.fillStyle = "#8c8b85";
-      ctx.font =
-        '36px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillStyle = STORY.muted;
+      ctx.font = storyFont("600", 28, "body");
       ctx.fillText("hiiipower.app/ai-or-not", 540, 1650);
 
       canvas.toBlob((blob) => {
