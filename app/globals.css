@@ -1,79 +1,149 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafafa;
-  --foreground: #0a0a0a;
-  --card: rgba(255, 255, 255, 0.8);
-  --card-border: rgba(0, 0, 0, 0.06);
-  --glass-blur: 16px;
+  --background: #060606;
+  --foreground: #f2f1ec;
+  --muted: #8c8b85;
+  --line: rgba(242, 241, 236, 0.1);
+  --accent: #ff3366;
+  --accent-ink: #1a0610;
+  --surface: #111111;
+  --surface-2: #181818;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-html,
-body {
-  overflow-x: hidden;
-}
-
 ::selection {
-  background: rgba(0, 0, 0, 0.1);
-  color: var(--foreground);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 
-.glass-card {
-  background: var(--card);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--card-border);
+.font-display {
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
 }
 
-/* Marquee animation */
-@keyframes marquee {
+.cinema-grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes moments-kenburns {
   0% {
-    transform: translateX(0);
+    transform: scale(1.12) translate(0, 0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: scale(1.2) translate(-2%, -1.5%);
   }
 }
 
-.animate-marquee {
-  animation: marquee 30s linear infinite;
-}
-
-@media (max-width: 768px) {
-  .animate-marquee {
-    animation: marquee 15s linear infinite;
+@keyframes moments-pin-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.85;
   }
 }
 
-/* Improve momentum scrolling */
-.overflow-x-auto {
-  -webkit-overflow-scrolling: touch;
+@keyframes moments-shimmer {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-12deg);
+  }
 }
 
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+@keyframes moments-ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
+@keyframes power-flow-dash {
+  to {
+    background-position: 40px 0;
+  }
+}
+
+@keyframes power-flow-packet {
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes power-trash-line {
+  0% {
+    transform: scaleX(1) translateY(0) rotate(0deg);
+    opacity: 1;
+    filter: blur(0);
+  }
+  35% {
+    transform: scaleX(0.85) translateY(4px) rotate(-2deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scaleX(0.15) translateY(28px) rotate(8deg);
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+
+@keyframes power-trash-node {
+  0% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+    filter: blur(0);
+  }
+  45% {
+    transform: translate(-50%, -42%) scale(0.88) rotate(-8deg);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate(-50%, 12%) scale(0.2) rotate(18deg);
+    opacity: 0;
+    filter: blur(5px);
+  }
 }

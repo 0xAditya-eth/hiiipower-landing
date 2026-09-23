@@ -1,38 +1,39 @@
 "use client";
 
 import React from "react";
-import { DynamicBackground } from "@/components/dynamic-bg";
-import { Nav } from "@/components/nav";
-import { Footer } from "@/components/footer";
+import { ExperienceShell } from "@/components/experience/experience-shell";
+import { HeroCascade } from "@/components/experience/motion";
 import { DataWorthCalculator } from "@/components/data-worth-calculator";
-import { WaitlistModal } from "@/components/waitlist-modal";
 
 export default function YourWorthPage() {
-  const [modalOpen, setModalOpen] = React.useState(false);
-
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden">
-      <DynamicBackground />
-      <Nav onJoin={() => setModalOpen(true)} hideJoinButton={true} minimalMode={true} />
-      
-      <main className="relative z-10 pt-28 pb-16 sm:pt-32 sm:pb-20">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 leading-tight">
-              What&apos;s Your Data{" "}
-              <span className="text-zinc-400">Really Worth?</span>
-            </h1>
-            <p className="mt-6 text-lg sm:text-xl text-zinc-500 leading-relaxed max-w-2xl mx-auto">
-              Discover the commercial value tech platforms extract from your personal data. This calculator uses the Web3 Foundation&apos;s PDAV framework to estimate your digital footprint&apos;s value.
-            </p>
+    <ExperienceShell>
+      <main>
+        <section className="px-5 pt-28 pb-12 sm:px-8 sm:pt-32 sm:pb-16 lg:px-12">
+          <div className="mx-auto max-w-3xl text-center sm:text-left">
+            <HeroCascade titleIndex={1}>
+              <p className="mb-4 text-[10px] font-semibold tracking-[0.28em] text-white/40 uppercase">
+                Your worth
+              </p>
+              <h1 className="font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                What&apos;s your data{" "}
+                <span className="text-white/50">really worth?</span>
+              </h1>
+              <p className="mt-5 max-w-2xl text-sm leading-relaxed text-white/50 sm:text-base">
+                Discover the commercial value tech platforms extract from your
+                personal data. This calculator uses the Web3 Foundation&apos;s
+                PDAV framework to estimate your digital footprint&apos;s value.
+              </p>
+            </HeroCascade>
           </div>
+        </section>
 
-          <DataWorthCalculator onJoin={() => setModalOpen(true)} />
-        </div>
+        <section className="px-5 py-12 sm:px-8 sm:py-16 lg:px-12">
+          <div className="mx-auto max-w-3xl">
+            <DataWorthCalculator />
+          </div>
+        </section>
       </main>
-
-      <Footer />
-      <WaitlistModal open={modalOpen} onClose={() => setModalOpen(false)} />
-    </div>
+    </ExperienceShell>
   );
 }

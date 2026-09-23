@@ -60,13 +60,13 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="absolute inset-0 bg-zinc-900/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/75 backdrop-blur-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -74,7 +74,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
             onClick={resetAndClose}
           />
           <motion.div
-            className="relative z-10 w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-7 sm:p-8 shadow-2xl"
+            className="relative z-10 w-full max-w-md rounded-3xl border border-line bg-surface p-7 shadow-2xl sm:p-8"
             initial={{ opacity: 0, y: 24, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
@@ -83,11 +83,16 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
           >
             <button
               onClick={resetAndClose}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
+              className="absolute top-4 right-4 rounded-lg p-1.5 text-muted transition-colors hover:bg-white/5 hover:text-foreground"
               aria-label="Close"
             >
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-                <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path
+                  d="M4 4l10 10M14 4L4 14"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
               </svg>
             </button>
 
@@ -99,13 +104,15 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2 }}
-                  className="text-center pt-2"
+                  className="pt-2 text-center"
                 >
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-900 text-2xl">
-                    🎉
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent font-display text-xl font-bold text-accent-ink">
+                    ✓
                   </div>
-                  <h4 className="text-2xl font-extrabold text-zinc-900 mb-2">You&apos;re on the list!</h4>
-                  <p className="text-zinc-500 mb-6">We&apos;ll reach out with early access details soon.</p>
+                  <h4 className="font-display mb-2 text-2xl font-semibold text-foreground">
+                    You&apos;re on the list
+                  </h4>
+                  <p className="mb-6 text-muted">We&apos;ll reach out with early access details soon.</p>
                   <Button onClick={resetAndClose}>Close</Button>
                 </motion.div>
               ) : (
@@ -119,31 +126,37 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                   transition={{ duration: 0.2 }}
                 >
                   <div className="text-center">
-                    <h4 className="text-2xl font-extrabold text-zinc-900">Join the waitlist</h4>
-                    <p className="mt-2 text-sm text-zinc-500">Be the first to access HiiiPower.</p>
+                    <h4 className="font-display text-2xl font-semibold text-foreground">
+                      Join the waitlist
+                    </h4>
+                    <p className="mt-2 text-sm text-muted">Be first when HiiiPower opens.</p>
                   </div>
                   {error && (
-                    <p className="text-sm text-red-600 text-center bg-red-50 rounded-xl px-4 py-2.5 border border-red-100">
+                    <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-center text-sm text-red-300">
                       {error}
                     </p>
                   )}
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-zinc-700">Name</label>
+                    <label className="mb-1.5 block text-sm font-medium text-foreground/80">
+                      Name
+                    </label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-300 transition-all"
+                      className="w-full rounded-xl border border-line bg-background px-4 py-2.5 text-foreground placeholder:text-muted/50 transition-all focus:border-accent/40 focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="Jane Doe"
                     />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-zinc-700">Email</label>
+                    <label className="mb-1.5 block text-sm font-medium text-foreground/80">
+                      Email
+                    </label>
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-300 transition-all"
+                      className="w-full rounded-xl border border-line bg-background px-4 py-2.5 text-foreground placeholder:text-muted/50 transition-all focus:border-accent/40 focus:outline-none focus:ring-2 focus:ring-accent/20"
                       placeholder="jane@example.com"
                     />
                   </div>
@@ -155,7 +168,9 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                       {submitting ? "Submitting..." : "Submit"}
                     </Button>
                   </div>
-                  <p className="text-xs text-zinc-400 text-center">No spam. One email when we launch.</p>
+                  <p className="text-center text-xs text-muted/70">
+                    No spam. One email when we launch.
+                  </p>
                 </motion.form>
               )}
             </AnimatePresence>

@@ -9,7 +9,7 @@ export function Logo({ showText = true, className = "" }: LogoProps) {
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <Image
-        src="/favicon.ico"
+        src="/icon2-inverted.png"
         alt="HiiiPower"
         width={32}
         height={32}

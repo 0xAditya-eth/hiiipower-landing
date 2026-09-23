@@ -1,20 +1,19 @@
 "use client";
 
 import { Logo } from "@/components/logo";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 const FOOTER_LINKS = {
   Product: [
-    { label: "Features", href: "#features", homeOnly: true },
-    { label: "How it works", href: "#how-it-works", homeOnly: true },
-    { label: "Compare", href: "#compare", homeOnly: true },
-    { label: "FAQ", href: "#faq", homeOnly: true },
+    { label: "Features", href: "/learn-more#features" },
+    { label: "How it works", href: "/learn-more#how-it-works" },
+    { label: "Compare", href: "/learn-more#compare" },
+    { label: "FAQ", href: "/learn-more#faq" },
     { label: "Your Worth", href: "/your-worth" },
   ],
   Resources: [
     { label: "Documentation", href: "https://docs.hiiipower.app", external: true },
-    { label: "Join waitlist", href: "#join", homeOnly: true },
+    { label: "Learn More", href: "/learn-more" },
     { label: "Terms of Service", href: "/tos" },
     { label: "Privacy Policy", href: "/privacy" },
   ],
@@ -26,9 +25,6 @@ const FOOTER_LINKS = {
 };
 
 export function Footer() {
-  const pathname = usePathname();
-  const isHome = pathname === "/";
-
   return (
     <footer className="relative z-10 border-t border-zinc-200/60 bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
@@ -46,20 +42,19 @@ export function Footer() {
             <div key={heading}>
               <h4 className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">{heading}</h4>
               <ul className="space-y-2.5">
-                {links.map((link) => {
-                  const href = !isHome && "homeOnly" in link && link.homeOnly ? `/${link.href}` : link.href;
-                  return (
-                    <li key={link.label}>
-                      <a
-                        href={href}
-                        {...("external" in link && link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                        className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
-                      >
-                        {link.label}
-                      </a>
-                    </li>
-                  );
-                })}
+                {links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      {...("external" in link && link.external
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
+                      className="text-sm text-zinc-600 hover:text-zinc-900 transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
           ))}

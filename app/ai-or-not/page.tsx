@@ -1,12 +1,22 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { DynamicBackground } from "@/components/dynamic-bg";
-import { Nav } from "@/components/nav";
-import { Footer } from "@/components/footer";
+import React, { useState, useEffect, useRef } from "react";
+import { ExperienceShell } from "@/components/experience/experience-shell";
 import { Button } from "@/components/ui/button";
-import { WaitlistModal } from "@/components/waitlist-modal";
-import { motion, AnimatePresence } from "framer-motion";
+import {
+  HeroCascade,
+  cinemaEase,
+  staggerItem,
+  staggerItemSoft,
+} from "@/components/experience/motion";
+import { ResultsWaitlistActions } from "@/components/experience/results-waitlist-actions";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useTransform,
+  type PanInfo,
+} from "framer-motion";
 import Image from "next/image";
 
 type ImageData = {
@@ -22,17 +32,17 @@ type GameState = "intro" | "quiz" | "end";
 function seededShuffle<T>(array: T[], seed: number): T[] {
   const arr = [...array];
   let currentSeed = seed;
-  
+
   const seededRandom = () => {
     currentSeed = (currentSeed * 9301 + 49297) % 233280;
     return currentSeed / 233280;
   };
-  
+
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(seededRandom() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-  
+
   return arr;
 }
 
@@ -41,21 +51,130 @@ function generateRandomSeed(): number {
 }
 
 function getRoundImages(allImages: ImageData[], seed: number): ImageData[] {
-  // Separate AI and real images
-  const aiImages = allImages.filter(img => img.isAI);
-  const realImages = allImages.filter(img => !img.isAI);
-  
-  // Shuffle each group with the seed
+  const aiImages = allImages.filter((img) => img.isAI);
+  const realImages = allImages.filter((img) => !img.isAI);
+
   const shuffledAI = seededShuffle(aiImages, seed);
   const shuffledReal = seededShuffle(realImages, seed);
-  
-  // Take first 5 from each group
+
   const selectedAI = shuffledAI.slice(0, 5);
   const selectedReal = shuffledReal.slice(0, 5);
-  
-  // Combine and shuffle with seed+1
+
   const combined = [...selectedAI, ...selectedReal];
   return seededShuffle(combined, seed + 1);
+}
+
+function QuizCard({
+  image,
+  index,
+  showFeedback,
+  lastGuessCorrect,
+  onGuess,
+  disabled,
+  onReady,
+}: {
+  image: ImageData;
+  index: number;
+  showFeedback: boolean;
+  lastGuessCorrect: boolean;
+  onGuess: (guessAI: boolean) => void;
+  disabled: boolean;
+  onReady: () => void;
+}) {
+  const [loaded, setLoaded] = useState(false);
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-220, 0, 220], [-14, 0, 14]);
+  const aiHint = useTransform(x, [-160, -40, 0], [1, 0.35, 0]);
+  const realHint = useTransform(x, [0, 40, 160], [0, 0.35, 1]);
+  const readySent = useRef(false);
+
+  useEffect(() => {
+    setLoaded(false);
+    readySent.current = false;
+    x.set(0);
+  }, [image.src, x]);
+
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
+    if (disabled || showFeedback || !loaded) return;
+    const threshold = 110;
+    if (info.offset.x > threshold || info.velocity.x > 650) {
+      onGuess(false);
+    } else if (info.offset.x < -threshold || info.velocity.x < -650) {
+      onGuess(true);
+    }
+  };
+
+  const canInteract = loaded && !disabled && !showFeedback;
+
+  return (
+    <motion.div
+      // Opacity enter/exit lives on the SAME node as drag transforms to
+      // avoid the parent-opacity + child-transform compositor flash.
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      style={{ x, rotate }}
+      drag={canInteract ? "x" : false}
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.9}
+      onDragEnd={handleDragEnd}
+      className="absolute inset-0 touch-pan-y"
+    >
+      <div className="relative h-full w-full overflow-hidden border border-white/10 bg-[#111]">
+        {!loaded && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/15 border-t-accent" />
+          </div>
+        )}
+        <Image
+          src={image.src}
+          alt={`Image ${index + 1}`}
+          fill
+          sizes="(max-width: 768px) 100vw, 768px"
+          className="pointer-events-none select-none object-cover"
+          priority
+          draggable={false}
+          onLoad={() => {
+            setLoaded(true);
+            if (!readySent.current) {
+              readySent.current = true;
+              onReady();
+            }
+          }}
+        />
+
+        <motion.div
+          style={{ opacity: aiHint }}
+          className="pointer-events-none absolute inset-0 z-20 flex items-start justify-start bg-gradient-to-br from-white/10 to-transparent p-5"
+        >
+          <span className="rotate-[-8deg] rounded-sm border-2 border-white/80 px-3 py-1 font-display text-xl font-semibold tracking-wide text-white uppercase">
+            AI
+          </span>
+        </motion.div>
+        <motion.div
+          style={{ opacity: realHint }}
+          className="pointer-events-none absolute inset-0 z-20 flex items-start justify-end bg-gradient-to-bl from-accent/20 to-transparent p-5"
+        >
+          <span className="rotate-[8deg] rounded-sm border-2 border-accent px-3 py-1 font-display text-xl font-semibold tracking-wide text-accent uppercase">
+            Real
+          </span>
+        </motion.div>
+
+        {showFeedback && (
+          <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center bg-black/50">
+            <p
+              className={`font-display text-3xl font-semibold sm:text-4xl ${
+                lastGuessCorrect ? "text-accent" : "text-white/55"
+              }`}
+            >
+              {lastGuessCorrect ? "Correct" : "Wrong"}
+            </p>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
 }
 
 export default function AIOrNotPage() {
@@ -64,21 +183,25 @@ export default function AIOrNotPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [guesses, setGuesses] = useState<boolean[]>([]);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [lastGuessCorrect, setLastGuessCorrect] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [feedback, setFeedback] = useState<{
+    src: string;
+    correct: boolean;
+  } | null>(null);
+  const [readySrc, setReadySrc] = useState<string | null>(null);
   const [currentSeed, setCurrentSeed] = useState<number>(0);
   const [isMobile, setIsMobile] = useState(false);
+  const [finishing, setFinishing] = useState(false);
+  const advancingRef = useRef(false);
+  const finishingRef = useRef(false);
 
   useEffect(() => {
     document.title = "AI or Not · HiiiPower";
-    
+
     const urlParams = new URLSearchParams(window.location.search);
-    const roundParam = urlParams.get('r');
+    const roundParam = urlParams.get("r");
     const seed = roundParam ? parseInt(roundParam, 10) : generateRandomSeed();
     setCurrentSeed(seed);
-    
+
     fetch("/ai-or-not/manifest.json")
       .then((res) => res.json())
       .then((data: ImageData[]) => {
@@ -86,16 +209,15 @@ export default function AIOrNotPage() {
         setImages(roundImages);
       });
 
-    // Mobile/desktop detection
-    const mediaQuery = window.matchMedia('(max-width: 767px)');
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
     setIsMobile(mediaQuery.matches);
-    
+
     const handleResize = (e: MediaQueryListEvent | MediaQueryList) => {
       setIsMobile(e.matches);
     };
-    
-    mediaQuery.addEventListener('change', handleResize);
-    return () => mediaQuery.removeEventListener('change', handleResize);
+
+    mediaQuery.addEventListener("change", handleResize);
+    return () => mediaQuery.removeEventListener("change", handleResize);
   }, []);
 
   const handleStart = () => {
@@ -103,146 +225,173 @@ export default function AIOrNotPage() {
     setCurrentIndex(0);
     setScore(0);
     setGuesses([]);
+    setReadySrc(null);
+    setFeedback(null);
+    setFinishing(false);
+    finishingRef.current = false;
+    advancingRef.current = false;
   };
 
   const handleGuess = (guessAI: boolean) => {
-    if (!imageLoaded) return;
-    
-    const correct = guessAI === images[currentIndex].isAI;
-    setLastGuessCorrect(correct);
-    const newGuesses = [...guesses, correct];
-    setGuesses(newGuesses);
-    
-    if (correct) {
-      setScore(score + 1);
+    const currentImg = images[currentIndex];
+    if (
+      !currentImg ||
+      readySrc !== currentImg.src ||
+      feedback ||
+      advancingRef.current ||
+      finishing
+    ) {
+      return;
     }
-    setShowFeedback(true);
+    advancingRef.current = true;
 
-    setTimeout(() => {
-      setShowFeedback(false);
-      setImageLoaded(false);
-      if (currentIndex + 1 < images.length) {
-        setCurrentIndex(currentIndex + 1);
-      } else {
-        setGameState("end");
+    const correct = guessAI === currentImg.isAI;
+    setGuesses((prev) => [...prev, correct]);
+    if (correct) setScore((s) => s + 1);
+    // Lock feedback to this src so the leaving card keeps Correct/Wrong
+    // even after we advance the index.
+    setFeedback({ src: currentImg.src, correct });
+
+    const isLast = currentIndex + 1 >= images.length;
+
+    window.setTimeout(() => {
+      if (isLast) {
+        finishingRef.current = true;
+        setFinishing(true);
+        return;
       }
-    }, 1000);
+
+      // Advance first; keep feedback.src on the leaving image so the exit
+      // fade can't lose Correct/Wrong or flash a blank/spinner state.
+      setCurrentIndex((i) => i + 1);
+      advancingRef.current = false;
+      window.setTimeout(() => setFeedback(null), 280);
+    }, 900);
   };
 
   const getShareText = (): string => {
-    const grid = guesses.map((correct: boolean) => correct ? '🟩' : '⬛').join('');
+    const grid = guesses
+      .map((correct: boolean) => (correct ? "🟩" : "⬛"))
+      .join("");
     return `${grid}\n\nScored ${score}/${images.length} on the Real or Slop test.\n\nNGL, it's getting scary hard to tell what's actually real.\n\nCurious if anyone on my timeline can pull off 100%.\n\nTake the challenge here 👇`;
   };
 
   const shareToX = () => {
     const shareText = getShareText();
     const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+      "_blank"
+    );
   };
 
   const shareToLinkedIn = () => {
     const shareText = getShareText();
     const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
     const fullText = `${shareText}\n\n${shareUrl}`;
-    window.open(`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(fullText)}`, '_blank');
+    window.open(
+      `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(fullText)}`,
+      "_blank"
+    );
   };
 
   const generateStoryImage = (): Promise<Blob> => {
     return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = 1080;
       canvas.height = 1920;
-      const ctx = canvas.getContext('2d')!;
+      const ctx = canvas.getContext("2d")!;
 
-      // Background - black
-      ctx.fillStyle = '#09090b';
+      ctx.fillStyle = "#060606";
       ctx.fillRect(0, 0, 1080, 1920);
 
-      // Title
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 84px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Real or AI?', 540, 320);
+      ctx.fillStyle = "#f2f1ec";
+      ctx.font =
+        'bold 84px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.textAlign = "center";
+      ctx.fillText("Real or AI?", 540, 320);
 
-      // Subtitle
-      ctx.fillStyle = '#9ca3af';
-      ctx.font = '40px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillText('10 photos. Half are Slop.', 540, 390);
+      ctx.fillStyle = "#8c8b85";
+      ctx.font =
+        '40px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText("10 photos. Half are Slop.", 540, 390);
 
-      // Score - very large
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 180px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillStyle = "#ff3366";
+      ctx.font =
+        'bold 180px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
       ctx.fillText(`${score}/10`, 540, 620);
 
-      // Draw result grid as rectangles (one row of 10)
       const boxSize = 58;
       const gap = 10;
-      const totalWidth = (boxSize * 10) + (gap * 9);
+      const totalWidth = boxSize * 10 + gap * 9;
       const startX = (1080 - totalWidth) / 2;
       const startY = 720;
 
       guesses.forEach((correct: boolean, index: number) => {
-        ctx.fillStyle = correct ? '#22c55e' : '#27272a';
-        const x = startX + (index * (boxSize + gap));
+        ctx.fillStyle = correct ? "#ff3366" : "#181818";
+        const x = startX + index * (boxSize + gap);
         ctx.fillRect(x, startY, boxSize, boxSize);
       });
 
-      // Body copy - line 1
-      ctx.fillStyle = '#e5e7eb';
-      ctx.font = '38px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillStyle = "#f2f1ec";
+      ctx.font =
+        '38px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
       ctx.fillText("NGL, it's getting scary hard to tell", 540, 1100);
       ctx.fillText("what's actually real.", 540, 1160);
+      ctx.fillText("Curious if anyone on my timeline", 540, 1260);
+      ctx.fillText("can pull off 100%.", 540, 1320);
 
-      // Body copy - line 2
-      ctx.fillText('Curious if anyone on my timeline', 540, 1260);
-      ctx.fillText('can pull off 100%.', 540, 1320);
-
-      // Footer URL
-      ctx.fillStyle = '#71717a';
-      ctx.font = '36px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-      ctx.fillText('hiiipower.app/ai-or-not', 540, 1650);
+      ctx.fillStyle = "#8c8b85";
+      ctx.font =
+        '36px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+      ctx.fillText("hiiipower.app/ai-or-not", 540, 1650);
 
       canvas.toBlob((blob) => {
         resolve(blob!);
-      }, 'image/png');
+      }, "image/png");
     });
   };
 
   const shareToInstagramStory = async () => {
     try {
       const imageBlob = await generateStoryImage();
-      const file = new File([imageBlob], 'ai-or-not-story.png', { type: 'image/png' });
+      const file = new File([imageBlob], "ai-or-not-story.png", {
+        type: "image/png",
+      });
 
       const shareText = getShareText();
       const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
       const fullText = `${shareText}\n\n${shareUrl}`;
 
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare({ files: [file] })
+      ) {
         await navigator.share({
           files: [file],
-          title: 'Real or AI?',
-          text: fullText
+          title: "Real or AI?",
+          text: fullText,
         });
       } else {
-        // Fallback: download the image
         const url = URL.createObjectURL(imageBlob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
-        a.download = 'ai-or-not-story.png';
+        a.download = "ai-or-not-story.png";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }
     } catch (err) {
-      console.error('Failed to share to Instagram Story:', err);
+      console.error("Failed to share to Instagram Story:", err);
     }
   };
 
   const playAnotherRound = () => {
     const newSeed = generateRandomSeed();
     setCurrentSeed(newSeed);
-    
+
     fetch("/ai-or-not/manifest.json")
       .then((res) => res.json())
       .then((data: ImageData[]) => {
@@ -252,227 +401,297 @@ export default function AIOrNotPage() {
         setCurrentIndex(0);
         setScore(0);
         setGuesses([]);
-        setImageLoaded(false);
-        
-        window.history.pushState({}, '', `/ai-or-not?r=${newSeed}`);
+        setReadySrc(null);
+        setFeedback(null);
+        setFinishing(false);
+        finishingRef.current = false;
+        advancingRef.current = false;
+
+        window.history.pushState({}, "", `/ai-or-not?r=${newSeed}`);
       });
   };
 
-  return (
-    <div className="relative min-h-screen w-full overflow-x-hidden">
-      <DynamicBackground />
-      <Nav onJoin={() => setModalOpen(true)} hideJoinButton={true} minimalMode={true} />
+  const current = images[currentIndex];
+  const imageReady = !!current && readySrc === current.src;
+  const showingFeedback = !!feedback && !!current && feedback.src === current.src;
 
-      <main className="relative z-10 pt-28 pb-16 sm:pt-32 sm:pb-20">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <AnimatePresence mode="wait">
+  return (
+    <ExperienceShell>
+      <main className="px-5 pt-28 pb-16 sm:px-8 sm:pt-32 sm:pb-20 lg:px-12">
+        <div className="mx-auto max-w-3xl">
+          <AnimatePresence
+            mode="wait"
+            onExitComplete={() => {
+              if (!finishingRef.current) return;
+              finishingRef.current = false;
+              setGameState("end");
+              setFeedback(null);
+              setFinishing(false);
+              advancingRef.current = false;
+            }}
+          >
             {gameState === "intro" && (
               <motion.div
                 key="intro"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.35, ease: cinemaEase }}
                 className="text-center"
               >
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-zinc-900 leading-tight">
-                  Can You Tell What&apos;s Real?
-                </h1>
-                <p className="mt-6 text-lg sm:text-xl text-zinc-500 leading-relaxed max-w-2xl mx-auto">
-                  Feeds are full of generated faces, filters, and fake personas. Ten pictures. Tap AI or Real. See how much of the internet you can still trust with your eyes.
-                </p>
-                <div className="mt-10">
-                  <Button size="lg" onClick={handleStart}>
-                    Start
-                  </Button>
-                </div>
+                <HeroCascade titleIndex={1} className="text-center">
+                  <p className="mb-4 text-[10px] font-semibold tracking-[0.28em] text-white/40 uppercase">
+                    AI or not
+                  </p>
+                  <h1 className="font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                    Can you tell what&apos;s real?
+                  </h1>
+                  <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-white/50 sm:text-base">
+                    Feeds are full of generated faces, filters, and fake
+                    personas. Ten pictures. Tap AI or Real — or swipe left for
+                    AI, right for Real. See how much of the internet you can
+                    still trust with your eyes.
+                  </p>
+                  <div className="mt-10 flex justify-center">
+                    <motion.div
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      <Button size="lg" onClick={handleStart}>
+                        Start
+                      </Button>
+                    </motion.div>
+                  </div>
+                </HeroCascade>
               </motion.div>
             )}
 
-            {gameState === "quiz" && images.length > 0 && (
+            {gameState === "quiz" && current && !finishing && (
               <motion.div
                 key="quiz"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{
+                  opacity: 0,
+                  transition: { duration: 0.25, ease: cinemaEase },
+                }}
+                transition={{ duration: 0.4, ease: cinemaEase }}
+                className="mx-auto w-full max-w-3xl space-y-8 overflow-x-hidden text-center"
               >
                 <div className="text-center">
-                  <p className="text-sm font-semibold text-zinc-500 uppercase tracking-widest">
+                  <p className="text-[10px] font-semibold tracking-[0.28em] text-white/40 uppercase">
                     {currentIndex + 1} of {images.length}
                   </p>
+                  <motion.div
+                    className="mx-auto mt-3 h-px max-w-[8rem] origin-center bg-accent"
+                    initial={false}
+                    animate={{ scaleX: (currentIndex + 1) / images.length }}
+                    transition={{ duration: 0.45, ease: cinemaEase }}
+                  />
                 </div>
 
-                <div className="relative rounded-2xl border border-zinc-200 bg-white overflow-hidden">
-                  <div className="relative w-full aspect-[4/3]">
-                    {!imageLoaded && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-zinc-50">
-                        <div className="w-8 h-8 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
-                      </div>
-                    )}
-                    <Image
-                      src={images[currentIndex].src}
-                      alt={`Image ${currentIndex + 1}`}
-                      fill
-                      className="object-cover"
-                      priority
-                      onLoad={() => setImageLoaded(true)}
+                {/* Stable stage — only the card crossfades. Avoid remounting the
+                    whole quiz (that was flashing every image on exit). */}
+                <div className="relative mx-auto aspect-[4/3] w-full">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <QuizCard
+                      key={current.src}
+                      image={current}
+                      index={currentIndex}
+                      showFeedback={!!feedback && feedback.src === current.src}
+                      lastGuessCorrect={
+                        feedback?.src === current.src && !!feedback.correct
+                      }
+                      onGuess={handleGuess}
+                      disabled={showingFeedback}
+                      onReady={() => setReadySrc(current.src)}
                     />
-                    {/* Preload next image */}
-                    {currentIndex + 1 < images.length && (
-                      <link
-                        rel="preload"
-                        as="image"
-                        href={images[currentIndex + 1].src}
-                      />
-                    )}
-                  </div>
+                  </AnimatePresence>
                 </div>
 
-                {!showFeedback ? (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="grid grid-cols-2 gap-4"
-                  >
-                    <Button
-                      size="lg"
-                      variant="primary"
-                      onClick={() => handleGuess(true)}
-                      disabled={!imageLoaded}
-                      className="w-full text-lg py-6"
-                    >
-                      AI
-                    </Button>
-                    <Button
-                      size="lg"
-                      variant="secondary"
-                      onClick={() => handleGuess(false)}
-                      disabled={!imageLoaded}
-                      className="w-full text-lg py-6"
-                    >
-                      Real
-                    </Button>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-6"
-                  >
-                    <p
-                      className={`text-2xl font-bold ${
-                        lastGuessCorrect ? "text-emerald-600" : "text-red-600"
-                      }`}
-                    >
-                      {lastGuessCorrect ? "Correct" : "Wrong"}
-                    </p>
-                  </motion.div>
-                )}
+                <div className="mx-auto w-full max-w-md space-y-3">
+                  {!showingFeedback ? (
+                    <div className="grid grid-cols-2 gap-4">
+                      <motion.div
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.97 }}
+                      >
+                        <Button
+                          size="lg"
+                          variant="primary"
+                          onClick={() => handleGuess(true)}
+                          disabled={!imageReady}
+                          className="w-full py-6 text-lg"
+                        >
+                          AI
+                        </Button>
+                      </motion.div>
+                      <motion.div
+                        whileHover={{ y: -2 }}
+                        whileTap={{ scale: 0.97 }}
+                      >
+                        <Button
+                          size="lg"
+                          variant="secondary"
+                          onClick={() => handleGuess(false)}
+                          disabled={!imageReady}
+                          className="w-full py-6 text-lg"
+                        >
+                          Real
+                        </Button>
+                      </motion.div>
+                    </div>
+                  ) : (
+                    <div className="flex min-h-[4.5rem] items-center justify-center py-2">
+                      <p
+                        className={`font-display text-2xl font-semibold sm:text-3xl ${
+                          feedback?.correct ? "text-accent" : "text-white/45"
+                        }`}
+                      >
+                        {feedback?.correct ? "Correct" : "Wrong"}
+                      </p>
+                    </div>
+                  )}
+                  <p className="text-center text-[11px] tracking-wide text-white/35">
+                    Swipe left = AI · Swipe right = Real
+                  </p>
+                </div>
               </motion.div>
             )}
 
             {gameState === "end" && (
               <motion.div
                 key="end"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
-                className="space-y-8"
+                initial="hidden"
+                animate="show"
+                exit={{ opacity: 0 }}
+                variants={{
+                  hidden: {},
+                  show: {
+                    transition: { staggerChildren: 0.1, delayChildren: 0.06 },
+                  },
+                }}
+                className="mx-auto w-full max-w-3xl space-y-8 text-center"
               >
-                {/* Score */}
-                <div className="text-center">
-                  <p className="text-lg text-zinc-500 mb-4">
-                    You got {score}/{images.length}.
+                <motion.div variants={staggerItem} className="text-center">
+                  <p className="mb-2 text-[10px] font-semibold tracking-[0.28em] text-white/40 uppercase">
+                    Your score
                   </p>
-                </div>
+                  <motion.p
+                    initial={{
+                      opacity: 0,
+                      y: 36,
+                      filter: "blur(14px)",
+                      scale: 0.9,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      filter: "blur(0px)",
+                      scale: 1,
+                    }}
+                    transition={{ delay: 0.15, duration: 0.85, ease: cinemaEase }}
+                    className="font-display text-4xl font-semibold text-accent sm:text-5xl"
+                  >
+                    {score}/{images.length}
+                  </motion.p>
+                </motion.div>
 
-                {/* Result Grid */}
-                <div className="flex justify-center">
-                  <div className="flex flex-nowrap gap-1 sm:gap-1.5">
+                <motion.div
+                  variants={staggerItemSoft}
+                  className="flex justify-center"
+                >
+                  <div className="flex flex-nowrap justify-center gap-1 sm:gap-1.5">
                     {guesses.map((correct, index) => (
-                      <div
+                      <motion.div
                         key={index}
-                        className={`w-6 h-6 sm:w-8 sm:h-8 rounded-sm ${
-                          correct ? 'bg-[#22c55e]' : 'bg-zinc-900'
+                        initial={{ opacity: 0, scale: 0.5, y: 8 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{
+                          delay: 0.35 + index * 0.04,
+                          duration: 0.35,
+                          ease: cinemaEase,
+                        }}
+                        className={`h-6 w-6 rounded-sm sm:h-8 sm:w-8 ${
+                          correct ? "bg-accent" : "bg-white/10"
                         }`}
                       />
                     ))}
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Heading and Body */}
-                <div className="text-center">
-                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-zinc-900 leading-tight mb-6">
+                <motion.div variants={staggerItem} className="text-center">
+                  <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
                     This shouldn&apos;t be a skill.
                   </h2>
-                  <p className="max-w-2xl mx-auto text-lg text-zinc-600 leading-relaxed">
+                  <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-white/50 sm:text-base">
                     You shouldn&apos;t have to guess what&apos;s real.
                     <br />
                     They let AI in so you&apos;d stop knowing the difference.
                   </p>
-                </div>
+                </motion.div>
 
-                {/* Green Waitlist Box */}
-                <div className="rounded-2xl border-2 border-emerald-500 bg-gradient-to-br from-emerald-50 to-white p-8 sm:p-10">
-                  <div className="max-w-3xl mx-auto text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500 mb-6">
-                      <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 mb-4">
+                <motion.div
+                  variants={staggerItem}
+                  className="border border-white/10 bg-white/[0.03] px-6 py-10 sm:px-10"
+                >
+                  <div className="mx-auto max-w-2xl text-center">
+                    <p className="mb-3 text-[10px] font-semibold tracking-[0.28em] text-accent uppercase">
+                      Take back reality
+                    </p>
+                    <h3 className="font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
                       Take back your reality.
                     </h3>
-                    <p className="text-lg text-zinc-600 mb-6 leading-relaxed">
-                      Switch to a feed that&apos;s real, that doesn&apos;t wear on your mental well-being with addictive algorithms, and never uses your content to train AI.
+                    <p className="mt-4 text-sm leading-relaxed text-white/50 sm:text-base">
+                      Switch to a feed that&apos;s real, that doesn&apos;t wear
+                      on your mental well-being with addictive algorithms, and
+                      never uses your content to train AI.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <Button size="lg" onClick={() => setModalOpen(true)}>
-                        Join the waitlist
-                      </Button>
-                      <Button variant="secondary" size="lg" onClick={() => window.location.href = '/'}>
-                        Learn More About HiiiPower
-                      </Button>
-                    </div>
+                    <ResultsWaitlistActions />
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Share Buttons */}
-                <div className="space-y-3">
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <Button variant="primary" size="lg" onClick={shareToX}>
-                      Share to X
+                <motion.div
+                  variants={staggerItemSoft}
+                  className="border border-white/10 bg-white/[0.03] px-6 py-8 text-center sm:px-8"
+                >
+                  <h3 className="font-display mb-4 text-lg font-semibold text-white">
+                    Share your results
+                  </h3>
+                  <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+                    <Button variant="primary" size="md" onClick={shareToX}>
+                      Share to X/Twitter
                     </Button>
                     {isMobile ? (
-                      <Button variant="secondary" size="lg" onClick={shareToInstagramStory}>
+                      <Button
+                        variant="secondary"
+                        size="md"
+                        onClick={shareToInstagramStory}
+                      >
                         Share to Instagram
                       </Button>
                     ) : (
-                      <Button variant="secondary" size="lg" onClick={shareToLinkedIn}>
+                      <Button
+                        variant="secondary"
+                        size="md"
+                        onClick={shareToLinkedIn}
+                      >
                         Share to LinkedIn
                       </Button>
                     )}
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Play Another Round */}
-                <div className="text-center">
+                <motion.div variants={staggerItemSoft} className="text-center">
                   <Button variant="ghost" size="lg" onClick={playAnotherRound}>
                     Play another round
                   </Button>
-                </div>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </main>
-
-      <Footer />
-      <WaitlistModal open={modalOpen} onClose={() => setModalOpen(false)} />
-    </div>
+    </ExperienceShell>
   );
 }
