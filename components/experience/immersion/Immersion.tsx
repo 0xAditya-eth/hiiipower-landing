@@ -20,7 +20,7 @@ const CHAPTER_COPY: Record<string, { title: string; body: string }> = {
     body: "Chronological. Real. Just what people around you actually lived.",
   },
   people: {
-    title: "If you’re not alive, you’re not in.",
+    title: "If you’re not human, you’re not in.",
     body: "Liveness before entry. Brand pages and bots stay outside.",
   },
   moments: {
