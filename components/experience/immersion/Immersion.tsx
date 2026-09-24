@@ -119,11 +119,18 @@ export function Immersion() {
 
     const syncMax = () => {
       fx.resize();
-      vs.setMax(totalVh() * window.innerHeight);
+      // Slightly shorter journey on touch phones without making one flick finish it
+      const coarse =
+        typeof window !== "undefined" &&
+        (window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 768);
+      vs.setMax(totalVh() * window.innerHeight * (coarse ? 0.88 : 1));
     };
 
     const vs = new VirtualScroll({
       damp: 9.5,
+      // Amplify finger travel, but keep multi-swipe pacing through chapters
+      touchScale: 2.0,
+      coastDecay: 4.2,
       onFrame: (progress, _c, _m, dt, velocity) => {
         fx.setVelocity(velocity);
         applyFrame(progress);
