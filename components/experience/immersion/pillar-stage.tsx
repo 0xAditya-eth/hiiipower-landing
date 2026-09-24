@@ -210,8 +210,8 @@ const MOMENT_SLIDES = [
 ] as const;
 
 function momentSlideIndex(local: number) {
-  // Spend presence lead outside; cycle three photos across the hold
-  const t = clamp((local - 0.12) / 0.76, 0, 0.999);
+  // Cycle all three photos in the first half of the chapter, then hold the last
+  const t = clamp((local - 0.08) / 0.38, 0, 0.999);
   return Math.min(MOMENT_SLIDES.length - 1, Math.floor(t * MOMENT_SLIDES.length));
 }
 
@@ -248,7 +248,7 @@ export function MomentsStage() {
             className="absolute inset-0 origin-center"
             style={{
               opacity: i === active ? 1 : 0,
-              transition: "opacity 0.45s ease",
+              transition: "opacity 0.22s ease",
               animation:
                 i === active
                   ? "moments-kenburns 14s ease-in-out infinite alternate"

@@ -18,12 +18,12 @@ export type SegmentDef = {
 };
 
 export const SEGMENTS: SegmentDef[] = [
-  { id: "intro", scrollVh: 2.8 },
-  { id: "feed", scrollVh: 2.5 },
-  { id: "people", scrollVh: 2.5 },
-  { id: "moments", scrollVh: 3.4 },
-  { id: "power", scrollVh: 3.6 },
-  { id: "finale", scrollVh: 1.8 },
+  { id: "intro", scrollVh: 1.6 },
+  { id: "feed", scrollVh: 1.7 },
+  { id: "people", scrollVh: 1.7 },
+  { id: "moments", scrollVh: 1.5 },
+  { id: "power", scrollVh: 2.2 },
+  { id: "finale", scrollVh: 1.1 },
 ];
 
 export function totalVh() {

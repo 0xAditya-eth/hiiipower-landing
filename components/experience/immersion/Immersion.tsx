@@ -50,7 +50,7 @@ function smooth(t: number) {
 }
 
 /** Shared chapter pacing — short star bridge, then content. */
-const PRESENCE = { lead: 0.12, fadeIn: 0.12, fadeOut: 0.14 } as const;
+const PRESENCE = { lead: 0.06, fadeIn: 0.08, fadeOut: 0.1 } as const;
 
 /**
  * Balanced chapter timing — small lead (stars), then content, then soft exit.
@@ -230,7 +230,7 @@ export function Immersion() {
         phoneOpacity = segmentPresence(progress, feed.start, phoneEnd, {
           lead: PRESENCE.lead,
           fadeIn: PRESENCE.fadeIn,
-          fadeOut: 0.28, // single long exit covering late feed → early people
+          fadeOut: 0.16, // single exit covering late feed → early people
         });
 
         const dist = (progress - feedMid) / feedSpan;
