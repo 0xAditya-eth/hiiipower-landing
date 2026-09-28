@@ -7,14 +7,14 @@ export default function PrivacyPolicy() {
     <LegalPageLayout
       eyebrow="Legal"
       title="Privacy Policy"
-      meta="Effective date: August 12, 2026"
+      meta="Effective date: September 28, 2026"
     >
       <p className={legal.meta}>
         <strong className={legal.strong}>Operator:</strong> HiiiPower
         (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;)
         <br />
         <strong className={legal.strong}>Contact / privacy requests:</strong>{" "}
-        support@hiiipower.app
+        <LegalLink href="mailto:support@hiiipower.app">support@hiiipower.app</LegalLink>
         <br />
         <strong className={legal.strong}>Public URL:</strong>{" "}
         https://hiiipower.app/privacy
@@ -34,7 +34,7 @@ export default function PrivacyPolicy() {
         HiiiPower operates a social application with optional privacy-preserving
         (encrypted) posts and identity checks intended to reduce fake accounts.
         For privacy questions or data requests, email{" "}
-        <strong className={legal.strong}>support@hiiipower.app</strong>.
+        <strong className={legal.strong}><LegalLink href="mailto:support@hiiipower.app">support@hiiipower.app</LegalLink></strong>.
       </p>
 
       <h2 className={legal.h2}>2. Data we collect</h2>
@@ -69,31 +69,79 @@ export default function PrivacyPolicy() {
         offer password-based login.
       </p>
 
-      <h3 className={legal.h3}>2.3 Biometric / liveness data (sensitive)</h3>
+      <h3 className={legal.h3}>2.3 Face data (TrueDepth camera / ARKit liveness check)</h3>
       <p className={legal.p}>
-        During registration we may run a facial liveness / uniqueness check.
-        Camera frames used for the check are processed on your device and are{" "}
-        <strong className={legal.strong}>not</strong> uploaded as images or
-        video. What we receive and may store includes:
+        This section describes all face data HiiiPower collects, how it is used,
+        shared, stored, retained, and deleted.
+      </p>
+
+      <p className={legal.p}>
+        <strong className={legal.strong}>2.3.1 What we collect.</strong> During registration, on iPhones with a TrueDepth (Face ID) camera, HiiiPower runs a one-time face liveness and uniqueness check using Apple&apos;s TrueDepth camera and ARKit face tracking.
       </p>
       <ul className={legal.ul}>
-        <li>Device / session metadata for the check</li>
         <li>
-          A derived face embedding / template (and encrypted forms of that
-          template)
+          <em>Processed on your device only, never transmitted or stored:</em> camera frames, face position and orientation, and facial expression values (such as eye blink, smile, and head turn) that ARKit provides through the TrueDepth camera. The app uses these only to confirm that a single, live person is present and completing a randomized on-screen challenge. They are discarded as soon as the check ends. We never upload or store photos, video, depth maps, or face-mesh geometry.
         </li>
         <li>
-          Scores and decision metadata (e.g. accept / review / reject), device
-          hashes, and similarity match references used for anti-abuse
+          <em>Sent to our servers:</em> a numeric face template (also called an embedding) that an on-device model computes from the captured frames. The template is encrypted on your device before it is sent. With it we receive the liveness score, a session identifier, and a one-way hash of your device identifier.
+        </li>
+        <li>
+          <em>Created on our servers:</em> the check outcome (accept, review, or reject), a similarity score, a reference to the most similar existing account (if any), a one-way hash of the template, and the time of the check.
         </li>
       </ul>
       <p className={legal.p}>
-        We use this data only to verify that a real person is registering and to
-        reduce duplicate or fraudulent accounts. We do{" "}
-        <strong className={legal.strong}>not</strong> sell biometric data, and we
-        do <strong className={legal.strong}>not</strong> use biometric templates
-        for advertising or third-party advertising profiles. Templates are
-        treated as sensitive personal information.
+        A face template is a string of numbers, not an image, and cannot be viewed as a photo.
+      </p>
+
+      <p className={legal.p}>
+        <strong className={legal.strong}>2.3.2 How we use face data.</strong> We use face data only to:
+      </p>
+      <ol className={legal.ul} style={{listStyleType: 'decimal'}}>
+        <li>
+          confirm that a real, live person is creating the account; and
+        </li>
+        <li>
+          prevent duplicate and fraudulent accounts by comparing your template against the templates of existing HiiiPower accounts, so that each person can hold only one account.
+        </li>
+      </ol>
+      <p className={legal.p}>
+        We do <strong className={legal.strong}>not</strong> use face data for advertising, marketing, profiling, analytics, use-based data mining, or training machine-learning models. We do not use it to identify you to other users, and we do not use it to unlock the app or sign you in. We never sell face data.
+      </p>
+
+      <p className={legal.p}>
+        <strong className={legal.strong}>2.3.3 Sharing.</strong> We do <strong className={legal.strong}>not</strong> share, sell, rent, or disclose face data to any third party. Face data is not sent to Privy, advertising networks, analytics providers, or any other third-party service. It is handled only by HiiiPower&apos;s own systems, which run on the infrastructure providers listed in §2.3.4. Those providers host our systems on our behalf and may not use the data for their own purposes. Within HiiiPower, access is limited to authorized personnel who review flagged checks, and they see outcomes and scores only (no images exist). We will disclose face data only if the law requires it.
+      </p>
+
+      <p className={legal.p}>
+        <strong className={legal.strong}>2.3.4 Where face data is stored.</strong>
+      </p>
+      <ul className={legal.ul}>
+        <li>
+          <strong className={legal.strong}>Database:</strong> HiiiPower&apos;s own database on MongoDB Atlas, hosted on Amazon Web Services in the Mumbai, India region (ap-south-1). The template is stored only in encrypted form.
+        </li>
+        <li>
+          <strong className={legal.strong}>Application servers:</strong> our API servers on Render, hosted in the United States (Oregon). They decrypt the template in memory only to run the uniqueness comparison, and do not write it to disk or to logs.
+        </li>
+        <li>
+          <strong className={legal.strong}>Operational logs:</strong> our server logs record the outcome and similarity score of each check, never the template. These logs roll off automatically within 30 days.
+        </li>
+      </ul>
+
+      <p className={legal.p}>
+        <strong className={legal.strong}>2.3.5 Security.</strong> Templates are protected in transit by TLS and by encryption on your device (RSA-OAEP with AES-256-GCM). At rest they are encrypted with AES-256-GCM using keys held on our application servers, separately from the database. The database provider also encrypts storage at rest.
+      </p>
+
+      <p className={legal.p}>
+        <strong className={legal.strong}>2.3.6 Retention.</strong> We keep your face template and related liveness records only while your account exists, because they are needed to keep preventing duplicate accounts. If a check is rejected as a duplicate, your template is not stored. We keep only the attempt record (outcome, score, and the matched-account reference), and it is deleted along with your account. Temporary check sessions expire automatically within minutes. We do not currently keep separate database backups that contain face data. If we add backups, encrypted backup copies will be overwritten within 30 days of deletion.
+      </p>
+
+      <p className={legal.p}>
+        <strong className={legal.strong}>2.3.7 Deletion.</strong> When you delete your account (<strong className={legal.strong}>Settings → Deactivate / Delete Account</strong>), your face template, template hash, liveness scores, and all liveness session and attempt records are permanently erased when the 30-day deletion grace period ends. Any reference to your account in other users&apos; liveness records is also removed. You can ask us to delete your face data at any time by emailing{" "}
+        <strong className={legal.strong}><LegalLink href="mailto:support@hiiipower.app">support@hiiipower.app</LegalLink></strong>. Deleting your face data this way also removes your verified status, and you may need to verify again to keep using features that require it.
+      </p>
+
+      <p className={legal.p}>
+        <strong className={legal.strong}>2.3.8 Consent.</strong> The face check runs only after you choose to start it and grant camera permission. You can revoke camera permission at any time in iOS Settings.
       </p>
 
       <h3 className={legal.h3}>2.4 User-generated content</h3>
@@ -196,7 +244,9 @@ export default function PrivacyPolicy() {
           Operate encrypted / access-controlled posts (including key wrapping and
           access checks)
         </li>
-        <li>Run liveness / uniqueness checks for fraud prevention</li>
+        <li>
+          Run the face liveness / uniqueness check to prevent fraud and duplicate accounts (face data is used only as described in §2.3)
+        </li>
         <li>Enforce safety (reports, blocks, bans) and respond to abuse</li>
         <li>
           Send transactional email (for example account lifecycle notices when an
@@ -213,41 +263,45 @@ export default function PrivacyPolicy() {
       <h2 className={legal.h2}>4. Legal bases (where applicable)</h2>
       <p className={legal.p}>
         Depending on your jurisdiction, we process data based on: contract (to
-        provide the Service), consent (e.g. camera / location / biometric check
-        where required), legitimate interests (security, abuse prevention,
+        provide the Service), consent (e.g. camera / location / the face liveness check), legitimate interests (security, abuse prevention,
         product improvement), and legal obligation.
       </p>
 
       <h2 className={legal.h2}>5. Sharing and processors</h2>
       <p className={legal.p}>
-        We share data with service providers who process it on our instructions,
+        <strong className={legal.strong}>Face data is never shared with third parties.</strong> See §2.3.3.
+      </p>
+      <p className={legal.p}>
+        We share other data with service providers who process it on our instructions,
         which may include:
       </p>
       <ul className={legal.ul}>
         <li>
-          <strong className={legal.strong}>Privy</strong> — email OTP
-          authentication and embedded wallets
+          <strong className={legal.strong}>Privy</strong>: email OTP
+          authentication and embedded wallets (receives no face data)
         </li>
         <li>
-          <strong className={legal.strong}>Cloud hosting / database</strong> — API,
-          realtime, and data storage
+          <strong className={legal.strong}>Cloud hosting / database</strong> (Render for application servers; MongoDB Atlas on AWS for the database): API, realtime, and data storage
         </li>
         <li>
-          <strong className={legal.strong}>Email delivery</strong> —
+          <strong className={legal.strong}>Object storage</strong> (Cloudflare R2): uploaded media such as profile photos and post images (receives no face data)
+        </li>
+        <li>
+          <strong className={legal.strong}>Email delivery</strong>:
           transactional messages
         </li>
         <li>
           <strong className={legal.strong}>Maps / geocoding providers</strong>{" "}
-          (Apple Maps via the device, LocationIQ) — location features
+          (Apple Maps via the device, LocationIQ): location features
         </li>
         <li>
           <strong className={legal.strong}>IPFS pinning / gateways</strong> (e.g.
-          Infura, Pinata, or another provider we configure) — media and metadata
+          Infura, Pinata, or another provider we configure): media and metadata
           storage for posts
         </li>
         <li>
           <strong className={legal.strong}>Push infrastructure</strong> (e.g. Expo
-          / APNs) — notifications
+          / APNs): notifications
         </li>
       </ul>
       <p className={legal.p}>
@@ -267,7 +321,7 @@ export default function PrivacyPolicy() {
 
       <h2 className={legal.h2}>6. International transfers</h2>
       <p className={legal.p}>
-        Servers and processors may be located outside your country. Where
+        Our database is hosted in India (AWS Mumbai region) and our application servers in the United States, so your data, including encrypted face templates, may be processed in countries other than your own. Where
         required, we use appropriate safeguards for cross-border transfers.
       </p>
 
@@ -287,29 +341,24 @@ export default function PrivacyPolicy() {
           <strong className={legal.strong}>30-day grace period</strong> during
           which you may cancel by signing back in). After purge we delete account
           records, social graph rows, messages involving you, safety rows
-          involving you, liveness session/attempt records, local profile media
+          involving you, face templates and all liveness session/attempt records, local profile media
           files we host, and related progression data, as described in our
           account lifecycle process
         </li>
         <li>
-          <strong className={legal.strong}>Biometric templates:</strong> retained
-          only for anti-abuse / uniqueness purposes while the account exists (or
-          until purge after a deletion request). Soft-hide (deactivation or the
-          deletion grace period) clears push tokens and hides content but may
-          retain templates until purge completes. Templates are deleted with the
-          account purge and are not used for advertising
+          <strong className={legal.strong}>Face data:</strong> retained and deleted as described in §2.3.6 and §2.3.7. Deactivation or the deletion grace period hides your account but keeps your template until the purge completes. The template is then permanently erased
         </li>
         <li>
           <strong className={legal.strong}>Backups:</strong> may persist for a
-          limited period before rolling off
+          limited period (no more than 30 days) before rolling off
         </li>
         <li>
           <strong className={legal.strong}>Legal holds / abuse records:</strong>{" "}
-          may be retained longer when necessary
+          may be retained longer when necessary (this never includes face templates beyond the periods in §2.3)
         </li>
         <li>
           <strong className={legal.strong}>IPFS / blockchain:</strong> we may be
-          unable to erase copies that already exist on public networks
+          unable to erase copies that already exist on public networks (face data is never published to IPFS or a blockchain)
         </li>
       </ul>
 
@@ -324,11 +373,11 @@ export default function PrivacyPolicy() {
         <li>
           <strong className={legal.strong}>
             Settings → Deactivate / Delete Account
-          </strong>{" "}
-          — start deletion
+          </strong>
+          : start deletion (including face data)
         </li>
         <li>
-          <strong className={legal.strong}>Settings → Blocked users</strong> —
+          <strong className={legal.strong}>Settings → Blocked users</strong>:
           manage blocks
         </li>
         <li>
@@ -336,13 +385,13 @@ export default function PrivacyPolicy() {
           profiles, comments, and chats
         </li>
         <li>
-          System settings — revoke camera, microphone, photos, location, and
+          System settings: revoke camera, photos, location, and
           notification permissions
         </li>
       </ul>
       <p className={legal.p}>
         You can also email{" "}
-        <strong className={legal.strong}>support@hiiipower.app</strong>. We aim
+        <strong className={legal.strong}><LegalLink href="mailto:support@hiiipower.app">support@hiiipower.app</LegalLink></strong>, including to request deletion of your face data only. We aim
         to respond within a reasonable period (and within 2–3 business days for
         safety reports where feasible).
       </p>
@@ -359,7 +408,7 @@ export default function PrivacyPolicy() {
       <p className={legal.p}>
         We use industry-standard measures including transport encryption
         (HTTPS/TLS), access-controlled APIs, and encryption for certain post
-        content and biometric templates. No method of transmission or storage is
+        content and for face templates (see §2.3.5). No method of transmission or storage is
         100% secure.
       </p>
 
@@ -368,7 +417,7 @@ export default function PrivacyPolicy() {
         We disclose data collection categories in Apple App Store Connect (and
         equivalent store listings) consistent with this Policy, including
         identifiers, contact info, user content, location (if enabled),
-        diagnostics, and sensitive info related to liveness checks.
+        diagnostics, and sensitive info related to the face liveness check.
       </p>
 
       <h2 className={legal.h2}>12. Changes</h2>
@@ -380,7 +429,7 @@ export default function PrivacyPolicy() {
 
       <h2 className={legal.h2}>13. Contact</h2>
       <p className={legal.p}>
-        <strong className={legal.strong}>support@hiiipower.app</strong>
+        <strong className={legal.strong}><LegalLink href="mailto:support@hiiipower.app">support@hiiipower.app</LegalLink></strong>
         <br />
         Website: https://hiiipower.app
       </p>
