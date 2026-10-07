@@ -87,17 +87,55 @@ function QuizCard({
   onReady: () => void;
 }) {
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [currentSrc, setCurrentSrc] = useState(image.src);
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-220, 0, 220], [-14, 0, 14]);
   const aiHint = useTransform(x, [-160, -40, 0], [1, 0.35, 0]);
   const realHint = useTransform(x, [0, 40, 160], [0, 0.35, 1]);
   const readySent = useRef(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setLoaded(false);
+    setError(false);
+    setRetryCount(0);
+    setCurrentSrc(image.src);
     readySent.current = false;
     x.set(0);
-  }, [image.src, x]);
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      if (!loaded && !error) {
+        setError(true);
+      }
+    }, 10000);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [image.src, x, loaded, error]);
+
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0 && !loaded) {
+      setLoaded(true);
+      if (!readySent.current) {
+        readySent.current = true;
+        onReady();
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    }
+  }, [currentSrc, loaded, onReady]);
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
     if (disabled || showFeedback || !loaded) return;
@@ -109,12 +147,68 @@ function QuizCard({
     }
   };
 
-  const canInteract = loaded && !disabled && !showFeedback;
+  const handleImageLoad = () => {
+    setLoaded(true);
+    setError(false);
+    if (!readySent.current) {
+      readySent.current = true;
+      onReady();
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
+
+  const handleImageError = () => {
+    if (retryCount < 3) {
+      setRetryCount((prev) => prev + 1);
+      setCurrentSrc(`${image.src}?retry=${retryCount + 1}`);
+    } else {
+      const unoptimizedSrc = image.src.startsWith("/_next/")
+        ? image.src
+        : image.src;
+      if (currentSrc !== unoptimizedSrc) {
+        setCurrentSrc(unoptimizedSrc);
+      } else {
+        setError(true);
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+      }
+    }
+  };
+
+  const handleRetry = () => {
+    setError(false);
+    setLoaded(false);
+    setRetryCount(0);
+    setCurrentSrc(image.src);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      if (!loaded && !error) {
+        setError(true);
+      }
+    }, 10000);
+  };
+
+  const handleSkip = () => {
+    setError(false);
+    setLoaded(true);
+    if (!readySent.current) {
+      readySent.current = true;
+      onReady();
+    }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
+
+  const canInteract = loaded && !disabled && !showFeedback && !error;
 
   return (
     <motion.div
-      // Opacity enter/exit lives on the SAME node as drag transforms to
-      // avoid the parent-opacity + child-transform compositor flash.
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -127,26 +221,42 @@ function QuizCard({
       className="absolute inset-0 touch-pan-y"
     >
       <div className="relative h-full w-full overflow-hidden border border-white/10 bg-[#111]">
-        {!loaded && (
+        {!loaded && !error && (
           <div className="absolute inset-0 z-10 flex items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/15 border-t-accent" />
           </div>
         )}
+        {error && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-black/70 p-6">
+            <p className="text-center text-sm text-white/70">
+              Failed to load image
+            </p>
+            <div className="flex gap-3">
+              <Button size="sm" variant="secondary" onClick={handleRetry}>
+                Tap to retry
+              </Button>
+              <Button size="sm" variant="ghost" onClick={handleSkip}>
+                Skip
+              </Button>
+            </div>
+          </div>
+        )}
         <Image
-          src={image.src}
+          ref={(el) => {
+            if (el) {
+              const img = el as unknown as { _imageElement?: HTMLImageElement };
+              imgRef.current = img._imageElement || null;
+            }
+          }}
+          src={currentSrc}
           alt={`Image ${index + 1}`}
           fill
           sizes="(max-width: 768px) 100vw, 768px"
           className="pointer-events-none select-none object-cover"
           priority
           draggable={false}
-          onLoad={() => {
-            setLoaded(true);
-            if (!readySent.current) {
-              readySent.current = true;
-              onReady();
-            }
-          }}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
         />
 
         <motion.div
@@ -207,11 +317,30 @@ export default function AIOrNotPage() {
     const seed = roundParam ? parseInt(roundParam, 10) : generateRandomSeed();
     setCurrentSeed(seed);
 
-    fetch("/ai-or-not/manifest.json")
-      .then((res) => res.json())
+    const fetchManifestWithRetry = async (retries = 3): Promise<ImageData[]> => {
+      for (let i = 0; i <= retries; i++) {
+        try {
+          const res = await fetch(`/ai-or-not/manifest.json?v=${Date.now()}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return await res.json();
+        } catch (err) {
+          console.error(`Manifest fetch attempt ${i + 1} failed:`, err);
+          if (i === retries) {
+            throw err;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, i)));
+        }
+      }
+      throw new Error("Failed to fetch manifest");
+    };
+
+    fetchManifestWithRetry()
       .then((data: ImageData[]) => {
         const roundImages = getRoundImages(data, seed);
         setImages(roundImages);
+      })
+      .catch((err) => {
+        console.error("Failed to load game images:", err);
       });
 
     const mediaQuery = window.matchMedia("(max-width: 767px)");
@@ -224,6 +353,19 @@ export default function AIOrNotPage() {
     mediaQuery.addEventListener("change", handleResize);
     return () => mediaQuery.removeEventListener("change", handleResize);
   }, []);
+
+  useEffect(() => {
+    if (gameState === "quiz" && images.length > 0) {
+      const preloadCount = 2;
+      for (let i = 1; i <= preloadCount; i++) {
+        const nextIndex = currentIndex + i;
+        if (nextIndex < images.length) {
+          const img = new window.Image();
+          img.src = images[nextIndex].src;
+        }
+      }
+    }
+  }, [currentIndex, images, gameState]);
 
   const handleStart = () => {
     setGameState("quiz");
@@ -394,8 +536,24 @@ export default function AIOrNotPage() {
     const newSeed = generateRandomSeed();
     setCurrentSeed(newSeed);
 
-    fetch("/ai-or-not/manifest.json")
-      .then((res) => res.json())
+    const fetchManifestWithRetry = async (retries = 3): Promise<ImageData[]> => {
+      for (let i = 0; i <= retries; i++) {
+        try {
+          const res = await fetch(`/ai-or-not/manifest.json?v=${Date.now()}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return await res.json();
+        } catch (err) {
+          console.error(`Manifest fetch attempt ${i + 1} failed:`, err);
+          if (i === retries) {
+            throw err;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, i)));
+        }
+      }
+      throw new Error("Failed to fetch manifest");
+    };
+
+    fetchManifestWithRetry()
       .then((data: ImageData[]) => {
         const roundImages = getRoundImages(data, newSeed);
         setImages(roundImages);
@@ -410,6 +568,9 @@ export default function AIOrNotPage() {
         advancingRef.current = false;
 
         window.history.pushState({}, "", `/ai-or-not?r=${newSeed}`);
+      })
+      .catch((err) => {
+        console.error("Failed to load new round:", err);
       });
   };
 
@@ -497,7 +658,7 @@ export default function AIOrNotPage() {
                 <div className="relative mx-auto aspect-[4/3] w-full">
                   <AnimatePresence mode="wait" initial={false}>
                     <QuizCard
-                      key={current.src}
+                      key={`${current.src}-${currentIndex}`}
                       image={current}
                       index={currentIndex}
                       showFeedback={!!feedback && feedback.src === current.src}
