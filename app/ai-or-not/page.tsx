@@ -95,8 +95,8 @@ function QuizCard({
   const aiHint = useTransform(x, [-160, -40, 0], [1, 0.35, 0]);
   const realHint = useTransform(x, [0, 40, 160], [0, 0.35, 1]);
   const readySent = useRef(false);
-  const imgRef = useRef<HTMLImageElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const loadedRef = useRef(false);
 
   useEffect(() => {
     setLoaded(false);
@@ -104,6 +104,7 @@ function QuizCard({
     setRetryCount(0);
     setCurrentSrc(image.src);
     readySent.current = false;
+    loadedRef.current = false;
     x.set(0);
 
     if (timeoutRef.current) {
@@ -111,7 +112,7 @@ function QuizCard({
     }
 
     timeoutRef.current = setTimeout(() => {
-      if (!loaded && !error) {
+      if (!loadedRef.current) {
         setError(true);
       }
     }, 10000);
@@ -121,21 +122,7 @@ function QuizCard({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [image.src, x, loaded, error]);
-
-  useEffect(() => {
-    const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth > 0 && !loaded) {
-      setLoaded(true);
-      if (!readySent.current) {
-        readySent.current = true;
-        onReady();
-      }
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    }
-  }, [currentSrc, loaded, onReady]);
+  }, [image.src, x]);
 
   const handleDragEnd = (_: unknown, info: PanInfo) => {
     if (disabled || showFeedback || !loaded) return;
@@ -148,14 +135,15 @@ function QuizCard({
   };
 
   const handleImageLoad = () => {
+    loadedRef.current = true;
     setLoaded(true);
     setError(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     if (!readySent.current) {
       readySent.current = true;
       onReady();
-    }
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
     }
   };
 
@@ -183,25 +171,27 @@ function QuizCard({
     setLoaded(false);
     setRetryCount(0);
     setCurrentSrc(image.src);
+    loadedRef.current = false;
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
     timeoutRef.current = setTimeout(() => {
-      if (!loaded && !error) {
+      if (!loadedRef.current) {
         setError(true);
       }
     }, 10000);
   };
 
   const handleSkip = () => {
+    loadedRef.current = true;
     setError(false);
     setLoaded(true);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     if (!readySent.current) {
       readySent.current = true;
       onReady();
-    }
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
     }
   };
 
@@ -242,12 +232,6 @@ function QuizCard({
           </div>
         )}
         <Image
-          ref={(el) => {
-            if (el) {
-              const img = el as unknown as { _imageElement?: HTMLImageElement };
-              imgRef.current = img._imageElement || null;
-            }
-          }}
           src={currentSrc}
           alt={`Image ${index + 1}`}
           fill
