@@ -189,14 +189,14 @@
     "licenseUrl": "https://www.pexels.com/license/"
   },
   {
-    "src": "/ai-or-not/real-08.jpg",
+    "src": "/ai-or-not/real-08.webp",
     "isAI": false,
     "credit": "Photo by Harman Tatla",
     "license": "Unsplash License",
     "licenseUrl": "https://unsplash.com/license"
   },
   {
-    "src": "/ai-or-not/real-09.jpg",
+    "src": "/ai-or-not/real-09.webp",
     "isAI": false,
     "credit": "Photo by Pexels",
     "license": "Pexels License",
@@ -238,7 +238,7 @@
     "licenseUrl": "https://www.pexels.com/license/"
   },
   {
-    "src": "/ai-or-not/real-15.jpg",
+    "src": "/ai-or-not/real-15.webp",
     "isAI": false,
     "credit": "Photo by Italo Melo",
     "license": "Pexels License",
@@ -273,7 +273,7 @@
     "licenseUrl": "https://www.pexels.com/license/"
   },
   {
-    "src": "/ai-or-not/real-20.jpg",
+    "src": "/ai-or-not/real-20.webp",
     "isAI": false,
     "credit": "Photo by Sumit Surai",
     "license": "CC BY-SA 4.0",
