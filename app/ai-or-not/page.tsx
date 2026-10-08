@@ -607,34 +607,44 @@ export default function AIOrNotPage() {
           
           const contentX = cardX + cardBorder + cardPaddingLeft; // 70 + 2 + 50 = 122
 
-          // Approximate backdrop-filter blur(18px)
-          const blurRegionX = cardX;
-          const blurRegionY = cardY;
-          const blurRegionW = cardWidth;
-          const blurRegionH = cardHeight;
-          
-          // Create offscreen canvas for blur approximation
-          const blurCanvas = document.createElement('canvas');
-          const blurScale = 1 / 12;
-          blurCanvas.width = Math.ceil(blurRegionW * blurScale);
-          blurCanvas.height = Math.ceil(blurRegionH * blurScale);
-          const blurCtx = blurCanvas.getContext('2d')!;
-          
-          // Draw the region to blur at small scale
-          blurCtx.drawImage(
-            canvas,
-            blurRegionX, blurRegionY, blurRegionW, blurRegionH,
-            0, 0, blurCanvas.width, blurCanvas.height
-          );
-          
-          // Scale up and down multiple times for blur effect
+          // Real Gaussian-ish blur (3-pass box blur, sigma 18 = CSS blur(18px)), works in all browsers
+          const pad = 54;
+          const rx = Math.max(0, cardX - pad), ry = Math.max(0, cardY - pad);
+          const rw = Math.min(STORY.width, cardX + cardWidth + pad) - rx;
+          const rh = Math.min(STORY.height, cardY + cardHeight + pad) - ry;
+          const region = ctx.getImageData(rx, ry, rw, rh);
+          const src = region.data;
+          const sigma = 18, n = 3;
+          const wIdeal = Math.sqrt((12 * sigma * sigma) / n + 1);
+          let wl = Math.floor(wIdeal); if (wl % 2 === 0) wl--;
+          const m = Math.round((12 * sigma * sigma - n * wl * wl - 4 * n * wl - 3 * n) / (-4 * wl - 4));
+          const radii = [0, 1, 2].map((i) => ((i < m ? wl : wl + 2) - 1) / 2);
+          const tmpBuf = new Uint8ClampedArray(src.length);
+          const pass = (a: Uint8ClampedArray, b: Uint8ClampedArray, r: number, horiz: boolean) => {
+            const len = horiz ? rw : rh, lines = horiz ? rh : rw, step = horiz ? 4 : rw * 4;
+            const inv = 1 / (2 * r + 1);
+            for (let l = 0; l < lines; l++) {
+              const base = horiz ? l * rw * 4 : l * 4;
+              for (let c = 0; c < 3; c++) {
+                let acc = 0;
+                for (let k = -r; k <= r; k++) acc += a[base + Math.min(len - 1, Math.max(0, k)) * step + c];
+                for (let p = 0; p < len; p++) {
+                  b[base + p * step + c] = acc * inv;
+                  acc += a[base + Math.min(len - 1, p + r + 1) * step + c] - a[base + Math.max(0, p - r) * step + c];
+                }
+              }
+              for (let p = 0; p < len; p++) b[base + p * step + 3] = 255;
+            }
+          };
+          for (const r of radii) { pass(src, tmpBuf, r, true); pass(tmpBuf, src, r, false); }
+          const blurCanvas = document.createElement("canvas");
+          blurCanvas.width = rw; blurCanvas.height = rh;
+          blurCanvas.getContext("2d")!.putImageData(region, 0, 0);
           ctx.save();
           ctx.beginPath();
           ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
           ctx.clip();
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
-          ctx.drawImage(blurCanvas, blurRegionX, blurRegionY, blurRegionW, blurRegionH);
+          ctx.drawImage(blurCanvas, rx, ry);
           ctx.restore();
 
           // Card fill and border
