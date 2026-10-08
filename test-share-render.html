@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test Share Image Rendering</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #111;
+      color: white;
+      font-family: system-ui, sans-serif;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .panel {
+      background: #222;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    canvas {
+      border: 2px solid #444;
+      display: block;
+      max-width: 540px;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #ff3366;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #ff4477;
+    }
+    #status {
+      margin-top: 10px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>Instagram Share Card Test Render</h1>
+  <div class="container">
+    <div class="panel">
+      <h2>Test 7/10 Score</h2>
+      <canvas id="canvas7" width="1080" height="1920"></canvas>
+      <button onclick="render7()">Render 7/10</button>
+      <button onclick="download('canvas7', 'share-7of10.png')">Download</button>
+      <div id="status7"></div>
+    </div>
+    <div class="panel">
+      <h2>Test 10/10 Score</h2>
+      <canvas id="canvas10" width="1080" height="1920"></canvas>
+      <button onclick="render10()">Render 10/10</button>
+      <button onclick="download('canvas10', 'share-10of10.png')">Download</button>
+      <div id="status10"></div>
+    </div>
+  </div>
+
+  <script>
+    const STORY = { width: 1080, height: 1920 };
+
+    async function ensureFonts() {
+      try {
+        await document.fonts.load('700 32px Inter');
+        await document.fonts.load('800 42px Inter');
+        await document.fonts.load('900 150px Inter');
+        await document.fonts.load('900 120px Inter');
+      } catch (err) {
+        console.warn('Font loading error:', err);
+      }
+    }
+
+    async function renderShareImage(canvasId, score, guesses, bgImageUrl, statusId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d', { alpha: false });
+      const status = document.getElementById(statusId);
+      
+      status.textContent = 'Loading fonts...';
+      await ensureFonts();
+
+      status.textContent = 'Loading background image...';
+      const bg = new Image();
+      bg.crossOrigin = "anonymous";
+      
+      await new Promise((resolve, reject) => {
+        bg.onload = resolve;
+        bg.onerror = reject;
+        bg.src = bgImageUrl;
+      });
+
+      status.textContent = 'Drawing background...';
+      const canvasAspect = STORY.width / STORY.height;
+      const imgAspect = bg.width / bg.height;
+      let drawWidth, drawHeight, offsetX, offsetY;
+
+      if (imgAspect > canvasAspect) {
+        drawHeight = STORY.height;
+        drawWidth = drawHeight * imgAspect;
+        offsetX = (STORY.width - drawWidth) / 2;
+        offsetY = 0;
+      } else {
+        drawWidth = STORY.width;
+        drawHeight = drawWidth / imgAspect;
+        offsetX = 0;
+        offsetY = (STORY.height - drawHeight) / 2;
+      }
+
+      ctx.drawImage(bg, offsetX, offsetY, drawWidth, drawHeight);
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, STORY.height);
+      gradient.addColorStop(0, "rgba(0, 0, 0, 0.73)");
+      gradient.addColorStop(0.3, "rgba(0, 0, 0, 0.4)");
+      gradient.addColorStop(0.46, "rgba(0, 0, 0, 0)");
+      gradient.addColorStop(0.5, "rgba(0, 0, 0, 0)");
+      gradient.addColorStop(0.82, "rgba(0, 0, 0, 0.87)");
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0.87)");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, STORY.width, STORY.height);
+
+      status.textContent = 'Loading logo...';
+      const logo = new Image();
+      logo.crossOrigin = "anonymous";
+      
+      await new Promise((resolve, reject) => {
+        logo.onload = resolve;
+        logo.onerror = reject;
+        logo.src = '/share/tri-white.png';
+      });
+
+      status.textContent = 'Drawing content...';
+      let currentX, totalWidth;
+      const logoX = 70;
+      const logoY = 310;
+      const logoHeight = 42;
+      const logoWidth = (logo.width / logo.height) * logoHeight;
+      
+      ctx.save();
+      ctx.shadowColor = "rgba(0, 0, 0, 0.56)";
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 2;
+      ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
+      ctx.restore();
+
+      ctx.save();
+      ctx.shadowColor = "rgba(0, 0, 0, 0.56)";
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 2;
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 42px Inter, sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      const wordmarkX = logoX + logoWidth + 16;
+      const wordmark = "HiiiPower";
+      currentX = wordmarkX;
+      for (let i = 0; i < wordmark.length; i++) {
+        ctx.fillText(wordmark[i], currentX, logoY);
+        currentX += ctx.measureText(wordmark[i]).width - 1;
+      }
+      ctx.restore();
+
+      const headlineX = 70;
+      const headlineY = 430;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+      ctx.shadowBlur = 30;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 6;
+      
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 150px Inter, sans-serif";
+      currentX = headlineX;
+      const line1 = "Real photo";
+      for (let i = 0; i < line1.length; i++) {
+        ctx.fillText(line1[i], currentX, headlineY);
+        currentX += ctx.measureText(line1[i]).width - 6;
+      }
+
+      currentX = headlineX;
+      const line2a = "or ";
+      ctx.fillStyle = "#ffffff";
+      for (let i = 0; i < line2a.length; i++) {
+        ctx.fillText(line2a[i], currentX, headlineY + 135);
+        currentX += ctx.measureText(line2a[i]).width - 6;
+      }
+      
+      ctx.fillStyle = "#FF3366";
+      const ai = "AI";
+      for (let i = 0; i < ai.length; i++) {
+        ctx.fillText(ai[i], currentX, headlineY + 135);
+        currentX += ctx.measureText(ai[i]).width - 6;
+      }
+
+      currentX = headlineX;
+      const line3 = "photo?";
+      ctx.fillStyle = "#ffffff";
+      for (let i = 0; i < line3.length; i++) {
+        ctx.fillText(line3[i], currentX, headlineY + 270);
+        currentX += ctx.measureText(line3[i]).width - 6;
+      }
+
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+
+      const cardX = 70;
+      const cardWidth = 940;
+      const cardBottom = STORY.height - 300;
+      const cardRadius = 44;
+      const cardPaddingTop = 44;
+      const cardPaddingBottom = 46;
+      
+      const cardContentHeight = 120 + 14 + 44 + 30 + 56 + 30 + 32;
+      const cardHeight = cardPaddingTop + cardContentHeight + cardPaddingBottom;
+      const cardY = cardBottom - cardHeight;
+
+      ctx.fillStyle = "rgba(10, 10, 10, 0.72)";
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+      ctx.stroke();
+
+      let contentY = cardY + cardPaddingTop;
+      
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      const centerX = cardX + cardWidth / 2;
+      
+      ctx.font = "900 120px Inter, sans-serif";
+      const iGotPart = "I got ";
+      const scorePart = `${score}/10`;
+      totalWidth = 0;
+      for (let i = 0; i < iGotPart.length; i++) {
+        totalWidth += ctx.measureText(iGotPart[i]).width - 5;
+      }
+      for (let i = 0; i < scorePart.length; i++) {
+        totalWidth += ctx.measureText(scorePart[i]).width - 5;
+      }
+      
+      currentX = centerX - totalWidth / 2;
+      
+      ctx.fillStyle = "#ffffff";
+      for (let i = 0; i < iGotPart.length; i++) {
+        ctx.fillText(iGotPart[i], currentX, contentY);
+        currentX += ctx.measureText(iGotPart[i]).width - 5;
+      }
+      
+      ctx.fillStyle = "#FF3366";
+      for (let i = 0; i < scorePart.length; i++) {
+        ctx.fillText(scorePart[i], currentX, contentY);
+        currentX += ctx.measureText(scorePart[i]).width - 5;
+      }
+      
+      contentY += 120 + 14;
+
+      ctx.font = "700 44px Inter, sans-serif";
+      ctx.fillStyle = "#f2f1ec";
+      const beatMe = "Can you beat me.";
+      totalWidth = 0;
+      for (let i = 0; i < beatMe.length; i++) {
+        totalWidth += ctx.measureText(beatMe[i]).width - 1;
+      }
+      currentX = centerX - totalWidth / 2;
+      for (let i = 0; i < beatMe.length; i++) {
+        ctx.fillText(beatMe[i], currentX, contentY);
+        currentX += ctx.measureText(beatMe[i]).width - 1;
+      }
+      
+      contentY += 44 + 30;
+
+      const squareSize = 56;
+      const squareGap = 12;
+      const squaresTotalWidth = squareSize * 10 + squareGap * 9;
+      let squareX = centerX - squaresTotalWidth / 2;
+      
+      guesses.forEach((correct) => {
+        ctx.fillStyle = correct ? "#FF3366" : "rgba(255, 255, 255, 0.18)";
+        ctx.beginPath();
+        ctx.roundRect(squareX, contentY, squareSize, squareSize, 12);
+        ctx.fill();
+        squareX += squareSize + squareGap;
+      });
+      
+      contentY += 56 + 30;
+
+      ctx.font = "700 32px Inter, sans-serif";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.63)";
+      const url = "hiiipower.app/ai-or-not";
+      totalWidth = 0;
+      for (let i = 0; i < url.length; i++) {
+        totalWidth += ctx.measureText(url[i]).width - 0.5;
+      }
+      currentX = centerX - totalWidth / 2;
+      for (let i = 0; i < url.length; i++) {
+        ctx.fillText(url[i], currentX, contentY);
+        currentX += ctx.measureText(url[i]).width - 0.5;
+      }
+
+      status.textContent = 'Complete!';
+    }
+
+    async function render7() {
+      const guesses = [true, false, true, true, false, true, true, true, false, true]; // 7/10
+      await renderShareImage('canvas7', 7, guesses, '/ai-or-not/real-02.jpg', 'status7');
+    }
+
+    async function render10() {
+      const guesses = [true, true, true, true, true, true, true, true, true, true]; // 10/10
+      await renderShareImage('canvas10', 10, guesses, '/ai-or-not/real-01.jpg', 'status10');
+    }
+
+    function download(canvasId, filename) {
+      const canvas = document.getElementById(canvasId);
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    }
+  </script>
+</body>
+</html>

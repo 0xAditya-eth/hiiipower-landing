@@ -429,6 +429,7 @@ export default function AIOrNotPage() {
       try {
         await document.fonts.load('700 32px Inter');
         await document.fonts.load('800 42px Inter');
+        await document.fonts.load('700 44px Inter');
         await document.fonts.load('900 150px Inter');
         await document.fonts.load('900 120px Inter');
       } catch (err) {
@@ -457,23 +458,13 @@ export default function AIOrNotPage() {
       const bg = new window.Image();
       bg.crossOrigin = "anonymous";
       bg.onload = () => {
-        const canvasAspect = STORY.width / STORY.height;
-        const imgAspect = bg.width / bg.height;
-        let drawWidth, drawHeight, offsetX, offsetY;
-
-        if (imgAspect > canvasAspect) {
-          drawHeight = STORY.height;
-          drawWidth = drawHeight * imgAspect;
-          offsetX = (STORY.width - drawWidth) / 2;
-          offsetY = 0;
-        } else {
-          drawWidth = STORY.width;
-          drawHeight = drawWidth / imgAspect;
-          offsetX = 0;
-          offsetY = (STORY.height - drawHeight) / 2;
-        }
-
-        ctx.drawImage(bg, offsetX, offsetY, drawWidth, drawHeight);
+        // Match CSS 'center top / auto 2060px' with cover fallback
+        const scale = Math.max(2060 / bg.height, STORY.width / bg.width);
+        const drawWidth = bg.width * scale;
+        const drawHeight = bg.height * scale;
+        const offsetX = (STORY.width - drawWidth) / 2;
+        
+        ctx.drawImage(bg, offsetX, 0, drawWidth, drawHeight);
 
         const gradient = ctx.createLinearGradient(0, 0, 0, STORY.height);
         gradient.addColorStop(0, "rgba(0, 0, 0, 0.73)");
@@ -488,20 +479,21 @@ export default function AIOrNotPage() {
         const logo = new window.Image();
         logo.crossOrigin = "anonymous";
         logo.onload = () => {
-          let currentX, totalWidth;
+          const supportsLetterSpacing = 'letterSpacing' in ctx;
+          let currentX = 0;
           const logoX = 70;
-          const logoY = 310;
+          const logoTop = 314.4;
           const logoHeight = 42;
           const logoWidth = (logo.width / logo.height) * logoHeight;
           
-          ctx.save();
-          ctx.shadowColor = "rgba(0, 0, 0, 0.56)";
-          ctx.shadowBlur = 14;
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 2;
-          ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
-          ctx.restore();
+          // Draw triangle with NO shadow
+          ctx.drawImage(logo, logoX, logoTop, logoWidth, logoHeight);
 
+          // Draw "HiiiPower" wordmark with shadow
+          const wordmarkX = logoX + logoWidth + 16;
+          const wordmarkBaseline = 350.7;
+          const wordmark = "HiiiPower";
+          
           ctx.save();
           ctx.shadowColor = "rgba(0, 0, 0, 0.56)";
           ctx.shadowBlur = 14;
@@ -510,71 +502,142 @@ export default function AIOrNotPage() {
           ctx.fillStyle = "#ffffff";
           ctx.font = "800 42px Inter, sans-serif";
           ctx.textAlign = "left";
-          ctx.textBaseline = "top";
-          const wordmarkX = logoX + logoWidth + 16;
-          const wordmark = "HiiiPower";
-          currentX = wordmarkX;
-          for (let i = 0; i < wordmark.length; i++) {
-            ctx.fillText(wordmark[i], currentX, logoY);
-            currentX += ctx.measureText(wordmark[i]).width - 1;
+          ctx.textBaseline = "alphabetic";
+          
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-1px';
+            ctx.fillText(wordmark, wordmarkX, wordmarkBaseline);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            currentX = wordmarkX;
+            for (let i = 0; i < wordmark.length; i++) {
+              const prefix = wordmark.substring(0, i);
+              currentX = wordmarkX + ctx2D.measureText(prefix).width - i;
+              ctx2D.fillText(wordmark[i], currentX, wordmarkBaseline);
+            }
           }
           ctx.restore();
 
           const headlineX = 70;
-          const headlineY = 430;
+          const baseline1 = 552;
+          const baseline2 = 687;
+          const baseline3 = 822;
+          
           ctx.textAlign = "left";
-          ctx.textBaseline = "top";
+          ctx.textBaseline = "alphabetic";
           ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
           ctx.shadowBlur = 30;
           ctx.shadowOffsetX = 0;
           ctx.shadowOffsetY = 6;
-          
-          ctx.fillStyle = "#ffffff";
           ctx.font = "900 150px Inter, sans-serif";
-          currentX = headlineX;
-          const line1 = "Real photo";
-          for (let i = 0; i < line1.length; i++) {
-            ctx.fillText(line1[i], currentX, headlineY);
-            currentX += ctx.measureText(line1[i]).width - 6;
-          }
-
-          currentX = headlineX;
-          const line2a = "or ";
-          ctx.fillStyle = "#ffffff";
-          for (let i = 0; i < line2a.length; i++) {
-            ctx.fillText(line2a[i], currentX, headlineY + 135);
-            currentX += ctx.measureText(line2a[i]).width - 6;
-          }
           
-          ctx.fillStyle = "#FF3366";
-          const ai = "AI";
-          for (let i = 0; i < ai.length; i++) {
-            ctx.fillText(ai[i], currentX, headlineY + 135);
-            currentX += ctx.measureText(ai[i]).width - 6;
+          // Line 1: "Real photo"
+          ctx.fillStyle = "#ffffff";
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-6px';
+            ctx.fillText("Real photo", headlineX, baseline1);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            const line1 = "Real photo";
+            currentX = headlineX;
+            for (let i = 0; i < line1.length; i++) {
+              const prefix = line1.substring(0, i);
+              currentX = headlineX + ctx2D.measureText(prefix).width - (i * 6);
+              ctx2D.fillText(line1[i], currentX, baseline1);
+            }
           }
 
-          currentX = headlineX;
-          const line3 = "photo?";
+          // Line 2: "or " + "AI"
+          let line2X = headlineX;
           ctx.fillStyle = "#ffffff";
-          for (let i = 0; i < line3.length; i++) {
-            ctx.fillText(line3[i], currentX, headlineY + 270);
-            currentX += ctx.measureText(line3[i]).width - 6;
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-6px';
+            ctx.fillText("or ", headlineX, baseline2);
+            line2X = headlineX + ctx.measureText("or ").width;
+            ctx.fillStyle = "#FF3366";
+            ctx.fillText("AI", line2X, baseline2);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            const line2a = "or ";
+            currentX = headlineX;
+            for (let i = 0; i < line2a.length; i++) {
+              const prefix = line2a.substring(0, i);
+              currentX = headlineX + ctx2D.measureText(prefix).width - (i * 6);
+              ctx2D.fillText(line2a[i], currentX, baseline2);
+            }
+            line2X = currentX + ctx2D.measureText(line2a[line2a.length - 1]).width - 6;
+            
+            ctx2D.fillStyle = "#FF3366";
+            const ai = "AI";
+            for (let i = 0; i < ai.length; i++) {
+              const prefix = ai.substring(0, i);
+              currentX = line2X + ctx2D.measureText(prefix).width - (i * 6);
+              ctx2D.fillText(ai[i], currentX, baseline2);
+            }
+          }
+
+          // Line 3: "photo?"
+          ctx.fillStyle = "#ffffff";
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-6px';
+            ctx.fillText("photo?", headlineX, baseline3);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            const line3 = "photo?";
+            currentX = headlineX;
+            for (let i = 0; i < line3.length; i++) {
+              const prefix = line3.substring(0, i);
+              currentX = headlineX + ctx2D.measureText(prefix).width - (i * 6);
+              ctx2D.fillText(line3[i], currentX, baseline3);
+            }
           }
 
           ctx.shadowColor = "transparent";
           ctx.shadowBlur = 0;
+            ctx.letterSpacing = '0px';
 
+          // Card dimensions and positioning
           const cardX = 70;
           const cardWidth = 940;
-          const cardBottom = STORY.height - 300;
           const cardRadius = 44;
-          const cardPaddingTop = 44;
-          const cardPaddingBottom = 46;
+          const cardBorder = 2;
+          const cardPaddingLeft = 50;
+          const cardHeight = Math.round(cardBorder + 44 + 120 + 14 + 52.8 + 30 + 56 + 30 + 38.7 + 46 + cardBorder);
+          const cardY = Math.round(1620 - cardHeight);
           
-          const cardContentHeight = 120 + 14 + 44 + 30 + 56 + 30 + 32;
-          const cardHeight = cardPaddingTop + cardContentHeight + cardPaddingBottom;
-          const cardY = cardBottom - cardHeight;
+          const contentX = cardX + cardBorder + cardPaddingLeft; // 70 + 2 + 50 = 122
 
+          // Approximate backdrop-filter blur(18px)
+          const blurRegionX = cardX;
+          const blurRegionY = cardY;
+          const blurRegionW = cardWidth;
+          const blurRegionH = cardHeight;
+          
+          // Create offscreen canvas for blur approximation
+          const blurCanvas = document.createElement('canvas');
+          const blurScale = 1 / 12;
+          blurCanvas.width = Math.ceil(blurRegionW * blurScale);
+          blurCanvas.height = Math.ceil(blurRegionH * blurScale);
+          const blurCtx = blurCanvas.getContext('2d')!;
+          
+          // Draw the region to blur at small scale
+          blurCtx.drawImage(
+            canvas,
+            blurRegionX, blurRegionY, blurRegionW, blurRegionH,
+            0, 0, blurCanvas.width, blurCanvas.height
+          );
+          
+          // Scale up and down multiple times for blur effect
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+          ctx.clip();
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(blurCanvas, blurRegionX, blurRegionY, blurRegionW, blurRegionH);
+          ctx.restore();
+
+          // Card fill and border
           ctx.fillStyle = "rgba(10, 10, 10, 0.72)";
           ctx.beginPath();
           ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
@@ -586,81 +649,97 @@ export default function AIOrNotPage() {
           ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
           ctx.stroke();
 
-          let contentY = cardY + cardPaddingTop;
+          // Card content - all LEFT-aligned at x=122
+          ctx.textAlign = "left";
+          ctx.textBaseline = "alphabetic";
           
-          ctx.textAlign = "center";
-          ctx.textBaseline = "top";
-          const centerX = cardX + cardWidth / 2;
-          
+          // Score: "I got 7/10" at baseline ≈1334
+          const scoreBaseline = Math.round(cardY + 46 + (120 - 145.2) / 2 + 116.25);
           ctx.font = "900 120px Inter, sans-serif";
+          
           const iGotPart = "I got ";
           const scorePart = `${score}/10`;
-          totalWidth = 0;
-          for (let i = 0; i < iGotPart.length; i++) {
-            totalWidth += ctx.measureText(iGotPart[i]).width - 5;
-          }
-          for (let i = 0; i < scorePart.length; i++) {
-            totalWidth += ctx.measureText(scorePart[i]).width - 5;
-          }
-          
-          currentX = centerX - totalWidth / 2;
           
           ctx.fillStyle = "#ffffff";
-          for (let i = 0; i < iGotPart.length; i++) {
-            ctx.fillText(iGotPart[i], currentX, contentY);
-            currentX += ctx.measureText(iGotPart[i]).width - 5;
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-5px';
+            ctx.fillText(iGotPart, contentX, scoreBaseline);
+            const iGotWidth = ctx.measureText(iGotPart).width;
+            ctx.fillStyle = "#FF3366";
+            ctx.fillText(scorePart, contentX + iGotWidth, scoreBaseline);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            currentX = contentX;
+            for (let i = 0; i < iGotPart.length; i++) {
+              const prefix = iGotPart.substring(0, i);
+              currentX = contentX + ctx2D.measureText(prefix).width - (i * 5);
+              ctx2D.fillText(iGotPart[i], currentX, scoreBaseline);
+            }
+            const iGotWidth = currentX + ctx2D.measureText(iGotPart[iGotPart.length - 1]).width - 5 - contentX;
+            
+            ctx2D.fillStyle = "#FF3366";
+            currentX = contentX + iGotWidth;
+            for (let i = 0; i < scorePart.length; i++) {
+              const prefix = scorePart.substring(0, i);
+              const offsetX = contentX + iGotWidth + ctx2D.measureText(prefix).width - (i * 5);
+              ctx2D.fillText(scorePart[i], offsetX, scoreBaseline);
+            }
           }
-          
-          ctx.fillStyle = "#FF3366";
-          for (let i = 0; i < scorePart.length; i++) {
-            ctx.fillText(scorePart[i], currentX, contentY);
-            currentX += ctx.measureText(scorePart[i]).width - 5;
-          }
-          
-          contentY += 120 + 14;
+            ctx.letterSpacing = '0px';
 
+          // Subline: "Can you beat me." at baseline ≈1407
+          const sublineBaseline = 1407;
           ctx.font = "700 44px Inter, sans-serif";
           ctx.fillStyle = "#f2f1ec";
-          const beatMe = "Can you beat me.";
-          totalWidth = 0;
-          for (let i = 0; i < beatMe.length; i++) {
-            totalWidth += ctx.measureText(beatMe[i]).width - 1;
-          }
-          currentX = centerX - totalWidth / 2;
-          for (let i = 0; i < beatMe.length; i++) {
-            ctx.fillText(beatMe[i], currentX, contentY);
-            currentX += ctx.measureText(beatMe[i]).width - 1;
-          }
           
-          contentY += 44 + 30;
+          const beatMe = "Can you beat me.";
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-1px';
+            ctx.fillText(beatMe, contentX, sublineBaseline);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            currentX = contentX;
+            for (let i = 0; i < beatMe.length; i++) {
+              const prefix = beatMe.substring(0, i);
+              currentX = contentX + ctx2D.measureText(prefix).width - i;
+              ctx2D.fillText(beatMe[i], currentX, sublineBaseline);
+            }
+          }
+            ctx.letterSpacing = '0px';
 
+          // Squares at top ≈1447.3, x=122
+          const squaresTop = 1447.3;
           const squareSize = 56;
           const squareGap = 12;
-          const squaresTotalWidth = squareSize * 10 + squareGap * 9;
-          let squareX = centerX - squaresTotalWidth / 2;
+          let squareX = contentX;
           
           guesses.forEach((correct: boolean) => {
             ctx.fillStyle = correct ? "#FF3366" : "rgba(255, 255, 255, 0.18)";
             ctx.beginPath();
-            ctx.roundRect(squareX, contentY, squareSize, squareSize, 12);
+            ctx.roundRect(squareX, squaresTop, squareSize, squareSize, 12);
             ctx.fill();
             squareX += squareSize + squareGap;
           });
-          
-          contentY += 56 + 30;
 
+          // URL at baseline ≈1564
+          const urlBaseline = 1564;
           ctx.font = "700 32px Inter, sans-serif";
           ctx.fillStyle = "rgba(255, 255, 255, 0.63)";
+          
           const url = "hiiipower.app/ai-or-not";
-          totalWidth = 0;
-          for (let i = 0; i < url.length; i++) {
-            totalWidth += ctx.measureText(url[i]).width - 0.5;
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-0.5px';
+            ctx.fillText(url, contentX, urlBaseline);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            currentX = contentX;
+            for (let i = 0; i < url.length; i++) {
+              const prefix = url.substring(0, i);
+              currentX = contentX + ctx2D.measureText(prefix).width - (i * 0.5);
+              ctx2D.fillText(url[i], currentX, urlBaseline);
+            }
           }
-          currentX = centerX - totalWidth / 2;
-          for (let i = 0; i < url.length; i++) {
-            ctx.fillText(url[i], currentX, contentY);
-            currentX += ctx.measureText(url[i]).width - 0.5;
-          }
+            ctx.letterSpacing = '0px';
 
           canvas.toBlob((blob) => {
             if (blob) {
