@@ -20,7 +20,6 @@ import {
 import Image from "next/image";
 import {
   STORY,
-  fillCinemaBackground,
   storyFont,
 } from "@/lib/story-canvas";
 
@@ -427,56 +426,180 @@ export default function AIOrNotPage() {
   };
 
   const generateStoryImage = (): Promise<Blob> => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const canvas = document.createElement("canvas");
       canvas.width = STORY.width;
       canvas.height = STORY.height;
       const ctx = canvas.getContext("2d")!;
 
-      fillCinemaBackground(ctx);
-      ctx.textAlign = "center";
+      // Pick background photo: first wrong answer, or random if 10/10
+      let bgImage: ImageData | null = null;
+      if (score === 10) {
+        const randomIndex = Math.floor(Math.random() * images.length);
+        bgImage = images[randomIndex];
+      } else {
+        // Find first wrong answer
+        for (let i = 0; i < guesses.length; i++) {
+          if (!guesses[i]) {
+            bgImage = images[i];
+            break;
+          }
+        }
+        // Fallback to first image if somehow no wrong answers found
+        if (!bgImage) bgImage = images[0];
+      }
 
-      ctx.fillStyle = STORY.fg;
-      ctx.font = storyFont("800", 84, "display");
-      ctx.fillText("Real or AI?", 540, 320);
+      // Load background image
+      const bg = new window.Image();
+      bg.crossOrigin = "anonymous";
+      bg.onload = () => {
+        // Draw full-bleed background (cover-crop to fill 1080x1920)
+        const canvasAspect = STORY.width / STORY.height;
+        const imgAspect = bg.width / bg.height;
+        let drawWidth, drawHeight, offsetX, offsetY;
 
-      ctx.fillStyle = STORY.muted;
-      ctx.font = storyFont("500", 38, "body");
-      ctx.fillText("10 photos. Half are Slop.", 540, 390);
+        if (imgAspect > canvasAspect) {
+          // Image is wider than canvas
+          drawHeight = STORY.height;
+          drawWidth = drawHeight * imgAspect;
+          offsetX = (STORY.width - drawWidth) / 2;
+          offsetY = 0;
+        } else {
+          // Image is taller than canvas
+          drawWidth = STORY.width;
+          drawHeight = drawWidth / imgAspect;
+          offsetX = 0;
+          offsetY = (STORY.height - drawHeight) / 2;
+        }
 
-      ctx.fillStyle = STORY.accent;
-      ctx.font = storyFont("800", 180, "display");
-      ctx.fillText(`${score}/10`, 540, 620);
+        ctx.drawImage(bg, offsetX, offsetY, drawWidth, drawHeight);
 
-      const boxSize = 58;
-      const gap = 10;
-      const totalWidth = boxSize * 10 + gap * 9;
-      const startX = (STORY.width - totalWidth) / 2;
-      const startY = 720;
-      const radius = 8;
+        // Dark gradients at top and bottom for text contrast
+        const topGradient = ctx.createLinearGradient(0, 0, 0, 600);
+        topGradient.addColorStop(0, "rgba(0, 0, 0, 0.75)");
+        topGradient.addColorStop(0.5, "rgba(0, 0, 0, 0.45)");
+        topGradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = topGradient;
+        ctx.fillRect(0, 0, STORY.width, 600);
 
-      guesses.forEach((correct: boolean, index: number) => {
-        const x = startX + index * (boxSize + gap);
-        ctx.fillStyle = correct ? STORY.accent : STORY.surface;
-        ctx.beginPath();
-        ctx.roundRect(x, startY, boxSize, boxSize, radius);
-        ctx.fill();
-      });
+        const bottomGradient = ctx.createLinearGradient(0, STORY.height - 700, 0, STORY.height);
+        bottomGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
+        bottomGradient.addColorStop(0.4, "rgba(0, 0, 0, 0.45)");
+        bottomGradient.addColorStop(1, "rgba(0, 0, 0, 0.8)");
+        ctx.fillStyle = bottomGradient;
+        ctx.fillRect(0, STORY.height - 700, STORY.width, 700);
 
-      ctx.fillStyle = STORY.fg;
-      ctx.font = storyFont("500", 36, "body");
-      ctx.fillText("NGL, it's getting scary hard to tell", 540, 1100);
-      ctx.fillText("what's actually real.", 540, 1160);
-      ctx.fillText("Curious if anyone on my timeline", 540, 1260);
-      ctx.fillText("can pull off 100%.", 540, 1320);
+        // Load triangle logo
+        const logo = new window.Image();
+        logo.crossOrigin = "anonymous";
+        logo.onload = () => {
+          // Draw triangle logo at top-left (~310px from top)
+          const logoSize = 48;
+          const logoX = 60;
+          const logoY = 310;
+          ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
 
-      ctx.fillStyle = STORY.muted;
-      ctx.font = storyFont("600", 28, "body");
-      ctx.fillText("hiiipower.app/ai-or-not", 540, 1650);
+          // Draw "HiiiPower" wordmark
+          ctx.fillStyle = "#ffffff";
+          ctx.font = storyFont("700", 32, "display");
+          ctx.textAlign = "left";
+          ctx.fillText("HiiiPower", logoX + logoSize + 16, logoY + 34);
 
-      canvas.toBlob((blob) => {
-        resolve(blob!);
-      }, "image/png");
+          // Draw headline "Real photo or AI photo?"
+          const headlineY = logoY + 100;
+          ctx.textAlign = "left";
+          ctx.font = storyFont("700", 64, "display");
+          
+          // Draw "Real photo or "
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText("Real photo", logoX, headlineY);
+          
+          // Measure to place "or " on next line
+          ctx.fillText("or ", logoX, headlineY + 74);
+          
+          // Draw "AI" in pink
+          const orWidth = ctx.measureText("or ").width;
+          ctx.fillStyle = STORY.accent;
+          ctx.font = storyFont("800", 64, "display");
+          ctx.fillText("AI", logoX + orWidth, headlineY + 74);
+          
+          // Draw " photo?"
+          const aiWidth = ctx.measureText("AI").width;
+          ctx.fillStyle = "#ffffff";
+          ctx.font = storyFont("700", 64, "display");
+          ctx.fillText(" photo?", logoX + orWidth + aiWidth, headlineY + 74);
+
+          // Frosted bottom panel
+          const panelHeight = 440;
+          const panelY = STORY.height - panelHeight;
+          
+          // Frosted glass effect
+          ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+          ctx.fillRect(0, panelY, STORY.width, panelHeight);
+          
+          // Add subtle backdrop blur effect with border
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(0, panelY);
+          ctx.lineTo(STORY.width, panelY);
+          ctx.stroke();
+
+          ctx.textAlign = "center";
+
+          // "I got X/10"
+          ctx.fillStyle = "#ffffff";
+          ctx.font = storyFont("700", 42, "display");
+          ctx.fillText("I got ", 540, panelY + 80);
+          
+          const igotWidth = ctx.measureText("I got ").width;
+          ctx.fillStyle = STORY.accent;
+          ctx.font = storyFont("800", 54, "display");
+          ctx.fillText(`${score}/10`, 540 + igotWidth / 2, panelY + 80);
+
+          // "Can you beat me."
+          ctx.fillStyle = "#ffffff";
+          ctx.font = storyFont("600", 32, "display");
+          ctx.fillText("Can you beat me.", 540, panelY + 140);
+
+          // Score squares
+          const boxSize = 46;
+          const gap = 12;
+          const totalWidth = boxSize * 10 + gap * 9;
+          const startX = (STORY.width - totalWidth) / 2;
+          const startY = panelY + 180;
+          const radius = 6;
+
+          guesses.forEach((correct: boolean, index: number) => {
+            const x = startX + index * (boxSize + gap);
+            ctx.fillStyle = correct ? STORY.accent : "rgba(255, 255, 255, 0.2)";
+            ctx.beginPath();
+            ctx.roundRect(x, startY, boxSize, boxSize, radius);
+            ctx.fill();
+          });
+
+          // URL
+          ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+          ctx.font = storyFont("600", 28, "body");
+          ctx.fillText("hiiipower.app/ai-or-not", 540, panelY + 320);
+
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error("Failed to create blob"));
+            }
+          }, "image/png");
+        };
+        logo.onerror = () => {
+          reject(new Error("Failed to load logo"));
+        };
+        logo.src = "/icon2-inverted.png";
+      };
+      bg.onerror = () => {
+        reject(new Error("Failed to load background image"));
+      };
+      bg.src = bgImage?.src || images[0]?.src || "";
     });
   };
 
@@ -488,7 +611,46 @@ export default function AIOrNotPage() {
       });
 
       const shareText = getShareText();
-      const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
+      const shareUrl = `https://hiiipower.app/ai-or-not`;
+
+      // Copy URL to clipboard
+      if (navigator.clipboard) {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          // Show a temporary tip
+          const tip = document.createElement("div");
+          tip.textContent = "stickers → Link → paste";
+          tip.style.cssText = `
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+          `;
+          document.body.appendChild(tip);
+          // Fade in
+          setTimeout(() => {
+            tip.style.opacity = "1";
+          }, 10);
+          // Fade out and remove
+          setTimeout(() => {
+            tip.style.opacity = "0";
+            setTimeout(() => tip.remove(), 300);
+          }, 2500);
+        } catch (clipErr) {
+          console.log("Clipboard copy failed:", clipErr);
+        }
+      }
+
       const fullText = `${shareText}\n\n${shareUrl}`;
 
       if (
