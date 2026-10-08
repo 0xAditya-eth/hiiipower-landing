@@ -20,7 +20,6 @@ import {
 import Image from "next/image";
 import {
   STORY,
-  storyFont,
 } from "@/lib/story-canvas";
 
 type ImageData = {
@@ -426,46 +425,48 @@ export default function AIOrNotPage() {
   };
 
   const generateStoryImage = (): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await document.fonts.load('700 32px Inter');
+        await document.fonts.load('800 42px Inter');
+        await document.fonts.load('900 150px Inter');
+        await document.fonts.load('900 120px Inter');
+      } catch (err) {
+        console.warn('Failed to load Inter font:', err);
+      }
+
       const canvas = document.createElement("canvas");
       canvas.width = STORY.width;
       canvas.height = STORY.height;
-      const ctx = canvas.getContext("2d")!;
+      const ctx = canvas.getContext("2d", { alpha: false })!;
 
-      // Pick background photo: first wrong answer, or random if 10/10
       let bgImage: ImageData | null = null;
       if (score === 10) {
         const randomIndex = Math.floor(Math.random() * images.length);
         bgImage = images[randomIndex];
       } else {
-        // Find first wrong answer
         for (let i = 0; i < guesses.length; i++) {
           if (!guesses[i]) {
             bgImage = images[i];
             break;
           }
         }
-        // Fallback to first image if somehow no wrong answers found
         if (!bgImage) bgImage = images[0];
       }
 
-      // Load background image
       const bg = new window.Image();
       bg.crossOrigin = "anonymous";
       bg.onload = () => {
-        // Draw full-bleed background (cover-crop to fill 1080x1920)
         const canvasAspect = STORY.width / STORY.height;
         const imgAspect = bg.width / bg.height;
         let drawWidth, drawHeight, offsetX, offsetY;
 
         if (imgAspect > canvasAspect) {
-          // Image is wider than canvas
           drawHeight = STORY.height;
           drawWidth = drawHeight * imgAspect;
           offsetX = (STORY.width - drawWidth) / 2;
           offsetY = 0;
         } else {
-          // Image is taller than canvas
           drawWidth = STORY.width;
           drawHeight = drawWidth / imgAspect;
           offsetX = 0;
@@ -474,114 +475,192 @@ export default function AIOrNotPage() {
 
         ctx.drawImage(bg, offsetX, offsetY, drawWidth, drawHeight);
 
-        // Dark gradients at top and bottom for text contrast
-        const topGradient = ctx.createLinearGradient(0, 0, 0, 600);
-        topGradient.addColorStop(0, "rgba(0, 0, 0, 0.75)");
-        topGradient.addColorStop(0.5, "rgba(0, 0, 0, 0.45)");
-        topGradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = topGradient;
-        ctx.fillRect(0, 0, STORY.width, 600);
+        const gradient = ctx.createLinearGradient(0, 0, 0, STORY.height);
+        gradient.addColorStop(0, "rgba(0, 0, 0, 0.73)");
+        gradient.addColorStop(0.3, "rgba(0, 0, 0, 0.4)");
+        gradient.addColorStop(0.46, "rgba(0, 0, 0, 0)");
+        gradient.addColorStop(0.5, "rgba(0, 0, 0, 0)");
+        gradient.addColorStop(0.82, "rgba(0, 0, 0, 0.87)");
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0.87)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, STORY.width, STORY.height);
 
-        const bottomGradient = ctx.createLinearGradient(0, STORY.height - 700, 0, STORY.height);
-        bottomGradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-        bottomGradient.addColorStop(0.4, "rgba(0, 0, 0, 0.45)");
-        bottomGradient.addColorStop(1, "rgba(0, 0, 0, 0.8)");
-        ctx.fillStyle = bottomGradient;
-        ctx.fillRect(0, STORY.height - 700, STORY.width, 700);
-
-        // Load triangle logo
         const logo = new window.Image();
         logo.crossOrigin = "anonymous";
         logo.onload = () => {
-          // Draw triangle logo at top-left (~310px from top)
-          const logoSize = 48;
-          const logoX = 60;
+          let currentX, totalWidth;
+          const logoX = 70;
           const logoY = 310;
-          ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
+          const logoHeight = 42;
+          const logoWidth = (logo.width / logo.height) * logoHeight;
+          
+          ctx.save();
+          ctx.shadowColor = "rgba(0, 0, 0, 0.56)";
+          ctx.shadowBlur = 14;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 2;
+          ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
+          ctx.restore();
 
-          // Draw "HiiiPower" wordmark
+          ctx.save();
+          ctx.shadowColor = "rgba(0, 0, 0, 0.56)";
+          ctx.shadowBlur = 14;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 2;
           ctx.fillStyle = "#ffffff";
-          ctx.font = storyFont("700", 32, "display");
+          ctx.font = "800 42px Inter, sans-serif";
           ctx.textAlign = "left";
-          ctx.fillText("HiiiPower", logoX + logoSize + 16, logoY + 34);
+          ctx.textBaseline = "top";
+          const wordmarkX = logoX + logoWidth + 16;
+          const wordmark = "HiiiPower";
+          currentX = wordmarkX;
+          for (let i = 0; i < wordmark.length; i++) {
+            ctx.fillText(wordmark[i], currentX, logoY);
+            currentX += ctx.measureText(wordmark[i]).width - 1;
+          }
+          ctx.restore();
 
-          // Draw headline "Real photo or AI photo?"
-          const headlineY = logoY + 100;
+          const headlineX = 70;
+          const headlineY = 430;
           ctx.textAlign = "left";
-          ctx.font = storyFont("700", 64, "display");
+          ctx.textBaseline = "top";
+          ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+          ctx.shadowBlur = 30;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 6;
           
-          // Draw "Real photo or "
           ctx.fillStyle = "#ffffff";
-          ctx.fillText("Real photo", logoX, headlineY);
-          
-          // Measure to place "or " on next line
-          ctx.fillText("or ", logoX, headlineY + 74);
-          
-          // Draw "AI" in pink
-          const orWidth = ctx.measureText("or ").width;
-          ctx.fillStyle = STORY.accent;
-          ctx.font = storyFont("800", 64, "display");
-          ctx.fillText("AI", logoX + orWidth, headlineY + 74);
-          
-          // Draw " photo?"
-          const aiWidth = ctx.measureText("AI").width;
-          ctx.fillStyle = "#ffffff";
-          ctx.font = storyFont("700", 64, "display");
-          ctx.fillText(" photo?", logoX + orWidth + aiWidth, headlineY + 74);
+          ctx.font = "900 150px Inter, sans-serif";
+          currentX = headlineX;
+          const line1 = "Real photo";
+          for (let i = 0; i < line1.length; i++) {
+            ctx.fillText(line1[i], currentX, headlineY);
+            currentX += ctx.measureText(line1[i]).width - 6;
+          }
 
-          // Frosted bottom panel
-          const panelHeight = 440;
-          const panelY = STORY.height - panelHeight;
+          currentX = headlineX;
+          const line2a = "or ";
+          ctx.fillStyle = "#ffffff";
+          for (let i = 0; i < line2a.length; i++) {
+            ctx.fillText(line2a[i], currentX, headlineY + 135);
+            currentX += ctx.measureText(line2a[i]).width - 6;
+          }
           
-          // Frosted glass effect
-          ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-          ctx.fillRect(0, panelY, STORY.width, panelHeight);
+          ctx.fillStyle = "#FF3366";
+          const ai = "AI";
+          for (let i = 0; i < ai.length; i++) {
+            ctx.fillText(ai[i], currentX, headlineY + 135);
+            currentX += ctx.measureText(ai[i]).width - 6;
+          }
+
+          currentX = headlineX;
+          const line3 = "photo?";
+          ctx.fillStyle = "#ffffff";
+          for (let i = 0; i < line3.length; i++) {
+            ctx.fillText(line3[i], currentX, headlineY + 270);
+            currentX += ctx.measureText(line3[i]).width - 6;
+          }
+
+          ctx.shadowColor = "transparent";
+          ctx.shadowBlur = 0;
+
+          const cardX = 70;
+          const cardWidth = 940;
+          const cardBottom = STORY.height - 300;
+          const cardRadius = 44;
+          const cardPaddingTop = 44;
+          const cardPaddingBottom = 46;
           
-          // Add subtle backdrop blur effect with border
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
-          ctx.lineWidth = 1;
+          const cardContentHeight = 120 + 14 + 44 + 30 + 56 + 30 + 32;
+          const cardHeight = cardPaddingTop + cardContentHeight + cardPaddingBottom;
+          const cardY = cardBottom - cardHeight;
+
+          ctx.fillStyle = "rgba(10, 10, 10, 0.72)";
           ctx.beginPath();
-          ctx.moveTo(0, panelY);
-          ctx.lineTo(STORY.width, panelY);
+          ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+          ctx.fill();
+
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
           ctx.stroke();
 
-          ctx.textAlign = "center";
-
-          // "I got X/10"
-          ctx.fillStyle = "#ffffff";
-          ctx.font = storyFont("700", 42, "display");
-          ctx.fillText("I got ", 540, panelY + 80);
+          let contentY = cardY + cardPaddingTop;
           
-          const igotWidth = ctx.measureText("I got ").width;
-          ctx.fillStyle = STORY.accent;
-          ctx.font = storyFont("800", 54, "display");
-          ctx.fillText(`${score}/10`, 540 + igotWidth / 2, panelY + 80);
-
-          // "Can you beat me."
+          ctx.textAlign = "center";
+          ctx.textBaseline = "top";
+          const centerX = cardX + cardWidth / 2;
+          
+          ctx.font = "900 120px Inter, sans-serif";
+          const iGotPart = "I got ";
+          const scorePart = `${score}/10`;
+          totalWidth = 0;
+          for (let i = 0; i < iGotPart.length; i++) {
+            totalWidth += ctx.measureText(iGotPart[i]).width - 5;
+          }
+          for (let i = 0; i < scorePart.length; i++) {
+            totalWidth += ctx.measureText(scorePart[i]).width - 5;
+          }
+          
+          currentX = centerX - totalWidth / 2;
+          
           ctx.fillStyle = "#ffffff";
-          ctx.font = storyFont("600", 32, "display");
-          ctx.fillText("Can you beat me.", 540, panelY + 140);
+          for (let i = 0; i < iGotPart.length; i++) {
+            ctx.fillText(iGotPart[i], currentX, contentY);
+            currentX += ctx.measureText(iGotPart[i]).width - 5;
+          }
+          
+          ctx.fillStyle = "#FF3366";
+          for (let i = 0; i < scorePart.length; i++) {
+            ctx.fillText(scorePart[i], currentX, contentY);
+            currentX += ctx.measureText(scorePart[i]).width - 5;
+          }
+          
+          contentY += 120 + 14;
 
-          // Score squares
-          const boxSize = 46;
-          const gap = 12;
-          const totalWidth = boxSize * 10 + gap * 9;
-          const startX = (STORY.width - totalWidth) / 2;
-          const startY = panelY + 180;
-          const radius = 6;
+          ctx.font = "700 44px Inter, sans-serif";
+          ctx.fillStyle = "#f2f1ec";
+          const beatMe = "Can you beat me.";
+          totalWidth = 0;
+          for (let i = 0; i < beatMe.length; i++) {
+            totalWidth += ctx.measureText(beatMe[i]).width - 1;
+          }
+          currentX = centerX - totalWidth / 2;
+          for (let i = 0; i < beatMe.length; i++) {
+            ctx.fillText(beatMe[i], currentX, contentY);
+            currentX += ctx.measureText(beatMe[i]).width - 1;
+          }
+          
+          contentY += 44 + 30;
 
-          guesses.forEach((correct: boolean, index: number) => {
-            const x = startX + index * (boxSize + gap);
-            ctx.fillStyle = correct ? STORY.accent : "rgba(255, 255, 255, 0.2)";
+          const squareSize = 56;
+          const squareGap = 12;
+          const squaresTotalWidth = squareSize * 10 + squareGap * 9;
+          let squareX = centerX - squaresTotalWidth / 2;
+          
+          guesses.forEach((correct: boolean) => {
+            ctx.fillStyle = correct ? "#FF3366" : "rgba(255, 255, 255, 0.18)";
             ctx.beginPath();
-            ctx.roundRect(x, startY, boxSize, boxSize, radius);
+            ctx.roundRect(squareX, contentY, squareSize, squareSize, 12);
             ctx.fill();
+            squareX += squareSize + squareGap;
           });
+          
+          contentY += 56 + 30;
 
-          // URL
-          ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
-          ctx.font = storyFont("600", 28, "body");
-          ctx.fillText("hiiipower.app/ai-or-not", 540, panelY + 320);
+          ctx.font = "700 32px Inter, sans-serif";
+          ctx.fillStyle = "rgba(255, 255, 255, 0.63)";
+          const url = "hiiipower.app/ai-or-not";
+          totalWidth = 0;
+          for (let i = 0; i < url.length; i++) {
+            totalWidth += ctx.measureText(url[i]).width - 0.5;
+          }
+          currentX = centerX - totalWidth / 2;
+          for (let i = 0; i < url.length; i++) {
+            ctx.fillText(url[i], currentX, contentY);
+            currentX += ctx.measureText(url[i]).width - 0.5;
+          }
 
           canvas.toBlob((blob) => {
             if (blob) {
@@ -594,7 +673,7 @@ export default function AIOrNotPage() {
         logo.onerror = () => {
           reject(new Error("Failed to load logo"));
         };
-        logo.src = "/icon2-inverted.png";
+        logo.src = "/share/tri-white.png";
       };
       bg.onerror = () => {
         reject(new Error("Failed to load background image"));
