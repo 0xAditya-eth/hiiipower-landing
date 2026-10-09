@@ -1136,25 +1136,24 @@ export default function AIOrNotPage() {
                     Share your results
                   </h3>
                   <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-                    <Button variant="primary" size="md" onClick={shareToX}>
-                      Share to X/Twitter
-                    </Button>
                     {isMobile ? (
-                      <Button
-                        variant="secondary"
-                        size="md"
-                        onClick={shareToInstagramStory}
-                      >
-                        Share to Instagram
-                      </Button>
+                      <>
+                        <Button variant="primary" size="md" onClick={shareToInstagramStory}>
+                          Share to Instagram
+                        </Button>
+                        <Button variant="secondary" size="md" onClick={shareToX}>
+                          Share to X/Twitter
+                        </Button>
+                      </>
                     ) : (
-                      <Button
-                        variant="secondary"
-                        size="md"
-                        onClick={shareToLinkedIn}
-                      >
-                        Share to LinkedIn
-                      </Button>
+                      <>
+                        <Button variant="primary" size="md" onClick={shareToX}>
+                          Share to X/Twitter
+                        </Button>
+                        <Button variant="secondary" size="md" onClick={shareToLinkedIn}>
+                          Share to LinkedIn
+                        </Button>
+                      </>
                     )}
                   </div>
                 </motion.div>
