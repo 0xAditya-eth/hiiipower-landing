@@ -20,8 +20,6 @@ import {
 import Image from "next/image";
 import {
   STORY,
-  fillCinemaBackground,
-  storyFont,
 } from "@/lib/story-canvas";
 
 type ImageData = {
@@ -427,56 +425,349 @@ export default function AIOrNotPage() {
   };
 
   const generateStoryImage = (): Promise<Blob> => {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await document.fonts.load('700 32px Inter');
+        await document.fonts.load('800 42px Inter');
+        await document.fonts.load('700 44px Inter');
+        await document.fonts.load('900 150px Inter');
+        await document.fonts.load('900 120px Inter');
+      } catch (err) {
+        console.warn('Failed to load Inter font:', err);
+      }
+
       const canvas = document.createElement("canvas");
       canvas.width = STORY.width;
       canvas.height = STORY.height;
-      const ctx = canvas.getContext("2d")!;
+      const ctx = canvas.getContext("2d", { alpha: false })!;
 
-      fillCinemaBackground(ctx);
-      ctx.textAlign = "center";
+      let bgImage: ImageData | null = null;
+      if (score === 10) {
+        const randomIndex = Math.floor(Math.random() * images.length);
+        bgImage = images[randomIndex];
+      } else {
+        for (let i = 0; i < guesses.length; i++) {
+          if (!guesses[i]) {
+            bgImage = images[i];
+            break;
+          }
+        }
+        if (!bgImage) bgImage = images[0];
+      }
 
-      ctx.fillStyle = STORY.fg;
-      ctx.font = storyFont("800", 84, "display");
-      ctx.fillText("Real or AI?", 540, 320);
+      const bg = new window.Image();
+      bg.crossOrigin = "anonymous";
+      bg.onload = () => {
+        // Match CSS 'center top / auto 2060px' with cover fallback
+        const scale = Math.max(2060 / bg.height, STORY.width / bg.width);
+        const drawWidth = bg.width * scale;
+        const drawHeight = bg.height * scale;
+        const offsetX = (STORY.width - drawWidth) / 2;
+        
+        ctx.drawImage(bg, offsetX, 0, drawWidth, drawHeight);
 
-      ctx.fillStyle = STORY.muted;
-      ctx.font = storyFont("500", 38, "body");
-      ctx.fillText("10 photos. Half are Slop.", 540, 390);
+        const gradient = ctx.createLinearGradient(0, 0, 0, STORY.height);
+        gradient.addColorStop(0, "rgba(0, 0, 0, 0.73)");
+        gradient.addColorStop(0.3, "rgba(0, 0, 0, 0.4)");
+        gradient.addColorStop(0.46, "rgba(0, 0, 0, 0)");
+        gradient.addColorStop(0.5, "rgba(0, 0, 0, 0)");
+        gradient.addColorStop(0.82, "rgba(0, 0, 0, 0.87)");
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0.87)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, STORY.width, STORY.height);
 
-      ctx.fillStyle = STORY.accent;
-      ctx.font = storyFont("800", 180, "display");
-      ctx.fillText(`${score}/10`, 540, 620);
+        const logo = new window.Image();
+        logo.crossOrigin = "anonymous";
+        logo.onload = () => {
+          const supportsLetterSpacing = 'letterSpacing' in ctx;
+          let currentX = 0;
+          const logoX = 70;
+          const logoTop = 314.4;
+          const logoHeight = 42;
+          const logoWidth = (logo.width / logo.height) * logoHeight;
+          
+          // Draw triangle with NO shadow
+          ctx.drawImage(logo, logoX, logoTop, logoWidth, logoHeight);
 
-      const boxSize = 58;
-      const gap = 10;
-      const totalWidth = boxSize * 10 + gap * 9;
-      const startX = (STORY.width - totalWidth) / 2;
-      const startY = 720;
-      const radius = 8;
+          // Draw "HiiiPower" wordmark with shadow
+          const wordmarkX = logoX + logoWidth + 16;
+          const wordmarkBaseline = 350.7;
+          const wordmark = "HiiiPower";
+          
+          ctx.save();
+          ctx.shadowColor = "rgba(0, 0, 0, 0.56)";
+          ctx.shadowBlur = 14;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 2;
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "800 42px Inter, sans-serif";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "alphabetic";
+          
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-1px';
+            ctx.fillText(wordmark, wordmarkX, wordmarkBaseline);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            currentX = wordmarkX;
+            for (let i = 0; i < wordmark.length; i++) {
+              const prefix = wordmark.substring(0, i);
+              currentX = wordmarkX + ctx2D.measureText(prefix).width - i;
+              ctx2D.fillText(wordmark[i], currentX, wordmarkBaseline);
+            }
+          }
+          ctx.restore();
 
-      guesses.forEach((correct: boolean, index: number) => {
-        const x = startX + index * (boxSize + gap);
-        ctx.fillStyle = correct ? STORY.accent : STORY.surface;
-        ctx.beginPath();
-        ctx.roundRect(x, startY, boxSize, boxSize, radius);
-        ctx.fill();
-      });
+          const headlineX = 70;
+          const baseline1 = 552;
+          const baseline2 = 687;
+          const baseline3 = 822;
+          
+          ctx.textAlign = "left";
+          ctx.textBaseline = "alphabetic";
+          ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+          ctx.shadowBlur = 30;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 6;
+          ctx.font = "900 150px Inter, sans-serif";
+          
+          // Line 1: "Real photo"
+          ctx.fillStyle = "#ffffff";
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-6px';
+            ctx.fillText("Real photo", headlineX, baseline1);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            const line1 = "Real photo";
+            currentX = headlineX;
+            for (let i = 0; i < line1.length; i++) {
+              const prefix = line1.substring(0, i);
+              currentX = headlineX + ctx2D.measureText(prefix).width - (i * 6);
+              ctx2D.fillText(line1[i], currentX, baseline1);
+            }
+          }
 
-      ctx.fillStyle = STORY.fg;
-      ctx.font = storyFont("500", 36, "body");
-      ctx.fillText("NGL, it's getting scary hard to tell", 540, 1100);
-      ctx.fillText("what's actually real.", 540, 1160);
-      ctx.fillText("Curious if anyone on my timeline", 540, 1260);
-      ctx.fillText("can pull off 100%.", 540, 1320);
+          // Line 2: "or " + "AI"
+          let line2X = headlineX;
+          ctx.fillStyle = "#ffffff";
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-6px';
+            ctx.fillText("or ", headlineX, baseline2);
+            line2X = headlineX + ctx.measureText("or ").width;
+            ctx.fillStyle = "#FF3366";
+            ctx.fillText("AI", line2X, baseline2);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            const line2a = "or ";
+            currentX = headlineX;
+            for (let i = 0; i < line2a.length; i++) {
+              const prefix = line2a.substring(0, i);
+              currentX = headlineX + ctx2D.measureText(prefix).width - (i * 6);
+              ctx2D.fillText(line2a[i], currentX, baseline2);
+            }
+            line2X = currentX + ctx2D.measureText(line2a[line2a.length - 1]).width - 6;
+            
+            ctx2D.fillStyle = "#FF3366";
+            const ai = "AI";
+            for (let i = 0; i < ai.length; i++) {
+              const prefix = ai.substring(0, i);
+              currentX = line2X + ctx2D.measureText(prefix).width - (i * 6);
+              ctx2D.fillText(ai[i], currentX, baseline2);
+            }
+          }
 
-      ctx.fillStyle = STORY.muted;
-      ctx.font = storyFont("600", 28, "body");
-      ctx.fillText("hiiipower.app/ai-or-not", 540, 1650);
+          // Line 3: "photo?"
+          ctx.fillStyle = "#ffffff";
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-6px';
+            ctx.fillText("photo?", headlineX, baseline3);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            const line3 = "photo?";
+            currentX = headlineX;
+            for (let i = 0; i < line3.length; i++) {
+              const prefix = line3.substring(0, i);
+              currentX = headlineX + ctx2D.measureText(prefix).width - (i * 6);
+              ctx2D.fillText(line3[i], currentX, baseline3);
+            }
+          }
 
-      canvas.toBlob((blob) => {
-        resolve(blob!);
-      }, "image/png");
+          ctx.shadowColor = "transparent";
+          ctx.shadowBlur = 0;
+            ctx.letterSpacing = '0px';
+
+          // Card dimensions and positioning
+          const cardX = 70;
+          const cardWidth = 940;
+          const cardRadius = 44;
+          const cardBorder = 2;
+          const cardPaddingLeft = 50;
+          const cardHeight = Math.round(cardBorder + 44 + 120 + 14 + 52.8 + 30 + 56 + 30 + 38.7 + 46 + cardBorder);
+          const cardY = Math.round(1620 - cardHeight);
+          
+          const contentX = cardX + cardBorder + cardPaddingLeft; // 70 + 2 + 50 = 122
+
+          // Real Gaussian-ish blur (3-pass box blur, sigma 18 = CSS blur(18px)), works in all browsers
+          const pad = 54;
+          const rx = Math.max(0, cardX - pad), ry = Math.max(0, cardY - pad);
+          const rw = Math.min(STORY.width, cardX + cardWidth + pad) - rx;
+          const rh = Math.min(STORY.height, cardY + cardHeight + pad) - ry;
+          const region = ctx.getImageData(rx, ry, rw, rh);
+          const src = region.data;
+          const sigma = 18, n = 3;
+          const wIdeal = Math.sqrt((12 * sigma * sigma) / n + 1);
+          let wl = Math.floor(wIdeal); if (wl % 2 === 0) wl--;
+          const m = Math.round((12 * sigma * sigma - n * wl * wl - 4 * n * wl - 3 * n) / (-4 * wl - 4));
+          const radii = [0, 1, 2].map((i) => ((i < m ? wl : wl + 2) - 1) / 2);
+          const tmpBuf = new Uint8ClampedArray(src.length);
+          const pass = (a: Uint8ClampedArray, b: Uint8ClampedArray, r: number, horiz: boolean) => {
+            const len = horiz ? rw : rh, lines = horiz ? rh : rw, step = horiz ? 4 : rw * 4;
+            const inv = 1 / (2 * r + 1);
+            for (let l = 0; l < lines; l++) {
+              const base = horiz ? l * rw * 4 : l * 4;
+              for (let c = 0; c < 3; c++) {
+                let acc = 0;
+                for (let k = -r; k <= r; k++) acc += a[base + Math.min(len - 1, Math.max(0, k)) * step + c];
+                for (let p = 0; p < len; p++) {
+                  b[base + p * step + c] = acc * inv;
+                  acc += a[base + Math.min(len - 1, p + r + 1) * step + c] - a[base + Math.max(0, p - r) * step + c];
+                }
+              }
+              for (let p = 0; p < len; p++) b[base + p * step + 3] = 255;
+            }
+          };
+          for (const r of radii) { pass(src, tmpBuf, r, true); pass(tmpBuf, src, r, false); }
+          const blurCanvas = document.createElement("canvas");
+          blurCanvas.width = rw; blurCanvas.height = rh;
+          blurCanvas.getContext("2d")!.putImageData(region, 0, 0);
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+          ctx.clip();
+          ctx.drawImage(blurCanvas, rx, ry);
+          ctx.restore();
+
+          // Card fill and border
+          ctx.fillStyle = "rgba(10, 10, 10, 0.72)";
+          ctx.beginPath();
+          ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+          ctx.fill();
+
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+          ctx.stroke();
+
+          // Card content - all LEFT-aligned at x=122
+          ctx.textAlign = "left";
+          ctx.textBaseline = "alphabetic";
+          
+          // Score: "I got 7/10" at baseline ≈1334
+          const scoreBaseline = Math.round(cardY + 46 + (120 - 145.2) / 2 + 116.25);
+          ctx.font = "900 120px Inter, sans-serif";
+          
+          const iGotPart = "I got ";
+          const scorePart = `${score}/10`;
+          
+          ctx.fillStyle = "#ffffff";
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-5px';
+            ctx.fillText(iGotPart, contentX, scoreBaseline);
+            const iGotWidth = ctx.measureText(iGotPart).width;
+            ctx.fillStyle = "#FF3366";
+            ctx.fillText(scorePart, contentX + iGotWidth, scoreBaseline);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            currentX = contentX;
+            for (let i = 0; i < iGotPart.length; i++) {
+              const prefix = iGotPart.substring(0, i);
+              currentX = contentX + ctx2D.measureText(prefix).width - (i * 5);
+              ctx2D.fillText(iGotPart[i], currentX, scoreBaseline);
+            }
+            const iGotWidth = currentX + ctx2D.measureText(iGotPart[iGotPart.length - 1]).width - 5 - contentX;
+            
+            ctx2D.fillStyle = "#FF3366";
+            currentX = contentX + iGotWidth;
+            for (let i = 0; i < scorePart.length; i++) {
+              const prefix = scorePart.substring(0, i);
+              const offsetX = contentX + iGotWidth + ctx2D.measureText(prefix).width - (i * 5);
+              ctx2D.fillText(scorePart[i], offsetX, scoreBaseline);
+            }
+          }
+            ctx.letterSpacing = '0px';
+
+          // Subline: "Can you beat me." at baseline ≈1407
+          const sublineBaseline = 1407;
+          ctx.font = "700 44px Inter, sans-serif";
+          ctx.fillStyle = "#f2f1ec";
+          
+          const beatMe = "Can you beat me.";
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-1px';
+            ctx.fillText(beatMe, contentX, sublineBaseline);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            currentX = contentX;
+            for (let i = 0; i < beatMe.length; i++) {
+              const prefix = beatMe.substring(0, i);
+              currentX = contentX + ctx2D.measureText(prefix).width - i;
+              ctx2D.fillText(beatMe[i], currentX, sublineBaseline);
+            }
+          }
+            ctx.letterSpacing = '0px';
+
+          // Squares at top ≈1447.3, x=122
+          const squaresTop = 1447.3;
+          const squareSize = 56;
+          const squareGap = 12;
+          let squareX = contentX;
+          
+          guesses.forEach((correct: boolean) => {
+            ctx.fillStyle = correct ? "#FF3366" : "rgba(255, 255, 255, 0.18)";
+            ctx.beginPath();
+            ctx.roundRect(squareX, squaresTop, squareSize, squareSize, 12);
+            ctx.fill();
+            squareX += squareSize + squareGap;
+          });
+
+          // URL at baseline ≈1564
+          const urlBaseline = 1564;
+          ctx.font = "700 32px Inter, sans-serif";
+          ctx.fillStyle = "rgba(255, 255, 255, 0.63)";
+          
+          const url = "hiiipower.app/ai-or-not";
+          if (supportsLetterSpacing) {
+            ctx.letterSpacing = '-0.5px';
+            ctx.fillText(url, contentX, urlBaseline);
+          } else {
+            const ctx2D = ctx as CanvasRenderingContext2D;
+            currentX = contentX;
+            for (let i = 0; i < url.length; i++) {
+              const prefix = url.substring(0, i);
+              currentX = contentX + ctx2D.measureText(prefix).width - (i * 0.5);
+              ctx2D.fillText(url[i], currentX, urlBaseline);
+            }
+          }
+            ctx.letterSpacing = '0px';
+
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error("Failed to create blob"));
+            }
+          }, "image/png");
+        };
+        logo.onerror = () => {
+          reject(new Error("Failed to load logo"));
+        };
+        logo.src = "/share/tri-white.png";
+      };
+      bg.onerror = () => {
+        reject(new Error("Failed to load background image"));
+      };
+      bg.src = bgImage?.src || images[0]?.src || "";
     });
   };
 
@@ -488,7 +779,46 @@ export default function AIOrNotPage() {
       });
 
       const shareText = getShareText();
-      const shareUrl = `https://www.hiiipower.app/ai-or-not?r=${currentSeed}`;
+      const shareUrl = `https://hiiipower.app/ai-or-not`;
+
+      // Copy URL to clipboard
+      if (navigator.clipboard) {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          // Show a temporary tip
+          const tip = document.createElement("div");
+          tip.textContent = "stickers → Link → paste";
+          tip.style.cssText = `
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+          `;
+          document.body.appendChild(tip);
+          // Fade in
+          setTimeout(() => {
+            tip.style.opacity = "1";
+          }, 10);
+          // Fade out and remove
+          setTimeout(() => {
+            tip.style.opacity = "0";
+            setTimeout(() => tip.remove(), 300);
+          }, 2500);
+        } catch (clipErr) {
+          console.log("Clipboard copy failed:", clipErr);
+        }
+      }
+
       const fullText = `${shareText}\n\n${shareUrl}`;
 
       if (

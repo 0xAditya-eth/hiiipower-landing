@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Syne, DM_Sans } from "next/font/google";
+import { Syne, DM_Sans, Inter } from "next/font/google";
 import "./globals.css";
 
 const display = Syne({
@@ -12,6 +12,12 @@ const body = DM_Sans({
   variable: "--font-body",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -57,7 +63,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${display.variable} ${body.variable} font-sans antialiased`}>
+      <body className={`${display.variable} ${body.variable} ${inter.variable} font-sans antialiased`}>
         {children}
       </body>
     </html>
