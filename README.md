@@ -67,7 +67,7 @@ Only `name` and `email` are required. UTM parameters are optional and captured f
 
 Responses:
 
-- `200` `{ ok: true, storage: "mongodb" | "file" }` on success (idempotent for duplicate emails)
+- `200` `{ ok: true }` on success (idempotent for duplicate emails)
 - `400` `{ error: "Invalid input" }` if name/email invalid
 - `500` `{ error: "Server error" }` on unexpected errors
 - `503` `{ error: "Storage unavailable" }` if file system is read-only
@@ -103,7 +103,13 @@ Response:
 }
 ```
 
-**Note**: Stats endpoint only works with MongoDB storage. Returns `404` if `WAITLIST_STATS_TOKEN` is not set, and `401` if the token is incorrect.
+When `from` or `to` parameters are provided, the daily series respects those filters and the field name changes to `daily_by_source` instead of `daily_by_source_last_30d`.
+
+**Errors**:
+- `404` if `WAITLIST_STATS_TOKEN` is not set
+- `401` if the token is incorrect
+- `400` if `from` or `to` are invalid dates
+- `503` if MongoDB is not configured
 
 ### Persistence
 

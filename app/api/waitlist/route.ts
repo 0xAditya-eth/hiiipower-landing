@@ -89,11 +89,14 @@ export async function POST(request: Request) {
           { $setOnInsert: doc },
           { upsert: true }
         );
-        return NextResponse.json({ ok: true, storage: "mongodb" });
+        return NextResponse.json({ ok: true });
       } catch (err: unknown) {
         console.error("MongoDB error:", err);
         const mongoErr = err as { code?: number };
-        if (mongoUri && mongoErr?.code !== 11000) {
+        if (mongoErr?.code === 11000) {
+          return NextResponse.json({ ok: true });
+        }
+        if (mongoUri) {
           return NextResponse.json(
             { error: "Database temporarily unavailable" },
             { status: 503 }
@@ -133,131 +136,8 @@ export async function POST(request: Request) {
       await fs.writeFile(DATA_FILE, JSON.stringify(json, null, 2));
     }
 
-    return NextResponse.json({ ok: true, storage: "file" });
+    return NextResponse.json({ ok: true });
   } catch {
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
-  }
-}
-
-export async function GET(request: Request) {
-  const token = process.env.WAITLIST_STATS_TOKEN;
-  if (!token) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
-  const authHeader = request.headers.get("authorization");
-  const providedToken = authHeader?.replace(/^Bearer\s+/i, "");
-  if (providedToken !== token) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const url = new URL(request.url);
-  const from = url.searchParams.get("from");
-  const to = url.searchParams.get("to");
-
-  const mongoUri = process.env.MONGODB_URI || "";
-  const mongoDbName = process.env.MONGODB_DB || undefined;
-
-  if (!mongoUri) {
-    return NextResponse.json(
-      { error: "Stats only available with MongoDB" },
-      { status: 503 }
-    );
-  }
-
-  try {
-    const db = await getMongoDb(mongoUri, mongoDbName);
-    const collection = db.collection<WaitlistEntry>("waitlist");
-
-    const dateFilter: { $gte?: string; $lte?: string } = {};
-    if (from) dateFilter.$gte = new Date(from).toISOString();
-    if (to) dateFilter.$lte = new Date(to).toISOString();
-    const matchStage = Object.keys(dateFilter).length > 0 ? { createdAt: dateFilter } : {};
-
-    const [
-      totalResult,
-      sourceResults,
-      mediumResults,
-      campaignResults,
-      dailyResults,
-    ] = await Promise.all([
-      collection.countDocuments(matchStage),
-      collection
-        .aggregate([
-          ...(Object.keys(matchStage).length > 0 ? [{ $match: matchStage }] : []),
-          { $group: { _id: "$utm_source", count: { $sum: 1 } } },
-          { $sort: { count: -1 } },
-        ])
-        .toArray(),
-      collection
-        .aggregate([
-          ...(Object.keys(matchStage).length > 0 ? [{ $match: matchStage }] : []),
-          { $group: { _id: "$utm_medium", count: { $sum: 1 } } },
-          { $sort: { count: -1 } },
-        ])
-        .toArray(),
-      collection
-        .aggregate([
-          ...(Object.keys(matchStage).length > 0 ? [{ $match: matchStage }] : []),
-          { $group: { _id: "$utm_campaign", count: { $sum: 1 } } },
-          { $sort: { count: -1 } },
-        ])
-        .toArray(),
-      collection
-        .aggregate([
-          {
-            $match: {
-              createdAt: {
-                $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-              },
-            },
-          },
-          {
-            $addFields: {
-              date: { $substr: ["$createdAt", 0, 10] },
-            },
-          },
-          {
-            $group: {
-              _id: { date: "$date", source: "$utm_source" },
-              count: { $sum: 1 },
-            },
-          },
-          { $sort: { "_id.date": 1 } },
-        ])
-        .toArray(),
-    ]);
-
-    type AggResult = { _id: string | null; count: number };
-    type DailyAggResult = { _id: { date: string; source: string | null }; count: number };
-
-    const bySource = Object.fromEntries(
-      (sourceResults as AggResult[]).map((r) => [r._id || "unknown", r.count])
-    );
-    const byMedium = Object.fromEntries(
-      (mediumResults as AggResult[]).map((r) => [r._id || "unknown", r.count])
-    );
-    const byCampaign = Object.fromEntries(
-      (campaignResults as AggResult[]).map((r) => [r._id || "unknown", r.count])
-    );
-
-    const dailySeries: Record<string, Record<string, number>> = {};
-    for (const row of dailyResults as DailyAggResult[]) {
-      const date = row._id.date;
-      const source = row._id.source || "unknown";
-      if (!dailySeries[date]) dailySeries[date] = {};
-      dailySeries[date][source] = row.count;
-    }
-
-    return NextResponse.json({
-      total: totalResult,
-      by_utm_source: bySource,
-      by_utm_medium: byMedium,
-      by_utm_campaign: byCampaign,
-      daily_by_source_last_30d: dailySeries,
-    });
-  } catch (err) {
-    console.error("Stats error:", err);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }
