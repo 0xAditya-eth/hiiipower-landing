@@ -49,7 +49,7 @@ public/                   # Static assets
 
 ### `POST /api/waitlist`
 
-Submit a waitlist signup with optional source tracking and referral code.
+Submit a waitlist signup with optional UTM source tracking.
 
 Request body:
 
@@ -59,27 +59,22 @@ Request body:
   "email": "ada@example.com",
   "utm_source": "instagram",
   "utm_medium": "bio",
-  "utm_campaign": "meta_exodus",
-  "heard_from": "Instagram",
-  "referred_by": "a1b2c3d4"
+  "utm_campaign": "meta_exodus"
 }
 ```
 
-Only `name` and `email` are required. All other fields are optional:
-- `utm_source`, `utm_medium`, `utm_campaign`: UTM parameters captured from landing URL
-- `heard_from`: One of `"Instagram"`, `"Threads"`, `"X"`, `"A friend"`, `"Other"`
-- `referred_by`: Referral code from another user's invite link
+Only `name` and `email` are required. UTM parameters are optional and captured from landing URL query strings.
 
 Responses:
 
-- `200` `{ ok: true, storage: "mongodb" | "file", ref_code: "a1b2c3d4" }` on success (idempotent for duplicate emails)
+- `200` `{ ok: true, storage: "mongodb" | "file" }` on success (idempotent for duplicate emails)
 - `400` `{ error: "Invalid input" }` if name/email invalid
 - `500` `{ error: "Server error" }` on unexpected errors
 - `503` `{ error: "Storage unavailable" }` if file system is read-only
 
 ### `GET /api/waitlist/stats`
 
-Protected endpoint for read-only analytics. Returns aggregate counts only (no emails or codes).
+Protected endpoint for read-only analytics. Returns aggregate counts only (no emails).
 
 **Authentication**: Requires `Authorization: Bearer <token>` header where token matches `WAITLIST_STATS_TOKEN` environment variable.
 
@@ -102,9 +97,6 @@ Response:
   "by_utm_source": { "instagram": 823, "threads": 401, "x": 299 },
   "by_utm_medium": { "bio": 1523 },
   "by_utm_campaign": { "meta_exodus": 1523 },
-  "by_heard_from": { "Instagram": 450, "Threads": 320, "A friend": 280 },
-  "with_referral": 234,
-  "organic": 1289,
   "daily_by_source_last_30d": {
     "2026-10-19": { "instagram": 45, "threads": 23 }
   }
@@ -116,9 +108,7 @@ Response:
 ### Persistence
 
 - By default, submissions are stored in `data/waitlist.json`.
-- If `MONGODB_URI` is set, submissions are stored in MongoDB with unique indexes on `email` and `ref_code`.
-
-Each signup receives a unique 8-character referral code. Duplicate email submissions return the existing code.
+- If `MONGODB_URI` is set, submissions are stored in MongoDB with a unique index on `email`.
 
 ### Environment variables
 
@@ -142,12 +132,9 @@ Each waitlist entry stores:
 - `name` (string): Derived from email username
 - `email` (string, unique): User's email address
 - `createdAt` (ISO date): Signup timestamp
-- `ref_code` (string, unique, 8 chars): Personal referral code
 - `utm_source` (string, optional): UTM source parameter
 - `utm_medium` (string, optional): UTM medium parameter
 - `utm_campaign` (string, optional): UTM campaign parameter
-- `heard_from` (string, optional): Self-reported discovery source
-- `referred_by` (string, optional): Referral code that brought this signup
 
 ## Deployment
 
