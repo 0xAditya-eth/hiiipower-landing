@@ -12,7 +12,7 @@ import {
 const FAQS = [
   {
     q: "Where can I get it?",
-    a: "Android: Google Play, now. You need an invite from someone already on HiiiPower. iPhone: join the waitlist and we'll tell you when we're on iPhone.",
+    a: "Android: Google Play, now. You need an invite from someone already on HiiiPower. iPhone: join the waitlist and we'll tell you when we're on iOS.",
   },
   {
     q: "How does identity verification work?",

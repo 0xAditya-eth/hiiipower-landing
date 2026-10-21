@@ -17,7 +17,7 @@ type DesktopPlatform = "android" | "iphone";
 
 const DESKTOP_TABS: { id: DesktopPlatform; label: string }[] = [
   { id: "android", label: "Android" },
-  { id: "iphone", label: "iPhone" },
+  { id: "iphone", label: "iOS" },
 ];
 
 function WaitlistFields({ autoFocus }: { autoFocus?: boolean }) {
