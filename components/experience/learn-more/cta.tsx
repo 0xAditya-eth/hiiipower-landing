@@ -34,7 +34,7 @@ export function LearnCta() {
             }}
             className="font-display text-3xl font-semibold tracking-tight text-white sm:text-5xl"
           >
-            Your data stays yours. Now on Android.
+            Ready to join the real world?
           </motion.h2>
           <motion.p
             variants={{

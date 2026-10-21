@@ -77,27 +77,13 @@ export function GetAppBlock({
     </div>
   );
 
-  const androidLinkSmall = (
-    <a
-      href={playUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-center text-xs text-white/45 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white/70 hover:decoration-white/40"
-    >
-      On Android? Get it on Google Play
-    </a>
-  );
-
   return (
     <div className={className}>
       <div
         className={`flex flex-col items-center ${compact ? "gap-4" : "gap-5"}`}
       >
         {ios ? (
-          <>
-            {waitlistAction}
-            {androidLinkSmall}
-          </>
+          waitlistAction
         ) : (
           <>
             {playBadge}

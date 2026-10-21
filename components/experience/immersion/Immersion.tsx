@@ -32,8 +32,8 @@ const CHAPTER_COPY: Record<string, { title: string; body: string }> = {
     body: "Your data, your attention, your emotions, your time — and the agency to decide what gets any of them. Nothing sold. Nothing steered against you.",
   },
   finale: {
-    title: "Your data stays yours. Now on Android.",
-    body: "Real people. Real moments. Real power over your data and attention.",
+    title: "Ready to join the real world?",
+    body: "One email when we launch. No spam.",
   },
 };
 
@@ -490,8 +490,8 @@ export function Immersion() {
         className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center"
         style={{ opacity: 0 }}
       >
-        <h2 className="font-display text-[1.65rem] font-semibold tracking-tight text-white sm:text-5xl">
-          Your data stays yours. Now on Android.
+        <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+          Ready to join the real world?
         </h2>
         <div className="pointer-events-auto relative mx-auto mt-6 w-full max-w-md sm:mt-8">
           <GetAppBlock utmContent="home" />
