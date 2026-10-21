@@ -10,7 +10,7 @@ import {
 import { CanvasFx } from "@/components/experience/immersion/canvas-fx";
 import { PILLAR_STAGES } from "@/components/experience/immersion/pillar-stage";
 import { FeedScreen } from "@/components/experience/phone-screens";
-import { EmailJoinBar } from "@/components/experience/immersion/email-join-bar";
+import { GetAppBlock } from "@/components/experience/get-app-block";
 import { SiteMenu } from "@/components/experience/site-menu";
 import { BrandMark } from "@/components/experience/brand-mark";
 
@@ -361,7 +361,7 @@ export function Immersion() {
 
       const nextHud =
         seg.id === "finale"
-          ? "Enter your email below"
+          ? "Get the app or join the waitlist"
           : seg.id === "intro"
             ? "Scroll to begin"
             : "Scroll to continue";
@@ -370,7 +370,7 @@ export function Immersion() {
         setHud(nextHud);
       }
 
-      const showEmail = seg.id === "finale" && L > 0.2;
+      const showEmail = seg.id === "finale" && L > 0.15;
       if (emailBarRef.current !== showEmail) {
         emailBarRef.current = showEmail;
         setEmailBarVisible(showEmail);
@@ -487,18 +487,16 @@ export function Immersion() {
 
       <div
         ref={finaleCopyRef}
-        className="pointer-events-none absolute inset-x-0 top-[28%] z-20 px-6 text-center"
+        className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center"
         style={{ opacity: 0 }}
       >
         <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-5xl">
           Ready to join the real world?
         </h2>
-        <p className="mx-auto mt-4 max-w-sm text-sm text-white/50">
-          One email when we launch. No spam.
-        </p>
+        <div className="pointer-events-auto relative mx-auto mt-6 w-full max-w-xl sm:mt-8">
+          <GetAppBlock utmContent="home" />
+        </div>
       </div>
-
-      <EmailJoinBar visible={emailBarVisible} />
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         <div

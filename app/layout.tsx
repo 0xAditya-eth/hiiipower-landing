@@ -61,8 +61,35 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "HiiiPower",
+    operatingSystem: "Android",
+    applicationCategory: "SocialNetworkingApplication",
+    url: "https://play.google.com/store/apps/details?id=com.hiiipower.social",
+    downloadUrl: "https://play.google.com/store/apps/details?id=com.hiiipower.social",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    description:
+      "Social media, without the bullshit. Real people. Real moments. Real power over your data and attention.",
+    publisher: {
+      "@type": "Organization",
+      name: "HiiiPower Technologies Private Limited",
+    },
+  };
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className={`${display.variable} ${body.variable} ${inter.variable} font-sans antialiased`}>
         {children}
       </body>

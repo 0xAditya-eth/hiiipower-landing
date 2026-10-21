@@ -3,9 +3,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { cinemaEase, cinemaViewport } from "@/components/experience/motion";
-import { EmailJoinForm } from "@/components/experience/email-join-form";
+import { GetAppBlock } from "@/components/experience/get-app-block";
 
-/** Inline waitlist capture matching Immersion finale EmailJoinBar. */
+/** Inline app download / waitlist capture matching Immersion finale. */
 export function LearnCta() {
   return (
     <section id="join" className="scroll-mt-24 py-24 sm:py-32">
@@ -48,7 +48,7 @@ export function LearnCta() {
             }}
             className="mx-auto mt-4 max-w-sm text-sm text-white/50"
           >
-            One email when we launch. No spam.
+            Real people. Real moments. Real power.
           </motion.p>
           <motion.div
             variants={{
@@ -62,7 +62,7 @@ export function LearnCta() {
             }}
             className="relative mx-auto mt-10 flex justify-center"
           >
-            <EmailJoinForm />
+            <GetAppBlock utmContent="learn-more" />
           </motion.div>
         </motion.div>
       </div>

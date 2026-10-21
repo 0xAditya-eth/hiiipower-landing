@@ -3,7 +3,10 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { playStoreUrl } from "@/lib/play-store";
+import { detectDeviceClass } from "@/lib/device";
 
 type SiteMenuProps = {
   onJoin: () => void;
@@ -14,6 +17,11 @@ type SiteMenuProps = {
 type MenuLink =
   | { label: string; href: string; external?: boolean }
   | { label: string; action: "join" };
+
+function pageFromPath(pathname: string): string {
+  if (!pathname || pathname === "/") return "home";
+  return pathname.replace(/^\//, "").split("/")[0] || "home";
+}
 
 const MENU_GROUPS: { heading?: string; links: MenuLink[] }[] = [
   {
@@ -61,9 +69,14 @@ const morph = { type: "spring" as const, stiffness: 480, damping: 38, mass: 0.8 
 const defaultTriggerClass =
   "inline-flex min-w-[4.75rem] items-center justify-center rounded-full border border-white/20 px-4 py-2 text-xs tracking-wide text-white/80 transition-[border-color,color] duration-300 hover:border-accent hover:text-accent";
 
+const joinItemClass =
+  "block h-[22px] py-0.5 text-left text-[13px] leading-[18px] text-foreground/85 transition-colors hover:text-accent";
+
 export function SiteMenu({ onJoin, triggerClassName }: SiteMenuProps) {
+  const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
+  const [isAndroid, setIsAndroid] = React.useState(false);
   const triggerWrapRef = React.useRef<HTMLSpanElement>(null);
   const [anchor, setAnchor] = React.useState({
     top: 0,
@@ -86,6 +99,7 @@ export function SiteMenu({ onJoin, triggerClassName }: SiteMenuProps) {
 
   React.useEffect(() => {
     setMounted(true);
+    setIsAndroid(detectDeviceClass() === "android");
   }, []);
 
   React.useEffect(() => {
@@ -193,13 +207,25 @@ export function SiteMenu({ onJoin, triggerClassName }: SiteMenuProps) {
                         {group.links.map((link) => (
                           <li key={link.label}>
                             {"action" in link ? (
-                              <button
-                                type="button"
-                                onClick={handleJoin}
-                                className="block py-0.5 text-left text-[13px] text-foreground/85 transition-colors hover:text-accent"
-                              >
-                                {link.label}
-                              </button>
+                              isAndroid ? (
+                                <a
+                                  href={playStoreUrl(pageFromPath(pathname ?? "/"))}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={close}
+                                  className={joinItemClass}
+                                >
+                                  Get the app
+                                </a>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={handleJoin}
+                                  className={joinItemClass}
+                                >
+                                  Join waitlist
+                                </button>
+                              )
                             ) : link.external ? (
                               <a
                                 href={link.href}

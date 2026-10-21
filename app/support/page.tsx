@@ -1,6 +1,7 @@
 "use client";
 
 import { LegalLink, LegalPageLayout, legal } from "@/components/experience/legal-page";
+import { GetAppBlock } from "@/components/experience/get-app-block";
 
 export default function SupportPage() {
   return (
@@ -13,6 +14,14 @@ export default function SupportPage() {
         for account help, safety reports, privacy requests, and general product
         questions.
       </p>
+
+      <h3 className={legal.h3}>Get the app</h3>
+      <p className={legal.p}>
+        Android is live on Google Play, invite-only. On iOS, join the waitlist.
+      </p>
+      <div className="mb-8">
+        <GetAppBlock utmContent="support" />
+      </div>
 
       <h3 className={legal.h3}>Safety &amp; reports</h3>
       <p className={legal.p}>
@@ -57,7 +66,10 @@ export default function SupportPage() {
         <strong className={legal.strong}>Operator:</strong> HiiiPower
         <br />
         <strong className={legal.strong}>App:</strong> HiiiPower (
-        <code className={legal.code}>com.HiiiPower.social</code>)
+        <code className={legal.code}>com.hiiipower.social</code>)
+        <br />
+        <br />
+        Google Play and the Google Play logo are trademarks of Google LLC.
       </p>
     </LegalPageLayout>
   );

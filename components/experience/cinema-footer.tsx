@@ -34,6 +34,8 @@ export function CinemaFooter() {
       </div>
       <p className="mx-auto mt-10 max-w-7xl text-xs text-muted/60">
         © {new Date().getFullYear()} HiiiPower Technologies Private Limited.
+        <br />
+        Google Play and the Google Play logo are trademarks of Google LLC.
       </p>
     </footer>
   );

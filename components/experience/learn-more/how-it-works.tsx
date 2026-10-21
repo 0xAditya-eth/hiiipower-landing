@@ -11,16 +11,21 @@ import {
 const STEPS = [
   {
     step: "01",
+    title: "Get an invite",
+    desc: "HiiiPower is invite-only. Know someone already in? Ask them to invite you. Otherwise, join the waitlist.",
+  },
+  {
+    step: "02",
     title: "Verify your identity",
     desc: "Complete a one-time human verification. No bots, no catfish — everyone on HiiiPower is real.",
   },
   {
-    step: "02",
+    step: "03",
     title: "Capture the moment",
     desc: "Open the app and share what's happening right now. No gallery uploads, no filters, no editing.",
   },
   {
-    step: "03",
+    step: "04",
     title: "Connect authentically",
     desc: "See a chronological feed of real people living real lives. Talk, don't just react.",
   },
@@ -40,15 +45,15 @@ export function LearnHowItWorks() {
             </p>
           </Reveal>
           <Reveal y={36} blur scale delay={0.08}>
-            <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-              Three steps to the real world.
-            </h2>
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+            Four steps to the real world.
+          </h2>
           </Reveal>
         </div>
 
-        <div className="relative grid gap-10 md:grid-cols-3 md:gap-8">
+        <div className="relative grid gap-10 md:grid-cols-4 md:gap-8">
           <motion.div
-            className="pointer-events-none absolute top-8 right-[16.67%] left-[16.67%] hidden h-px origin-left bg-white/10 md:block"
+            className="pointer-events-none absolute top-8 right-[12.5%] left-[12.5%] hidden h-px origin-left bg-white/10 md:block"
             aria-hidden
             initial={{ scaleX: 0, opacity: 0 }}
             whileInView={{ scaleX: 1, opacity: 1 }}
