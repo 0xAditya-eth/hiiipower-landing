@@ -8,17 +8,54 @@ type EmailJoinFormProps = {
   autoFocus?: boolean;
 };
 
+type SourceParams = {
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+};
+
 /** White pill email capture — matches Immersion finale / Learn More CTA. */
 export function EmailJoinForm({ className, autoFocus }: EmailJoinFormProps) {
   const [email, setEmail] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [sourceParams, setSourceParams] = React.useState<SourceParams>({});
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
     if (autoFocus) inputRef.current?.focus();
   }, [autoFocus]);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const stored = sessionStorage.getItem("hiiipower_source");
+    if (stored) {
+      try {
+        setSourceParams(JSON.parse(stored));
+        return;
+      } catch {
+        // ignore
+      }
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const captured: SourceParams = {};
+    
+    const utmSource = params.get("utm_source");
+    const utmMedium = params.get("utm_medium");
+    const utmCampaign = params.get("utm_campaign");
+
+    if (utmSource) captured.utm_source = utmSource;
+    if (utmMedium) captured.utm_medium = utmMedium;
+    if (utmCampaign) captured.utm_campaign = utmCampaign;
+
+    if (Object.keys(captured).length > 0) {
+      sessionStorage.setItem("hiiipower_source", JSON.stringify(captured));
+      setSourceParams(captured);
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -30,10 +67,22 @@ export function EmailJoinForm({ className, autoFocus }: EmailJoinFormProps) {
     setSubmitting(true);
     try {
       const name = email.split("@")[0] || "Friend";
+      const payload: {
+        name: string;
+        email: string;
+        utm_source?: string;
+        utm_medium?: string;
+        utm_campaign?: string;
+      } = { name, email };
+      
+      if (sourceParams.utm_source) payload.utm_source = sourceParams.utm_source;
+      if (sourceParams.utm_medium) payload.utm_medium = sourceParams.utm_medium;
+      if (sourceParams.utm_campaign) payload.utm_campaign = sourceParams.utm_campaign;
+
       const res = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("Failed");
       setSuccess(true);
