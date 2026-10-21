@@ -10,8 +10,6 @@ import { WAITLIST_PROMPT } from "@/lib/waitlist-copy";
 type GetAppBlockProps = {
   /** UTM content parameter for tracking (e.g., "home", "ai-or-not") */
   utmContent: string;
-  /** Text-link actions for the site menu. */
-  variant?: "full" | "menu";
   className?: string;
 };
 
@@ -76,7 +74,6 @@ function PlayBadge({
  */
 export function GetAppBlock({
   utmContent,
-  variant = "full",
   className,
 }: GetAppBlockProps) {
   const [device, setDevice] = React.useState<DeviceClass | null>(null);
@@ -90,57 +87,6 @@ export function GetAppBlock({
 
   if (!device) {
     return <div className={className} aria-hidden style={{ minHeight: 72 }} />;
-  }
-
-  if (variant === "menu") {
-    return (
-      <div className={className}>
-        <div className="flex flex-col items-start gap-2">
-          {device === "android" && (
-            <a
-              href={playUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block py-0.5 text-[13px] text-foreground/85 transition-colors hover:text-accent"
-            >
-              Get the app
-            </a>
-          )}
-          {device === "ios" && (
-            <>
-              <p className="py-0.5 text-[13px] text-foreground/85">Join the waitlist</p>
-              <div className="w-full">
-                <WaitlistFields />
-              </div>
-            </>
-          )}
-          {device === "desktop" && (
-            <>
-              <a
-                href={playUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block py-0.5 text-[13px] text-foreground/85 transition-colors hover:text-accent"
-              >
-                Get the app
-              </a>
-              <button
-                type="button"
-                onClick={() => setShowWaitlist((open) => !open)}
-                className="block py-0.5 text-left text-[13px] text-foreground/85 transition-colors hover:text-accent"
-              >
-                iPhone
-              </button>
-              {showWaitlist ? (
-                <div className="w-full pt-1">
-                  <WaitlistFields autoFocus />
-                </div>
-              ) : null}
-            </>
-          )}
-        </div>
-      </div>
-    );
   }
 
   if (device === "ios") {
