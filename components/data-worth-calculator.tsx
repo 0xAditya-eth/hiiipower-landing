@@ -521,7 +521,10 @@ https://www.hiiipower.app/your-worth`;
               data&apos;s worth going forward. Join a social network where you
               own your data, control your privacy, and keep the value you create.
             </p>
-            <ResultsWaitlistActions utmContent="your-worth" />
+            <ResultsWaitlistActions
+              utmContent="your-worth"
+              joinLabel="Join the Waitlist"
+            />
           </div>
         </motion.div>
 
