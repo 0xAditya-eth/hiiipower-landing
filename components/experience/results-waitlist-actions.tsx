@@ -2,18 +2,20 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { EmailJoinForm } from "@/components/experience/email-join-form";
+import { GetAppBlock } from "@/components/experience/get-app-block";
 
 type ResultsWaitlistActionsProps = {
   joinLabel?: string;
+  /** UTM content parameter for tracking (e.g., "ai-or-not", "your-worth") */
+  utmContent: string;
 };
 
 /**
- * Results-page CTA pair: Join expands into the home-style email field;
- * “What’s HiiiPower?” moves below once expanded.
+ * Results-page CTA: Get the app or join the waitlist.
  */
 export function ResultsWaitlistActions({
-  joinLabel = "Join the waitlist",
+  joinLabel = "Get the app or join the waitlist",
+  utmContent,
 }: ResultsWaitlistActionsProps) {
   const [expanded, setExpanded] = React.useState(false);
 
@@ -32,7 +34,7 @@ export function ResultsWaitlistActions({
   if (expanded) {
     return (
       <div className="mt-8 flex flex-col items-center gap-4">
-        <EmailJoinForm autoFocus />
+        <GetAppBlock utmContent={utmContent} mode="full" />
         {learnMore}
       </div>
     );

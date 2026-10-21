@@ -64,7 +64,11 @@ export function Footer() {
           <p className="text-xs text-zinc-400 text-center">
             &copy; {new Date().getFullYear()} HiiiPower Technologies Private Limited. All rights reserved.
           </p>
-          <p className="text-xs text-zinc-400 text-center">Built for humans.</p>
+          <p className="text-xs text-zinc-400 text-center">
+            Built for humans.
+            <br />
+            Google Play and the Google Play logo are trademarks of Google LLC.
+          </p>
         </div>
       </div>
     </footer>

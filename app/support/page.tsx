@@ -14,6 +14,17 @@ export default function SupportPage() {
         questions.
       </p>
 
+      <h3 className={legal.h3}>Get the app</h3>
+      <p className={legal.p}>
+        HiiiPower is available now on{" "}
+        <LegalLink href="https://play.google.com/store/apps/details?id=com.hiiipower.social" target="_blank" rel="noopener noreferrer">
+          Google Play for Android
+        </LegalLink>
+        . It&apos;s invite-only: you need an invite from someone already on HiiiPower.
+        No invite yet, or on iPhone? Join the waitlist on{" "}
+        <LegalLink href="/">our homepage</LegalLink>.
+      </p>
+
       <h3 className={legal.h3}>Safety &amp; reports</h3>
       <p className={legal.p}>
         If you report content or a user in the app, we aim to review and act
@@ -57,7 +68,10 @@ export default function SupportPage() {
         <strong className={legal.strong}>Operator:</strong> HiiiPower
         <br />
         <strong className={legal.strong}>App:</strong> HiiiPower (
-        <code className={legal.code}>com.HiiiPower.social</code>)
+        <code className={legal.code}>com.hiiipower.social</code>)
+        <br />
+        <br />
+        Google Play and the Google Play logo are trademarks of Google LLC.
       </p>
     </LegalPageLayout>
   );

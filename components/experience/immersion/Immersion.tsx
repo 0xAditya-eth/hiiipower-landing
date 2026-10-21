@@ -10,7 +10,7 @@ import {
 import { CanvasFx } from "@/components/experience/immersion/canvas-fx";
 import { PILLAR_STAGES } from "@/components/experience/immersion/pillar-stage";
 import { FeedScreen } from "@/components/experience/phone-screens";
-import { EmailJoinBar } from "@/components/experience/immersion/email-join-bar";
+import { GetAppBlock } from "@/components/experience/get-app-block";
 import { SiteMenu } from "@/components/experience/site-menu";
 import { BrandMark } from "@/components/experience/brand-mark";
 
@@ -32,8 +32,8 @@ const CHAPTER_COPY: Record<string, { title: string; body: string }> = {
     body: "Your data, your attention, your emotions, your time — and the agency to decide what gets any of them. Nothing sold. Nothing steered against you.",
   },
   finale: {
-    title: "Ready to join the real world?",
-    body: "One email when we launch. No spam.",
+    title: "Your data stays yours. Now on Android.",
+    body: "Real people. Real moments. Real power over your data and attention.",
   },
 };
 
@@ -361,7 +361,7 @@ export function Immersion() {
 
       const nextHud =
         seg.id === "finale"
-          ? "Enter your email below"
+          ? "Get the app or join the waitlist"
           : seg.id === "intro"
             ? "Scroll to begin"
             : "Scroll to continue";
@@ -370,7 +370,7 @@ export function Immersion() {
         setHud(nextHud);
       }
 
-      const showEmail = seg.id === "finale" && L > 0.2;
+      const showEmail = seg.id === "finale" && L > 0.15;
       if (emailBarRef.current !== showEmail) {
         emailBarRef.current = showEmail;
         setEmailBarVisible(showEmail);
@@ -487,18 +487,19 @@ export function Immersion() {
 
       <div
         ref={finaleCopyRef}
-        className="pointer-events-none absolute inset-x-0 top-[28%] z-20 px-6 text-center"
+        className="pointer-events-none absolute inset-x-0 top-[20%] z-20 px-6 text-center"
         style={{ opacity: 0 }}
       >
         <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-5xl">
-          Ready to join the real world?
+          Your data stays yours. Now on Android.
         </h2>
         <p className="mx-auto mt-4 max-w-sm text-sm text-white/50">
-          One email when we launch. No spam.
+          Real people. Real moments. Real power.
         </p>
+        <div className="pointer-events-auto relative mx-auto mt-10 max-w-md">
+          <GetAppBlock utmContent="home" mode="full" />
+        </div>
       </div>
-
-      <EmailJoinBar visible={emailBarVisible} />
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-40 px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
         <div

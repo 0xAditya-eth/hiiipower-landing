@@ -11,8 +11,8 @@ import {
 
 const FAQS = [
   {
-    q: "When is HiiiPower launching?",
-    a: "The waitlist is open now. iOS early access starts in early September 2026. Waitlist members get in first.",
+    q: "Where can I get it?",
+    a: "Android: Google Play, now. You need an invite from someone already on HiiiPower. No invite yet, or on iPhone? Join the waitlist and we'll email you.",
   },
   {
     q: "How does identity verification work?",

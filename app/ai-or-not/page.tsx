@@ -1124,7 +1124,7 @@ export default function AIOrNotPage() {
                       on your mental well-being with addictive algorithms, and
                       never uses your content to train AI.
                     </p>
-                    <ResultsWaitlistActions />
+                    <ResultsWaitlistActions utmContent="ai-or-not" />
                   </div>
                 </motion.div>
 

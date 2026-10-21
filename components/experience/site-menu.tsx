@@ -22,7 +22,7 @@ const MENU_GROUPS: { heading?: string; links: MenuLink[] }[] = [
       { label: "Learn More", href: "/learn-more" },
       { label: "Your Worth", href: "/your-worth" },
       { label: "AI or Not", href: "/ai-or-not" },
-      { label: "Join waitlist", action: "join" },
+      { label: "Get the app or join waitlist", action: "join" },
     ],
   },
   {

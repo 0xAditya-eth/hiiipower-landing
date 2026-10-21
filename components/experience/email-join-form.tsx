@@ -103,7 +103,7 @@ export function EmailJoinForm({ className, autoFocus }: EmailJoinFormProps) {
     >
       {success ? (
         <p className="w-full pr-4 text-center text-sm font-medium text-zinc-900">
-          You&apos;re on the list
+          You&apos;re on the list. We&apos;ll email you when there&apos;s a spot or iPhone is live.
         </p>
       ) : (
         <>
