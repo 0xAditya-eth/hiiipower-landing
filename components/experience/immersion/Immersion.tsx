@@ -487,17 +487,14 @@ export function Immersion() {
 
       <div
         ref={finaleCopyRef}
-        className="pointer-events-none absolute inset-x-0 top-[20%] z-20 px-6 text-center"
+        className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center"
         style={{ opacity: 0 }}
       >
-        <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-5xl">
+        <h2 className="font-display text-[1.65rem] font-semibold tracking-tight text-white sm:text-5xl">
           Your data stays yours. Now on Android.
         </h2>
-        <p className="mx-auto mt-4 max-w-sm text-sm text-white/50">
-          Real people. Real moments. Real power.
-        </p>
-        <div className="pointer-events-auto relative mx-auto mt-10 max-w-md">
-          <GetAppBlock utmContent="home" mode="full" />
+        <div className="pointer-events-auto relative mx-auto mt-6 w-full max-w-md sm:mt-8">
+          <GetAppBlock utmContent="home" />
         </div>
       </div>
 

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { captureWaitlistUtm, type WaitlistUtm } from "@/lib/waitlist-utm";
 
 type WaitlistModalProps = {
   open: boolean;
@@ -15,8 +16,13 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sourceParams, setSourceParams] = useState<WaitlistUtm>({});
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  React.useEffect(() => {
+    if (open) setSourceParams(captureWaitlistUtm());
+  }, [open]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,10 +37,21 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
     }
     setSubmitting(true);
     try {
+      const payload: {
+        name: string;
+        email: string;
+        utm_source?: string;
+        utm_medium?: string;
+        utm_campaign?: string;
+      } = { name, email };
+      if (sourceParams.utm_source) payload.utm_source = sourceParams.utm_source;
+      if (sourceParams.utm_medium) payload.utm_medium = sourceParams.utm_medium;
+      if (sourceParams.utm_campaign) payload.utm_campaign = sourceParams.utm_campaign;
+
       const res = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         throw new Error("Failed to join waitlist");
@@ -112,7 +129,9 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                   <h4 className="font-display mb-2 text-2xl font-semibold text-foreground">
                     You&apos;re on the list
                   </h4>
-                  <p className="mb-6 text-muted">We&apos;ll reach out with early access details soon.</p>
+                  <p className="mb-6 text-muted">
+                    We&apos;ll email you when there&apos;s a spot or iPhone is live.
+                  </p>
                   <Button onClick={resetAndClose}>Close</Button>
                 </motion.div>
               ) : (
@@ -129,7 +148,9 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                     <h4 className="font-display text-2xl font-semibold text-foreground">
                       Join the waitlist
                     </h4>
-                    <p className="mt-2 text-sm text-muted">Be first when HiiiPower opens.</p>
+                    <p className="mt-2 text-sm text-muted">
+                      No invite yet, or on iPhone? We&apos;ll email you when there&apos;s a spot or iPhone is live.
+                    </p>
                   </div>
                   {error && (
                     <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-center text-sm text-red-300">
@@ -169,7 +190,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                     </Button>
                   </div>
                   <p className="text-center text-xs text-muted/70">
-                    No spam. One email when we launch.
+                    For people without an invite, and for iPhone.
                   </p>
                 </motion.form>
               )}

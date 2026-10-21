@@ -1,6 +1,7 @@
 "use client";
 
 import { LegalLink, LegalPageLayout, legal } from "@/components/experience/legal-page";
+import { GetAppBlock } from "@/components/experience/get-app-block";
 
 export default function SupportPage() {
   return (
@@ -16,14 +17,12 @@ export default function SupportPage() {
 
       <h3 className={legal.h3}>Get the app</h3>
       <p className={legal.p}>
-        HiiiPower is available now on{" "}
-        <LegalLink href="https://play.google.com/store/apps/details?id=com.hiiipower.social" target="_blank" rel="noopener noreferrer">
-          Google Play for Android
-        </LegalLink>
-        . It&apos;s invite-only: you need an invite from someone already on HiiiPower.
-        No invite yet, or on iPhone? Join the waitlist on{" "}
-        <LegalLink href="/">our homepage</LegalLink>.
+        Android is live on Google Play. Invite-only. No invite yet, or on iPhone?
+        Join the waitlist below.
       </p>
+      <div className="mb-8">
+        <GetAppBlock utmContent="support" />
+      </div>
 
       <h3 className={legal.h3}>Safety &amp; reports</h3>
       <p className={legal.p}>

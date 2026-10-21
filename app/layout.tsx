@@ -64,20 +64,22 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "HiiiPower",
-    "operatingSystem": "ANDROID",
-    "applicationCategory": "SocialNetworkingApplication",
-    "offers": {
+    name: "HiiiPower",
+    operatingSystem: "Android",
+    applicationCategory: "SocialNetworkingApplication",
+    url: "https://play.google.com/store/apps/details?id=com.hiiipower.social",
+    downloadUrl: "https://play.google.com/store/apps/details?id=com.hiiipower.social",
+    offers: {
       "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
+      price: "0",
+      priceCurrency: "USD",
     },
-    "downloadUrl": "https://play.google.com/store/apps/details?id=com.hiiipower.social",
-    "description": "Social media, without the bullshit. Real people. Real moments. Real power over your data and attention.",
-    "publisher": {
+    description:
+      "Social media, without the bullshit. Real people. Real moments. Real power over your data and attention.",
+    publisher: {
       "@type": "Organization",
-      "name": "HiiiPower Technologies Private Limited"
-    }
+      name: "HiiiPower Technologies Private Limited",
+    },
   };
 
   return (

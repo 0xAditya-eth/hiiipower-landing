@@ -3,22 +3,28 @@
 import React from "react";
 import Image from "next/image";
 import { EmailJoinForm } from "@/components/experience/email-join-form";
+import { playStoreUrl } from "@/lib/play-store";
 
 type GetAppBlockProps = {
   /** UTM content parameter for tracking (e.g., "home", "ai-or-not") */
   utmContent: string;
-  /** Display mode: "full" shows both badge and waitlist, "compact" shows badge and small link */
-  mode?: "full" | "compact";
-  /** Optional className for the container */
+  /** Tighter stack for the site menu / support inset. */
+  compact?: boolean;
   className?: string;
 };
 
 /**
- * Shared "get the app" block used across site where waitlist CTAs appear.
- * Device-aware ordering: Android shows Play first, iOS shows waitlist first with Android link.
+ * Shared "get the app" block used wherever a waitlist CTA used to appear.
+ * Device order is applied after mount so SSR/hydration always match (desktop).
  */
-export function GetAppBlock({ utmContent, mode = "full", className }: GetAppBlockProps) {
-  const [device, setDevice] = React.useState<"android" | "ios" | "desktop">("desktop");
+export function GetAppBlock({
+  utmContent,
+  compact = false,
+  className,
+}: GetAppBlockProps) {
+  const [device, setDevice] = React.useState<"android" | "ios" | "desktop">(
+    "desktop"
+  );
 
   React.useEffect(() => {
     const ua = navigator.userAgent.toLowerCase();
@@ -31,36 +37,41 @@ export function GetAppBlock({ utmContent, mode = "full", className }: GetAppBloc
     }
   }, []);
 
-  const playUrl = `https://play.google.com/store/apps/details?id=com.hiiipower.social&referrer=utm_source%3Dsite%26utm_content%3D${encodeURIComponent(utmContent)}`;
+  const playUrl = playStoreUrl(utmContent);
+  const ios = device === "ios";
 
   const playBadge = (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center">
+      {/*
+        Official generic badge PNG includes Google's clear-space padding.
+        h-[72px] keeps the painted badge well above the 28px minimum.
+      */}
       <a
         href={playUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="transition-opacity hover:opacity-80"
+        className="inline-flex transition-opacity hover:opacity-80"
         aria-label="Get it on Google Play"
       >
         <Image
           src="/google-play-badge.png"
           alt="Get it on Google Play"
-          width={135}
-          height={40}
-          className="h-10 w-auto"
+          width={646}
+          height={250}
+          className={compact ? "h-[60px] w-auto" : "h-[72px] w-auto"}
           priority
         />
       </a>
-      <p className="text-xs text-white/50">
-        invite-only. got an invite? get the app.
+      <p className="-mt-1 max-w-[16rem] text-center text-xs leading-snug text-white/55">
+        Invite-only. Got an invite? Get the app.
       </p>
     </div>
   );
 
   const waitlistAction = (
-    <div className="flex flex-col items-center gap-3">
-      <p className="text-xs text-white/50">
-        no invite yet, or on iphone? join the waitlist.
+    <div className="flex w-full max-w-sm flex-col items-center gap-3">
+      <p className="text-center text-xs leading-snug text-white/55">
+        No invite yet, or on iPhone? Join the waitlist.
       </p>
       <EmailJoinForm />
     </div>
@@ -71,46 +82,25 @@ export function GetAppBlock({ utmContent, mode = "full", className }: GetAppBloc
       href={playUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-xs text-white/40 underline decoration-white/20 transition-colors hover:text-white/60 hover:decoration-white/40"
+      className="text-center text-xs text-white/45 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white/70 hover:decoration-white/40"
     >
-      on android? get it on google play
+      On Android? Get it on Google Play
     </a>
   );
 
-  if (mode === "compact") {
-    return (
-      <div className={className}>
-        {device === "ios" ? (
-          <div className="flex flex-col items-center gap-3">
-            <EmailJoinForm />
-            {androidLinkSmall}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-3">
-            {playBadge}
-            <p className="text-xs text-white/40">
-              no invite? join the waitlist instead
-            </p>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Full mode with both actions
   return (
     <div className={className}>
-      <div className="flex flex-col items-center gap-6">
-        {device === "ios" ? (
+      <div
+        className={`flex flex-col items-center ${compact ? "gap-4" : "gap-5"}`}
+      >
+        {ios ? (
           <>
             {waitlistAction}
-            <div className="h-px w-16 bg-white/10" />
             {androidLinkSmall}
           </>
         ) : (
           <>
             {playBadge}
-            <div className="h-px w-16 bg-white/10" />
             {waitlistAction}
           </>
         )}

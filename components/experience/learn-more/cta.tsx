@@ -62,7 +62,7 @@ export function LearnCta() {
             }}
             className="relative mx-auto mt-10 flex justify-center"
           >
-            <GetAppBlock utmContent="learn-more" mode="full" />
+            <GetAppBlock utmContent="learn-more" />
           </motion.div>
         </motion.div>
       </div>

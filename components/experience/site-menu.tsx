@@ -3,17 +3,23 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { GetAppBlock } from "@/components/experience/get-app-block";
 
 type SiteMenuProps = {
-  onJoin: () => void;
+  /** Kept for callers; the menu now embeds GetAppBlock instead of scrolling to join. */
+  onJoin?: () => void;
   /** Optional class for the trigger button (Immersion uses white chrome). */
   triggerClassName?: string;
 };
 
-type MenuLink =
-  | { label: string; href: string; external?: boolean }
-  | { label: string; action: "join" };
+type MenuLink = { label: string; href: string; external?: boolean };
+
+function pageFromPath(pathname: string): string {
+  if (!pathname || pathname === "/") return "home";
+  return pathname.replace(/^\//, "").split("/")[0] || "home";
+}
 
 const MENU_GROUPS: { heading?: string; links: MenuLink[] }[] = [
   {
@@ -22,7 +28,6 @@ const MENU_GROUPS: { heading?: string; links: MenuLink[] }[] = [
       { label: "Learn More", href: "/learn-more" },
       { label: "Your Worth", href: "/your-worth" },
       { label: "AI or Not", href: "/ai-or-not" },
-      { label: "Get the app or join waitlist", action: "join" },
     ],
   },
   {
@@ -61,7 +66,8 @@ const morph = { type: "spring" as const, stiffness: 480, damping: 38, mass: 0.8 
 const defaultTriggerClass =
   "inline-flex min-w-[4.75rem] items-center justify-center rounded-full border border-white/20 px-4 py-2 text-xs tracking-wide text-white/80 transition-[border-color,color] duration-300 hover:border-accent hover:text-accent";
 
-export function SiteMenu({ onJoin, triggerClassName }: SiteMenuProps) {
+export function SiteMenu({ triggerClassName }: SiteMenuProps) {
+  const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const triggerWrapRef = React.useRef<HTMLSpanElement>(null);
@@ -114,11 +120,6 @@ export function SiteMenu({ onJoin, triggerClassName }: SiteMenuProps) {
 
   const close = () => setOpen(false);
 
-  const handleJoin = () => {
-    close();
-    onJoin();
-  };
-
   const btnClass = triggerClassName ?? defaultTriggerClass;
 
   const vw = typeof window !== "undefined" ? window.innerWidth : 1200;
@@ -148,11 +149,12 @@ export function SiteMenu({ onJoin, triggerClassName }: SiteMenuProps) {
               role="dialog"
               aria-modal="true"
               aria-label="Site menu"
-              className="fixed z-[201] overflow-hidden border border-line bg-surface text-foreground shadow-[0_20px_50px_rgba(0,0,0,0.55)]"
+              className="fixed z-[201] overflow-y-auto border border-line bg-surface text-foreground shadow-[0_20px_50px_rgba(0,0,0,0.55)]"
               style={{
                 top: panelTop,
                 left: panelLeft,
                 width: panelWidth,
+                maxHeight: "min(90dvh, calc(100dvh - 24px))",
                 borderRadius: 16,
               }}
               transition={morph}
@@ -192,15 +194,7 @@ export function SiteMenu({ onJoin, triggerClassName }: SiteMenuProps) {
                       <ul className="space-y-1">
                         {group.links.map((link) => (
                           <li key={link.label}>
-                            {"action" in link ? (
-                              <button
-                                type="button"
-                                onClick={handleJoin}
-                                className="block py-0.5 text-left text-[13px] text-foreground/85 transition-colors hover:text-accent"
-                              >
-                                {link.label}
-                              </button>
-                            ) : link.external ? (
+                            {link.external ? (
                               <a
                                 href={link.href}
                                 target="_blank"
@@ -224,6 +218,12 @@ export function SiteMenu({ onJoin, triggerClassName }: SiteMenuProps) {
                       </ul>
                     </div>
                   ))}
+                  <div className="border-t border-white/10 pt-3">
+                    <GetAppBlock
+                      utmContent={pageFromPath(pathname ?? "/")}
+                      compact
+                    />
+                  </div>
                   <p className="pt-1 text-[9px] text-muted/40">
                     © {new Date().getFullYear()} HiiiPower Technologies
                   </p>
