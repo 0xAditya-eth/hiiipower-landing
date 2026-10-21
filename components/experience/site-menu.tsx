@@ -221,7 +221,7 @@ export function SiteMenu({ triggerClassName }: SiteMenuProps) {
                   <div className="border-t border-white/10 pt-3">
                     <GetAppBlock
                       utmContent={pageFromPath(pathname ?? "/")}
-                      compact
+                      variant="menu"
                     />
                   </div>
                   <p className="pt-1 text-[9px] text-muted/40">

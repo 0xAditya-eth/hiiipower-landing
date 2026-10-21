@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { captureWaitlistUtm, type WaitlistUtm } from "@/lib/waitlist-utm";
+import { WAITLIST_PROMPT } from "@/lib/waitlist-copy";
 
 type WaitlistModalProps = {
   open: boolean;
@@ -130,7 +131,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                     You&apos;re on the list
                   </h4>
                   <p className="mb-6 text-muted">
-                    We&apos;ll email you when there&apos;s a spot or iPhone is live.
+                    We&apos;ll tell you when we&apos;re on iPhone.
                   </p>
                   <Button onClick={resetAndClose}>Close</Button>
                 </motion.div>
@@ -148,9 +149,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                     <h4 className="font-display text-2xl font-semibold text-foreground">
                       Join the waitlist
                     </h4>
-                    <p className="mt-2 text-sm text-muted">
-                      No invite yet, or on iPhone? We&apos;ll email you when there&apos;s a spot or iPhone is live.
-                    </p>
+                    <p className="mt-2 text-sm text-muted">{WAITLIST_PROMPT}</p>
                   </div>
                   {error && (
                     <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-center text-sm text-red-300">
@@ -190,7 +189,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                     </Button>
                   </div>
                   <p className="text-center text-xs text-muted/70">
-                    For people without an invite, and for iPhone.
+                    We&apos;ll tell you when we&apos;re on iPhone.
                   </p>
                 </motion.form>
               )}

@@ -17,8 +17,7 @@ export default function SupportPage() {
 
       <h3 className={legal.h3}>Get the app</h3>
       <p className={legal.p}>
-        Android is live on Google Play. Invite-only. No invite yet, or on iPhone?
-        Join the waitlist below.
+        Android is live on Google Play, invite-only. On iPhone, join the waitlist.
       </p>
       <div className="mb-8">
         <GetAppBlock utmContent="support" />

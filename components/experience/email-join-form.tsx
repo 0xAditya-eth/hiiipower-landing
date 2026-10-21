@@ -2,6 +2,7 @@
 
 import React from "react";
 import { captureWaitlistUtm, type WaitlistUtm } from "@/lib/waitlist-utm";
+import { WAITLIST_SUCCESS } from "@/lib/waitlist-copy";
 
 type EmailJoinFormProps = {
   className?: string;
@@ -72,8 +73,7 @@ export function EmailJoinForm({ className, autoFocus }: EmailJoinFormProps) {
     >
       {success ? (
         <p className="w-full px-3 py-2 text-center text-[11px] leading-snug font-medium text-zinc-900 sm:text-xs">
-          You&apos;re on the list. We&apos;ll email you when there&apos;s a spot
-          or iPhone is live.
+          {WAITLIST_SUCCESS}
         </p>
       ) : (
         <>

@@ -493,7 +493,7 @@ export function Immersion() {
         <h2 className="font-display text-3xl font-semibold tracking-tight text-white sm:text-5xl">
           Ready to join the real world?
         </h2>
-        <div className="pointer-events-auto relative mx-auto mt-6 w-full max-w-md sm:mt-8">
+        <div className="pointer-events-auto relative mx-auto mt-6 w-full max-w-xl sm:mt-8">
           <GetAppBlock utmContent="home" />
         </div>
       </div>
