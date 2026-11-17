@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { EmailJoinForm } from "@/components/experience/email-join-form";
 import { playStoreUrl } from "@/lib/play-store";
-import { detectDeviceClass, type DeviceClass } from "@/lib/device";
+import { detectDeviceClass, isIpadOsDesktopUa, type DeviceClass } from "@/lib/device";
 import { WAITLIST_PROMPT } from "@/lib/waitlist-copy";
 
 type GetAppBlockProps = {
@@ -19,6 +19,11 @@ type GetAppBlockProps = {
   iosPrompt?: string;
   /** Line under the Play badge. Defaults to the home-page note. */
   androidNote?: string;
+  /**
+   * Treat iPadOS (Macintosh UA + touch) as iOS. Off by default so the home
+   * finale keeps its desktop switcher for that UA.
+   */
+  includeIpadOs?: boolean;
 };
 
 type DesktopPlatform = "android" | "iphone";
@@ -198,12 +203,17 @@ export function GetAppBlock({
   playUrl,
   iosPrompt = WAITLIST_PROMPT,
   androidNote = DEFAULT_ANDROID_NOTE,
+  includeIpadOs = false,
 }: GetAppBlockProps) {
   const [device, setDevice] = React.useState<DeviceClass | null>(null);
 
   React.useEffect(() => {
+    if (includeIpadOs && isIpadOsDesktopUa()) {
+      setDevice("ios");
+      return;
+    }
     setDevice(detectDeviceClass());
-  }, []);
+  }, [includeIpadOs]);
 
   const resolvedPlayUrl = playUrl ?? playStoreUrl(utmContent);
 

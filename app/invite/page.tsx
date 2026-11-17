@@ -7,7 +7,7 @@ import { ExperienceShell } from "@/components/experience/experience-shell";
 import { HeroCascade } from "@/components/experience/motion";
 import { EmailJoinForm } from "@/components/experience/email-join-form";
 import { Button } from "@/components/ui/button";
-import { detectDeviceClass } from "@/lib/device";
+import { detectDeviceClass, isIpadOsDesktopUa } from "@/lib/device";
 import { PLAY_STORE_LISTING_URL } from "@/lib/play-store";
 
 const SHARE_URL = "https://hiiipower.app/ai-or-not";
@@ -37,17 +37,12 @@ export default function InvitePage() {
   }, []);
 
   function onDownload() {
-    const device = detectDeviceClass();
-    if (device === "android") {
+    // Android opens Play. iPhone, iPad, and iPadOS (a Mac UA with a touch
+    // screen) go to /download, which shows the iOS waitlist. Desktop does too.
+    if (detectDeviceClass() === "android" && !isIpadOsDesktopUa()) {
       window.open(PLAY_STORE_LISTING_URL, "_blank", "noopener,noreferrer");
       return;
     }
-    if (device === "ios") {
-      scrollToWaitlist();
-      return;
-    }
-    // Desktop and any unrecognized device land on the download page,
-    // where Play and the iOS waitlist are both available.
     router.push("/download");
   }
 

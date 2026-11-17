@@ -17,6 +17,7 @@ export default function DownloadPage() {
             playUrl={PLAY_STORE_LISTING_URL}
             iosPrompt="iOS is almost here. Join the waitlist and you'll be first in."
             androidNote="Have an invite code? Enter it after you sign up in the app."
+            includeIpadOs
           />
         </div>
       </main>
