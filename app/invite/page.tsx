@@ -11,8 +11,7 @@ import { detectDeviceClass } from "@/lib/device";
 import { PLAY_STORE_LISTING_URL } from "@/lib/play-store";
 
 const SHARE_URL = "https://hiiipower.app/ai-or-not";
-const INVITE_SUCCESS =
-  "You're on the list. Play or share AI or Not to move up.";
+const INVITE_SUCCESS = "You're on the list. We'll let you know when you're in.";
 
 const textLinkClass =
   "text-sm text-white/70 underline decoration-white/20 underline-offset-4 transition-colors hover:text-accent hover:decoration-accent";
@@ -98,9 +97,8 @@ export default function InvitePage() {
               </h1>
               <p className="mx-auto mt-5 max-w-xl text-balance text-sm leading-relaxed text-white/50 sm:text-base">
                 HiiiPower is invite-only right now. Got a code? Download the app
-                and enter it there. No code? Join the waitlist, and move up by
-                playing AI or Not or sharing it with a friend. No ranks. No
-                scores.
+                and enter it there. No code? Join the waitlist, and play AI or
+                Not while you wait.
               </p>
             </HeroCascade>
 
@@ -115,7 +113,7 @@ export default function InvitePage() {
 
             <div className="mt-8 flex flex-col items-center gap-3">
               <Link href="/ai-or-not" className={textLinkClass}>
-                Play AI or Not to move up
+                Play AI or Not
               </Link>
               <button type="button" onClick={onShare} className={textLinkClass}>
                 Share with a friend
