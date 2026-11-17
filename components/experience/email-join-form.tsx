@@ -8,10 +8,16 @@ type EmailJoinFormProps = {
   className?: string;
   /** Auto-focus the email input when mounted (e.g. after expanding from a CTA). */
   autoFocus?: boolean;
+  /** Overrides the default success line. Other pages keep WAITLIST_SUCCESS. */
+  successMessage?: string;
 };
 
 /** White pill email capture — matches Immersion finale / Learn More CTA. */
-export function EmailJoinForm({ className, autoFocus }: EmailJoinFormProps) {
+export function EmailJoinForm({
+  className,
+  autoFocus,
+  successMessage = WAITLIST_SUCCESS,
+}: EmailJoinFormProps) {
   const [email, setEmail] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
@@ -73,7 +79,7 @@ export function EmailJoinForm({ className, autoFocus }: EmailJoinFormProps) {
     >
       {success ? (
         <p className="w-full px-3 py-2 text-center text-[11px] leading-snug font-medium text-zinc-900 sm:text-xs">
-          {WAITLIST_SUCCESS}
+          {successMessage}
         </p>
       ) : (
         <>
