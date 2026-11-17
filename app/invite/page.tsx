@@ -96,38 +96,40 @@ export default function InvitePage() {
                 Need an invite?
               </h1>
               <p className="mx-auto mt-5 max-w-xl text-balance text-sm leading-relaxed text-white/50 sm:text-base">
-                HiiiPower is invite-only right now. Got a code? Download the app
-                and enter it there. No code? Join the waitlist, and play AI or
-                Not while you wait.
+                HiiiPower is invite-only right now.
               </p>
             </HeroCascade>
 
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button type="button" size="lg" onClick={onDownload}>
-                Download the app
-              </Button>
-              <Button type="button" size="lg" variant="secondary" onClick={scrollToWaitlist}>
-                Join the waitlist
-              </Button>
-            </div>
-
-            <div className="mt-8 flex flex-col items-center gap-3">
-              <Link href="/ai-or-not" className={textLinkClass}>
-                Play AI or Not
-              </Link>
-              <button type="button" onClick={onShare} className={textLinkClass}>
-                Share with a friend
-              </button>
-              <p className="min-h-4 text-xs text-white/50" role="status" aria-live="polite">
-                {copied ? "Link copied" : ""}
+            <div className="mx-auto mt-10 max-w-xl">
+              <p className="text-balance text-sm leading-relaxed text-white/50 sm:text-base">
+                No code? Join the waitlist, and play AI or Not while you wait.
               </p>
+              <div id="join" className="scroll-mt-24 mx-auto mt-6 flex justify-center">
+                <EmailJoinForm successMessage={INVITE_SUCCESS} />
+              </div>
+              <div className="mt-8 flex flex-col items-center gap-3">
+                <Link href="/ai-or-not" className={textLinkClass}>
+                  Play AI or Not
+                </Link>
+                <button type="button" onClick={onShare} className={textLinkClass}>
+                  Share with a friend
+                </button>
+                <p className="min-h-4 text-xs text-white/50" role="status" aria-live="polite">
+                  {copied ? "Link copied" : ""}
+                </p>
+              </div>
             </div>
-          </div>
-        </section>
 
-        <section id="join" className="scroll-mt-24 px-5 pb-24 sm:px-8 sm:pb-32">
-          <div className="mx-auto flex max-w-3xl justify-center">
-            <EmailJoinForm successMessage={INVITE_SUCCESS} />
+            <div className="mx-auto mt-14 max-w-xl">
+              <p className="text-balance text-sm leading-relaxed text-white/50 sm:text-base">
+                Got a code? Download the app and enter it there.
+              </p>
+              <div className="mt-6">
+                <Button type="button" size="lg" variant="secondary" onClick={onDownload}>
+                  Download the app
+                </Button>
+              </div>
+            </div>
           </div>
         </section>
       </main>

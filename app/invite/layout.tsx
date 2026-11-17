@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 const title = "Need an invite?";
 const description =
-  "HiiiPower is invite-only right now. Got a code? Download the app and enter it there. No code? Join the waitlist, and play AI or Not while you wait.";
+  "HiiiPower is invite-only right now. No code? Join the waitlist, and play AI or Not while you wait. Got a code? Download the app and enter it there.";
 
 export const metadata: Metadata = {
   title,

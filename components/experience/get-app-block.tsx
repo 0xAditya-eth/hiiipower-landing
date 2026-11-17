@@ -11,6 +11,14 @@ type GetAppBlockProps = {
   /** UTM content parameter for tracking (e.g., "home", "ai-or-not") */
   utmContent: string;
   className?: string;
+  /**
+   * Play listing URL. Omit to keep the existing campaign referrer built from utmContent.
+   */
+  playUrl?: string;
+  /** Line above the iOS waitlist form. Defaults to the home-page prompt. */
+  iosPrompt?: string;
+  /** Line under the Play badge. Defaults to the home-page note. */
+  androidNote?: string;
 };
 
 type DesktopPlatform = "android" | "iphone";
@@ -20,23 +28,33 @@ const DESKTOP_TABS: { id: DesktopPlatform; label: string }[] = [
   { id: "iphone", label: "iOS" },
 ];
 
-function WaitlistFields({ autoFocus }: { autoFocus?: boolean }) {
+function WaitlistFields({
+  autoFocus,
+  prompt = WAITLIST_PROMPT,
+}: {
+  autoFocus?: boolean;
+  prompt?: string;
+}) {
   return (
     <div className="flex w-full max-w-sm flex-col items-center gap-3">
       <p className="text-center text-xs leading-snug text-white/55">
-        {WAITLIST_PROMPT}
+        {prompt}
       </p>
       <EmailJoinForm autoFocus={autoFocus} />
     </div>
   );
 }
 
+const DEFAULT_ANDROID_NOTE = "Invite-only. Got an invite? Get the app.";
+
 function PlayBadge({
   playUrl,
   compact,
+  note = DEFAULT_ANDROID_NOTE,
 }: {
   playUrl: string;
   compact?: boolean;
+  note?: string;
 }) {
   return (
     <div className="flex flex-col items-center">
@@ -56,14 +74,22 @@ function PlayBadge({
           priority
         />
       </a>
-      <p className="-mt-1 max-w-[16rem] text-center text-xs leading-snug text-white/55">
-        Invite-only. Got an invite? Get the app.
+      <p className="-mt-1 max-w-[16rem] text-balance text-center text-xs leading-snug text-white/55">
+        {note}
       </p>
     </div>
   );
 }
 
-function DesktopGetApp({ playUrl }: { playUrl: string }) {
+function DesktopGetApp({
+  playUrl,
+  iosPrompt,
+  androidNote,
+}: {
+  playUrl: string;
+  iosPrompt: string;
+  androidNote: string;
+}) {
   const reactId = React.useId();
   const [platform, setPlatform] = React.useState<DesktopPlatform>("android");
   const [focusWaitlist, setFocusWaitlist] = React.useState(false);
@@ -151,9 +177,9 @@ function DesktopGetApp({ playUrl }: { playUrl: string }) {
               }`}
             >
               {tab.id === "android" ? (
-                <PlayBadge playUrl={playUrl} />
+                <PlayBadge playUrl={playUrl} note={androidNote} />
               ) : (
-                <WaitlistFields autoFocus={focusWaitlist} />
+                <WaitlistFields autoFocus={focusWaitlist} prompt={iosPrompt} />
               )}
             </div>
           );
@@ -169,6 +195,9 @@ function DesktopGetApp({ playUrl }: { playUrl: string }) {
 export function GetAppBlock({
   utmContent,
   className,
+  playUrl,
+  iosPrompt = WAITLIST_PROMPT,
+  androidNote = DEFAULT_ANDROID_NOTE,
 }: GetAppBlockProps) {
   const [device, setDevice] = React.useState<DeviceClass | null>(null);
 
@@ -176,7 +205,7 @@ export function GetAppBlock({
     setDevice(detectDeviceClass());
   }, []);
 
-  const playUrl = playStoreUrl(utmContent);
+  const resolvedPlayUrl = playUrl ?? playStoreUrl(utmContent);
 
   if (!device) {
     return <div className={className} aria-hidden style={{ minHeight: 72 }} />;
@@ -185,7 +214,7 @@ export function GetAppBlock({
   if (device === "ios") {
     return (
       <div className={className}>
-        <WaitlistFields />
+        <WaitlistFields prompt={iosPrompt} />
       </div>
     );
   }
@@ -193,14 +222,18 @@ export function GetAppBlock({
   if (device === "android") {
     return (
       <div className={className}>
-        <PlayBadge playUrl={playUrl} />
+        <PlayBadge playUrl={resolvedPlayUrl} note={androidNote} />
       </div>
     );
   }
 
   return (
     <div className={className}>
-      <DesktopGetApp playUrl={playUrl} />
+      <DesktopGetApp
+        playUrl={resolvedPlayUrl}
+        iosPrompt={iosPrompt}
+        androidNote={androidNote}
+      />
     </div>
   );
 }
