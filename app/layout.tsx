@@ -54,6 +54,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  itunes: {
+    appId: "6812477449",
+  },
 };
 
 export default function RootLayout({
@@ -61,25 +64,46 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const appDescription =
+    "Social media, without the bullshit. Real people. Real moments. Real power over your data and attention.";
+  const publisher = {
+    "@type": "Organization",
+    name: "HiiiPower Technologies Private Limited",
+  };
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: "HiiiPower",
-    operatingSystem: "Android",
-    applicationCategory: "SocialNetworkingApplication",
-    url: "https://play.google.com/store/apps/details?id=com.hiiipower.social",
-    downloadUrl: "https://play.google.com/store/apps/details?id=com.hiiipower.social",
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-    },
-    description:
-      "Social media, without the bullshit. Real people. Real moments. Real power over your data and attention.",
-    publisher: {
-      "@type": "Organization",
-      name: "HiiiPower Technologies Private Limited",
-    },
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        name: "HiiiPower",
+        operatingSystem: "iOS",
+        applicationCategory: "SocialNetworkingApplication",
+        url: "https://apps.apple.com/app/hiiipower/id6812477449",
+        downloadUrl: "https://apps.apple.com/app/hiiipower/id6812477449",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+        },
+        description: appDescription,
+        publisher,
+      },
+      {
+        "@type": "SoftwareApplication",
+        name: "HiiiPower",
+        operatingSystem: "Android",
+        applicationCategory: "SocialNetworkingApplication",
+        url: "https://play.google.com/store/apps/details?id=com.hiiipower.social",
+        downloadUrl: "https://play.google.com/store/apps/details?id=com.hiiipower.social",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+        },
+        description: appDescription,
+        publisher,
+      },
+    ],
   };
 
   return (

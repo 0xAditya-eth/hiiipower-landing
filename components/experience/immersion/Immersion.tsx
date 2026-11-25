@@ -33,7 +33,7 @@ const CHAPTER_COPY: Record<string, { title: string; body: string }> = {
   },
   finale: {
     title: "Ready to join the real world?",
-    body: "One email when we launch. No spam.",
+    body: "Real people. Real moments. Real power.",
   },
 };
 
@@ -361,7 +361,7 @@ export function Immersion() {
 
       const nextHud =
         seg.id === "finale"
-          ? "Get the app or join the waitlist"
+          ? "Get the app"
           : seg.id === "intro"
             ? "Scroll to begin"
             : "Scroll to continue";

@@ -2,10 +2,10 @@
 
 import React from "react";
 import Image from "next/image";
-import { EmailJoinForm } from "@/components/experience/email-join-form";
+import Link from "next/link";
 import { playStoreUrl } from "@/lib/play-store";
+import { APP_STORE_LISTING_URL } from "@/lib/app-store";
 import { detectDeviceClass, isIpadOsDesktopUa, type DeviceClass } from "@/lib/device";
-import { WAITLIST_PROMPT } from "@/lib/waitlist-copy";
 
 type GetAppBlockProps = {
   /** UTM content parameter for tracking (e.g., "home", "ai-or-not") */
@@ -15,194 +15,103 @@ type GetAppBlockProps = {
    * Play listing URL. Omit to keep the existing campaign referrer built from utmContent.
    */
   playUrl?: string;
-  /** Line above the iOS waitlist form. Defaults to the home-page prompt. */
-  iosPrompt?: string;
-  /** Line under the Play badge. Defaults to the home-page note. */
-  androidNote?: string;
   /**
    * Treat iPadOS (Macintosh UA + touch) as iOS. Off by default so the home
-   * finale keeps its desktop switcher for that UA.
+   * finale keeps its desktop badge pair for that UA.
    */
   includeIpadOs?: boolean;
 };
 
-type DesktopPlatform = "android" | "iphone";
-
-const DESKTOP_TABS: { id: DesktopPlatform; label: string }[] = [
-  { id: "android", label: "Android" },
-  { id: "iphone", label: "iOS" },
-];
-
-function WaitlistFields({
-  autoFocus,
-  prompt = WAITLIST_PROMPT,
-}: {
-  autoFocus?: boolean;
-  prompt?: string;
-}) {
-  return (
-    <div className="flex w-full max-w-sm flex-col items-center gap-3">
-      <p className="text-center text-xs leading-snug text-white/55">
-        {prompt}
-      </p>
-      <EmailJoinForm autoFocus={autoFocus} />
-    </div>
-  );
-}
-
-const DEFAULT_ANDROID_NOTE = "Invite-only. Got an invite? Get the app.";
+/**
+ * Shared visible height of the badge artwork. Apple's official SVG is the
+ * artwork edge to edge. The Play PNG is 646×250 and already includes 41px of
+ * clear space on every side, so the file is scaled until its artwork matches.
+ */
+const BADGE_ART_PX = 72;
+const PLAY_FILE = { w: 646, h: 250, pad: 41 } as const;
+const PLAY_ART_H = PLAY_FILE.h - PLAY_FILE.pad * 2;
+const PLAY_SCALE = BADGE_ART_PX / PLAY_ART_H;
+const PLAY_CSS_HEIGHT = PLAY_FILE.h * PLAY_SCALE;
+const PLAY_PAD_PX = PLAY_FILE.pad * PLAY_SCALE;
+/** Apple requires clear space of one quarter the badge height. */
+const APPLE_CLEAR_PX = BADGE_ART_PX / 4;
 
 function PlayBadge({
   playUrl,
-  compact,
-  note = DEFAULT_ANDROID_NOTE,
 }: {
   playUrl: string;
-  compact?: boolean;
-  note?: string;
 }) {
   return (
-    <div className="flex flex-col items-center">
-      <a
-        href={playUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex transition-opacity hover:opacity-80"
-        aria-label="Get it on Google Play"
-      >
-        <Image
-          src="/google-play-badge.png"
-          alt="Get it on Google Play"
-          width={646}
-          height={250}
-          className={compact ? "h-[60px] w-auto" : "h-[72px] w-auto"}
-          priority
-        />
-      </a>
-      <p className="-mt-1 max-w-[16rem] text-balance text-center text-xs leading-snug text-white/55">
-        {note}
-      </p>
-    </div>
+    <a
+      href={playUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex shrink-0 transition-opacity hover:opacity-80"
+      style={{ marginInline: -PLAY_PAD_PX }}
+      aria-label="Get it on Google Play"
+    >
+      <Image
+        src="/google-play-badge.png"
+        alt="Get it on Google Play"
+        width={PLAY_FILE.w}
+        height={PLAY_FILE.h}
+        className="w-auto"
+        style={{ height: PLAY_CSS_HEIGHT }}
+        priority
+      />
+    </a>
   );
 }
 
-function DesktopGetApp({
-  playUrl,
-  iosPrompt,
-  androidNote,
-}: {
-  playUrl: string;
-  iosPrompt: string;
-  androidNote: string;
-}) {
-  const reactId = React.useId();
-  const [platform, setPlatform] = React.useState<DesktopPlatform>("android");
-  const [focusWaitlist, setFocusWaitlist] = React.useState(false);
-  const tabRefs = React.useRef<Partial<Record<DesktopPlatform, HTMLButtonElement | null>>>(
-    {}
-  );
-
-  function select(
-    next: DesktopPlatform,
-    opts: { focusTab?: boolean; focusForm?: boolean } = {}
-  ) {
-    setPlatform(next);
-    setFocusWaitlist(next === "iphone" && !!opts.focusForm);
-    if (opts.focusTab) {
-      requestAnimationFrame(() => tabRefs.current[next]?.focus());
-    }
-  }
-
-  function onTabListKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
-    const order = DESKTOP_TABS.map((tab) => tab.id);
-    const index = order.indexOf(platform);
-    let next: DesktopPlatform | null = null;
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-      next = order[(index + 1) % order.length];
-    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-      next = order[(index - 1 + order.length) % order.length];
-    } else if (e.key === "Home") {
-      next = order[0];
-    } else if (e.key === "End") {
-      next = order[order.length - 1];
-    }
-    if (!next || next === platform) return;
-    e.preventDefault();
-    select(next, { focusTab: true });
-  }
-
+function AppStoreBadge() {
   return (
-    <div className="flex flex-col items-center gap-6">
-      <div
-        role="tablist"
-        aria-label="Choose platform"
-        className="inline-grid grid-cols-2 rounded-full border border-white/20 bg-white/[0.04] p-0.5"
-        onKeyDown={onTabListKeyDown}
-      >
-        {DESKTOP_TABS.map((tab) => {
-          const selected = platform === tab.id;
-          return (
-            <button
-              key={tab.id}
-              ref={(el) => {
-                tabRefs.current[tab.id] = el;
-              }}
-              type="button"
-              role="tab"
-              id={`${reactId}-tab-${tab.id}`}
-              aria-selected={selected}
-              aria-controls={`${reactId}-panel-${tab.id}`}
-              tabIndex={selected ? 0 : -1}
-              onClick={() => select(tab.id, { focusForm: tab.id === "iphone" })}
-              className={`rounded-full px-4 py-1.5 text-xs font-medium tracking-wide transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 ${
-                selected
-                  ? "bg-white text-zinc-900"
-                  : "text-white/55 hover:text-white/80"
-              }`}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
+    <a
+      href={APP_STORE_LISTING_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex shrink-0"
+      aria-label="Download on the App Store"
+    >
+      {/* Official black US/UK badge from Apple App Store Marketing Tools. Do not modify. */}
+      <Image
+        src="/download-on-the-app-store.svg"
+        alt="Download on the App Store"
+        width={120}
+        height={40}
+        className="w-auto"
+        style={{ height: BADGE_ART_PX }}
+        unoptimized
+        priority
+      />
+    </a>
+  );
+}
 
-      <div className="relative w-full min-h-[7.5rem]">
-        {DESKTOP_TABS.map((tab) => {
-          const active = platform === tab.id;
-          return (
-            <div
-              key={tab.id}
-              role="tabpanel"
-              id={`${reactId}-panel-${tab.id}`}
-              aria-labelledby={`${reactId}-tab-${tab.id}`}
-              inert={!active || undefined}
-              aria-hidden={!active}
-              className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ease-out ${
-                active ? "opacity-100" : "pointer-events-none opacity-0"
-              }`}
-            >
-              {tab.id === "android" ? (
-                <PlayBadge playUrl={playUrl} note={androidNote} />
-              ) : (
-                <WaitlistFields autoFocus={focusWaitlist} prompt={iosPrompt} />
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
+function BadgeNote({ tightArtwork }: { tightArtwork: boolean }) {
+  return (
+    <p
+      className="max-w-[16rem] text-balance text-center text-xs leading-snug text-white/55"
+      style={{ marginTop: tightArtwork ? APPLE_CLEAR_PX : 4 }}
+    >
+      Invite-only.{" "}
+      <Link
+        href="/invite"
+        className="underline decoration-white/30 underline-offset-2 transition-colors hover:text-white hover:decoration-white/70"
+      >
+        Don&apos;t have a code?
+      </Link>
+    </p>
   );
 }
 
 /**
  * Shared get-the-app block. Device UI is chosen after mount so SSR/hydration match.
+ * iOS: App Store badge. Android: Play badge. Desktop: both, App Store first.
  */
 export function GetAppBlock({
   utmContent,
   className,
   playUrl,
-  iosPrompt = WAITLIST_PROMPT,
-  androidNote = DEFAULT_ANDROID_NOTE,
   includeIpadOs = false,
 }: GetAppBlockProps) {
   const [device, setDevice] = React.useState<DeviceClass | null>(null);
@@ -218,13 +127,16 @@ export function GetAppBlock({
   const resolvedPlayUrl = playUrl ?? playStoreUrl(utmContent);
 
   if (!device) {
-    return <div className={className} aria-hidden style={{ minHeight: 72 }} />;
+    return <div className={className} aria-hidden style={{ minHeight: PLAY_CSS_HEIGHT }} />;
   }
 
   if (device === "ios") {
     return (
       <div className={className}>
-        <WaitlistFields prompt={iosPrompt} />
+        <div className="flex flex-col items-center">
+          <AppStoreBadge />
+          <BadgeNote tightArtwork />
+        </div>
       </div>
     );
   }
@@ -232,18 +144,26 @@ export function GetAppBlock({
   if (device === "android") {
     return (
       <div className={className}>
-        <PlayBadge playUrl={resolvedPlayUrl} note={androidNote} />
+        <div className="flex flex-col items-center">
+          <PlayBadge playUrl={resolvedPlayUrl} />
+          <BadgeNote tightArtwork={false} />
+        </div>
       </div>
     );
   }
 
   return (
     <div className={className}>
-      <DesktopGetApp
-        playUrl={resolvedPlayUrl}
-        iosPrompt={iosPrompt}
-        androidNote={androidNote}
-      />
+      <div className="flex flex-col items-center">
+        <div
+          className="flex flex-wrap items-center justify-center"
+          style={{ columnGap: APPLE_CLEAR_PX }}
+        >
+          <AppStoreBadge />
+          <PlayBadge playUrl={resolvedPlayUrl} />
+        </div>
+        <BadgeNote tightArtwork={false} />
+      </div>
     </div>
   );
 }
