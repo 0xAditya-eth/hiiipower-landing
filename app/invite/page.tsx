@@ -38,7 +38,7 @@ export default function InvitePage() {
 
   function onDownload() {
     // Android opens Play. iPhone, iPad, and iPadOS (a Mac UA with a touch
-    // screen) go to /download, which shows the iOS waitlist. Desktop does too.
+    // screen) go to /download, which shows the store badges. Desktop does too.
     if (detectDeviceClass() === "android" && !isIpadOsDesktopUa()) {
       window.open(PLAY_STORE_LISTING_URL, "_blank", "noopener,noreferrer");
       return;

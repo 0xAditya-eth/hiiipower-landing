@@ -131,7 +131,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                     You&apos;re on the list
                   </h4>
                   <p className="mb-6 text-muted">
-                    We&apos;ll tell you when we&apos;re on iOS.
+                    We&apos;ll let you know when you&apos;re in.
                   </p>
                   <Button onClick={resetAndClose}>Close</Button>
                 </motion.div>
@@ -189,7 +189,7 @@ export function WaitlistModal({ open, onClose }: WaitlistModalProps) {
                     </Button>
                   </div>
                   <p className="text-center text-xs text-muted/70">
-                    We&apos;ll tell you when we&apos;re on iOS.
+                    We&apos;ll let you know when you&apos;re in.
                   </p>
                 </motion.form>
               )}

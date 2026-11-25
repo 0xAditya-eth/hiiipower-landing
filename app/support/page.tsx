@@ -17,7 +17,7 @@ export default function SupportPage() {
 
       <h3 className={legal.h3}>Get the app</h3>
       <p className={legal.p}>
-        Android is live on Google Play, invite-only. On iOS, join the waitlist.
+        HiiiPower is live on the App Store and Google Play, invite-only.
       </p>
       <div className="mb-8">
         <GetAppBlock utmContent="support" />
@@ -70,6 +70,8 @@ export default function SupportPage() {
         <br />
         <br />
         Google Play and the Google Play logo are trademarks of Google LLC.
+        <br />
+        Apple, the Apple logo, and App Store are trademarks of Apple Inc.
       </p>
     </LegalPageLayout>
   );

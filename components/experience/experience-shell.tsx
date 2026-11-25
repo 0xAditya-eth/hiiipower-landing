@@ -9,7 +9,7 @@ import { WaitlistModal } from "@/components/waitlist-modal";
 
 type ExperienceShellProps = {
   children: React.ReactNode;
-  /** Menu "Join waitlist" — defaults to navigating home with ?join=1 */
+  /** Menu "Get the app" — defaults to navigating home with ?join=1 */
   onJoinFromMenu?: () => void;
   /** When true, menu join opens local waitlist modal */
   localJoin?: boolean;

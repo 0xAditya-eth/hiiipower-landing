@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { cinemaEase, cinemaViewport } from "@/components/experience/motion";
 import { GetAppBlock } from "@/components/experience/get-app-block";
 
-/** Inline app download / waitlist capture matching Immersion finale. */
+/** Inline app download matching Immersion finale. */
 export function LearnCta() {
   return (
     <section id="join" className="scroll-mt-24 py-24 sm:py-32">
