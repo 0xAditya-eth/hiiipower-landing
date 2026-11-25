@@ -6,7 +6,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { playStoreUrl } from "@/lib/play-store";
-import { detectDeviceClass } from "@/lib/device";
+import { APP_STORE_LISTING_URL } from "@/lib/app-store";
+import { directStore } from "@/lib/device";
 
 type SiteMenuProps = {
   onJoin: () => void;
@@ -76,7 +77,7 @@ export function SiteMenu({ onJoin, triggerClassName }: SiteMenuProps) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
-  const [isAndroid, setIsAndroid] = React.useState(false);
+  const [storeTarget, setStoreTarget] = React.useState<"ios" | "android" | null>(null);
   const triggerWrapRef = React.useRef<HTMLSpanElement>(null);
   const [anchor, setAnchor] = React.useState({
     top: 0,
@@ -99,7 +100,7 @@ export function SiteMenu({ onJoin, triggerClassName }: SiteMenuProps) {
 
   React.useEffect(() => {
     setMounted(true);
-    setIsAndroid(detectDeviceClass() === "android");
+    setStoreTarget(directStore());
   }, []);
 
   React.useEffect(() => {
@@ -207,9 +208,19 @@ export function SiteMenu({ onJoin, triggerClassName }: SiteMenuProps) {
                         {group.links.map((link) => (
                           <li key={link.label}>
                             {"action" in link ? (
-                              isAndroid ? (
+                              storeTarget === "android" ? (
                                 <a
                                   href={playStoreUrl(pageFromPath(pathname ?? "/"))}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={close}
+                                  className={joinItemClass}
+                                >
+                                  Get the app
+                                </a>
+                              ) : storeTarget === "ios" ? (
+                                <a
+                                  href={APP_STORE_LISTING_URL}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={close}

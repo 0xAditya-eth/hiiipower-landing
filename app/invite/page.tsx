@@ -7,7 +7,8 @@ import { ExperienceShell } from "@/components/experience/experience-shell";
 import { HeroCascade } from "@/components/experience/motion";
 import { EmailJoinForm } from "@/components/experience/email-join-form";
 import { Button } from "@/components/ui/button";
-import { detectDeviceClass, isIpadOsDesktopUa } from "@/lib/device";
+import { directStore } from "@/lib/device";
+import { APP_STORE_LISTING_URL } from "@/lib/app-store";
 import { PLAY_STORE_LISTING_URL } from "@/lib/play-store";
 
 const SHARE_URL = "https://hiiipower.app/ai-or-not";
@@ -37,9 +38,14 @@ export default function InvitePage() {
   }, []);
 
   function onDownload() {
-    // Android opens Play. iPhone, iPad, and iPadOS (a Mac UA with a touch
-    // screen) go to /download, which shows the store badges. Desktop does too.
-    if (detectDeviceClass() === "android" && !isIpadOsDesktopUa()) {
+    // iPhone, iPad, and iPadOS open the App Store. Android opens Play.
+    // Desktop goes to /download, which shows both badges.
+    const store = directStore();
+    if (store === "ios") {
+      window.open(APP_STORE_LISTING_URL, "_blank", "noopener,noreferrer");
+      return;
+    }
+    if (store === "android") {
       window.open(PLAY_STORE_LISTING_URL, "_blank", "noopener,noreferrer");
       return;
     }

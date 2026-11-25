@@ -15,7 +15,6 @@ export default function DownloadPage() {
           <GetAppBlock
             utmContent="download"
             playUrl={PLAY_STORE_LISTING_URL}
-            androidNote="Have an invite code? Enter it after you sign up in the app."
             includeIpadOs
           />
         </div>
